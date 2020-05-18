@@ -1,0 +1,15 @@
+Package: CircadianDynamics
+Type: Package
+Title: Period and Rythm Analysis of Timeseries Data
+Version: 0.1.0
+Author: Eddie Pérez Claudio, Jonathan Alemán
+Maintainer: Eddie Pérez Claudio <eddieperezclaudio@gmail.com>
+Description: 
+    Finds the period of univariate and multivariate timeseries (datetime) data by window.
+    It will iterate of each window and find any changes in the period. Also fits a COSINOR 
+    function to the data. After the analysis, plots which summarise the data can be exported.
+License: None
+Encoding: UTF-8
+LazyData: true
+Depends: tidyverse, pracma, rstudioapi, lomb
+RoxygenNote: 7.1.0
