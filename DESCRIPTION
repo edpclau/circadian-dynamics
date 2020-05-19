@@ -1,4 +1,4 @@
-Package: circadian-dynamics
+Package: circadiandynamics
 Type: Package
 Title: Period and Rythm Analysis of Timeseries Data
 Version: 0.1.0
