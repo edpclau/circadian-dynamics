@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' completed_dates <- fill_gaps(times = df$datetime, sampling_rate = "30 min")
-fill_gaps <- function(times = NULL, sampling_rate = NULL) {
+find_gaps <- function(times = NULL, sampling_rate = NULL) {
 
   completed_dates <- tibble::tibble(datetime = times) %>%
     tidyr::complete(datetime = seq(min(datetime),max(datetime), by = sampling_rate))
