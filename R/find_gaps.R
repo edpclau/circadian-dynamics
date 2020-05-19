@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' completed_dates <- fill_gaps(times = df$datetime, sampling_rate = "30 min")
+#' completed_dates <- find_gaps(times = df$datetime, sampling_rate = "30 min")
 find_gaps <- function(times = NULL, sampling_rate = NULL) {
 
   completed_dates <- tibble::tibble(datetime = times) %>%
