@@ -67,8 +67,8 @@ df_short <- purrr::map(1:length(df),
 
 results <- purrr::map(1:length(df_short),
            .f = ~
-             rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate, auto_correlation = TRUE, lomb_scargle = TRUE,
-                         from = NULL, to = NULL, ofac = 1, multipeak_period = TRUE, peak_of_interest = Inf)
+             rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate, auto_correlation = auto_correlation, lomb_scargle = lomb_scargle,
+                         from = from, to = to, ofac = ofac, multipeak_period = multipeak_period, peak_of_interest = peak_of_interest)
 )
 
 
