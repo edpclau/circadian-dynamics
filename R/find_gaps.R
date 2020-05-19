@@ -1,7 +1,7 @@
 #' Fill Gaps in the data
 #'
 #' @description Finds and fills gaps in a POSIXct vector.
-#' @usage fill_gaps(times = NULL, sampling_rate = NULL)
+#' @usage find_gaps(times = NULL, sampling_rate = NULL)
 #' @param times a POSIXct vector.
 #' @param sampling_rate A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
 #'
