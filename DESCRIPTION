@@ -12,6 +12,6 @@ Description:
     function to the data. After the analysis, plots which summarise the data can be exported.
 License: None
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Depends: tidyverse, pracma, rstudioapi, lomb, lubridate
 RoxygenNote: 7.1.0
