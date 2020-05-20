@@ -2,11 +2,11 @@
 #' Helper function to prepare raw data for analysis
 #' @description Processes raw data in such a way that it can be directly inputted to the multivariate_rythm_analysis function.
 #' @usage multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1, smooth_data = TRUE, detrend_data = FALSE)
-#' @param df A data.frame where the first column is a POSIXct object and the rest are independent measurement values.
+#' @param df (required) A data.frame where the first column is a POSIXct object and the rest are independent measurement values.
 #' @param sampling_rate
-#' A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
-#' @param window_size_in_days a numeric indicating the width of the window size in day units.
-#' @param window_step_in_days a numeric indicating the amount of day by which to move the window in day units.
+#' (required) A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
+#' @param window_size_in_days (default=3) a numeric indicating the width of the window size in day units.
+#' @param window_step_in_days (default=1) a numeric indicating the amount of day by which to move the window in day units.
 #' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
 #' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
 #'
@@ -16,6 +16,7 @@
 #' @export
 #'
 #' @examples
+#' 
 #' processed_data <- multivariate_process_timeseries(df = raw_data, 
 #' sampling_rate = "30 min", window_size_in_days = 3, 
 #' window_step_in_days = 1, smooth_data = TRUE,
