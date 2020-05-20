@@ -94,7 +94,7 @@ if (!all(is.na(df$times))) {
 lomb_scargle <- {
   setTimeLimit(60, transient = TRUE)
   purrr::map_if(unique(df$window),
-              .p = ~ sum(!is.na(dplyr::pull(dplyr::filter(df, window == .), values))) >= 4,
+              .p = ~ sum(!is.na(dplyr::pull(dplyr::filter(df, window == .), values))) >= 2,
               .f =  ~ lsp_mod(x = dplyr::select(dplyr::filter(df, window == .), times, values), from = from, to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
               .else = ~ NULL)
 }
@@ -102,7 +102,7 @@ lomb_scargle <- {
   lomb_scargle <- {
     setTimeLimit(60, transient = TRUE)
     purrr::map_if(unique(df$window),
-                                .p = ~ sum(!is.na(dplyr::pull(dplyr::filter(df, window == .), values))) >= 4,
+                                .p = ~ sum(!is.na(dplyr::pull(dplyr::filter(df, window == .), values))) >= 2,
                                 .f =  ~ lsp_mod(x = dplyr::pull(dplyr::filter(df, window == .), values), from = from, to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
                                 .else = ~ NULL)
   }
@@ -117,7 +117,9 @@ lomb_scargle_no_null <- purrr::discard(lomb_scargle, rlang::is_empty)
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
 results <- purrr::map_df(names(lomb_scargle_no_null),
            .f = ~ tibble::tibble(window = as.numeric(.),
-                       period = if(lubridate::is.POSIXct(df$times) | lubridate::is.POSIXct(times)) {
+                       period = if (!is.null(from) | !is.null(to)) {
+                         lomb_scargle_no_null[[.]]$peak.at[1]
+                       } else if (lubridate::is.POSIXct(df$times) | lubridate::is.POSIXct(times)) {
                          lubridate::dseconds(lomb_scargle_no_null[[.]]$peak.at[1])/lubridate::duration(sampling_rate)
                          } else {
                          lomb_scargle_no_null[[.]]$peak.at[1]
