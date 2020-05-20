@@ -31,6 +31,7 @@ Iterated autocorrelation over windowed (grouped) timeseries data.
 }
 \examples{
 autocorrelations_multipeak <- acf_window(df = df_with_windows, multipeak_period = TRUE)
+
 }
 \seealso{
 [stats::acf()] which this functions uses to run the autocorrelation.

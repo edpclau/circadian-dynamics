@@ -28,6 +28,14 @@
 #'
 #' @examples
 #' autocorrelations_multipeak <- acf_window(df = df_with_windows, multipeak_period = TRUE)
+#'
+#' @import dplyr
+#' @import purrr
+#' @importFrom tibble tibble
+#' @importFrom pracma findpeaks
+#' @importFrom pracma movavg
+#' @importFrom rlang is_empty
+#'
 acf_window <- function(df = NULL,  multipeak_period = TRUE, peak_of_interest = Inf, window_vector = NULL, values = NULL){
 
 ##### Flow Control Parameters #####
@@ -58,9 +66,15 @@ autocorrelations_no_na <- purrr::map(autocorrelations,  .f =  ~ dplyr::if_else(i
 
 # Find the peaks
 peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
-
+positive_peak_index <- map(1:length(peaks),
+                      .f = ~ which(peaks[[.]] > 0))
+neg_peak_index <- map(1:length(peaks),
+                      .f = ~ which(peaks[[.]] < 0))
+# Keep only the positive peaks
+positive_peaks <-  map2(peaks, positive_peak_index,
+     .f = ~ .x[.y])
 # Find the average peak size (autopower)
-mean_peaks <- purrr::map(peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { mean(., na.rm = TRUE)} ) # We use map_if so that we don't process the NULL values
+mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { mean(., na.rm = TRUE)} ) # We use map_if so that we don't process the NULL values
 
 
 ############### Find lags in the autocorrelation #####
@@ -75,6 +89,15 @@ peak_lags <- purrr::map2(lags, peak_index, .f = ~ .x[.y])
 
 # calculate lag diff so that we can find the period
 diff_lags <- purrr::map_if(peak_lags, .p = ~ !is.null(.), .f = ~ if(length(.) == 1){.} else {diff(.)})
+
+
+# Positive Peak Lags
+pos_peak_lag_index <- purrr::map2(peak_index, positive_peak_index, .f = ~ .x[.y])
+pos_peak_lags <- purrr::map2(lags, pos_peak_lag_index, .f = ~ .x[.y])
+# calculate lag diff so that we can find the period of positive peaks
+pos_diff_lags <- purrr::map_if(peak_lags, .p = ~ !is.null(.), .f = ~ if(length(.) == 1){.} else {diff(.)})
+
+
 
 #### The period ####
 # First, find the windows with null and empty values by turning mean_peaks into a tibble. This will eliminate all the null and is.numeric(0) values

@@ -95,7 +95,7 @@ ccf(x = raw_data[2], #Select the values in the window
 points(
   x= dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(peak_lags) %>% unlist(),
   y= dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(peaks) %>% unlist(),
-  pch=8,
+  pch=4,
   cex=3,
   col = 'red')
 
