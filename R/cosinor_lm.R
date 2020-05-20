@@ -123,7 +123,7 @@ model_p.value <- broom::glance(model)$p.value
 
 
 results <- tibble::tibble_row(MESOR, amplitude, amplitude_se, acrophase, acrophase_se, phase_in_seconds, phase_se_seconds,
-                              adj_r_squared, cosinor_p_value = model_p.value, wave_y = list(MESOR + amplitude * sinw),
+                              adj_r_squared, cosinor_p_value = model_p.value, wave_y = list(MESOR + (amplitude * sinw)),
                               wave_x = list(df$timeseries_datetime + phase_in_seconds))
 
 return(results)
