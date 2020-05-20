@@ -7,13 +7,13 @@
 multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1, smooth_data = TRUE, detrend_data = FALSE)
 }
 \arguments{
-\item{df}{A data.frame where the first column is a POSIXct object and the rest are independent measurement values.}
+\item{df}{(required) A data.frame where the first column is a POSIXct object and the rest are independent measurement values.}
 
-\item{sampling_rate}{A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.}
+\item{sampling_rate}{(required) A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.}
 
-\item{window_size_in_days}{a numeric indicating the width of the window size in day units.}
+\item{window_size_in_days}{(default=3) a numeric indicating the width of the window size in day units.}
 
-\item{window_step_in_days}{a numeric indicating the amount of day by which to move the window in day units.}
+\item{window_step_in_days}{(default=1) a numeric indicating the amount of day by which to move the window in day units.}
 
 \item{smooth_data}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
 
@@ -26,6 +26,10 @@ A named list of data.frames containing the output of [process_timeseries()] for 
 Processes raw data in such a way that it can be directly inputted to the multivariate_rythm_analysis function.
 }
 \examples{
-processed_data <- multivariate_process_timeseries(df = raw_data, sampling_rate = "30 min")
+
+processed_data <- multivariate_process_timeseries(df = raw_data, 
+sampling_rate = "30 min", window_size_in_days = 3, 
+window_step_in_days = 1, smooth_data = TRUE,
+detrend_data = TRUE)
 
 }
