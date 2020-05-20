@@ -16,7 +16,10 @@
 #' @export
 #'
 #' @examples
-#' processed_data <- multivariate_process_timeseries(df = raw_data, sampling_rate = "30 min")
+#' processed_data <- multivariate_process_timeseries(df = raw_data, 
+#' sampling_rate = "30 min", window_size_in_days = 3, 
+#' window_step_in_days = 1, smooth_data = TRUE,
+#' detrend_data = TRUE)
 #'
 multivariate_process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3,
                                 window_step_in_days = 1, smooth_data = TRUE, detrend_data = FALSE) {
