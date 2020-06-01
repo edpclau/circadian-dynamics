@@ -8,7 +8,7 @@
 #' butterworth_filter(df = NULL, period = 24,
 #'      type = c("low", "high"), plot = TRUE)
 #'
-#' @param df required. A data.frame object where column 1 is a POSIXct object and column 2 is the measurement values.
+#' @param df required. A data.frame object where column 1 is a POSIXct object and the other columns are measurement values.
 #' @param period The period on which we want to draw the threshold (default = 24).
 #' @param type A string indicating if a low or high pass filter will be used. options: "low" (default), "high".
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.
@@ -27,22 +27,33 @@ butterworth_filter <- function(df = NULL, period = 24, type = c("low", "high"), 
   type <- match.arg(type, choices = c("low", "high"))
 
 
+
 ##### Butterworth #####
 # Define parameters
 bf <- signal::butter(1, 1/period , type=type)
-# Filter signal
-bf <- signal::filtfilt(bf, df[[2]])
+
+
+b1 <-  map_dfc(2:ncol(df),
+       .f = ~ signal::filtfilt(bf, df[[.]])
+       )
 
 
 # Plots
 if (plot) {
-plot(df[[1]], df[[2]], type = "l")
-lines(df[[1]], b1, col = "red", lwd = 1.5)
+for (i in 2:ncol(df)) {
+plot(df[[1]], df[[i]], type = "l")
+lines(df[[1]], b1[[i-1]], col = "red", lwd = 1.5)
+mtext(paste("IND", i))
+answer <- readline("Press 'Enter' to plot the next figure. Write 'done' to finish.")
+if (answer != "") {break()}
+}
 }
 
 # return the filtered data
-df[[2]] <- b1
-return(df)
+names(b1) <- names(df[,c(2:ncol(df))])
+b1$datetime <- df[[1]]
+b1 <- dplyr::select(b1, datetime, everything())
+return(b1)
 
 }
 

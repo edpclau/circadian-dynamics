@@ -8,7 +8,7 @@ butterworth_filter(df = NULL, period = 24,
      type = c("low", "high"), plot = TRUE)
 }
 \arguments{
-\item{df}{required. A data.frame object where column 1 is a POSIXct object and column 2 is the measurement values.}
+\item{df}{required. A data.frame object where column 1 is a POSIXct object and the other columns are measurement values.}
 
 \item{period}{The period on which we want to draw the threshold (default = 24).}
 
