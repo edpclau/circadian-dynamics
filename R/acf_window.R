@@ -8,11 +8,14 @@
 #' Column 2 must supply the values. This parameter is optional if window_vector and values are supplied.
 #' df must not have gaps in the dates, acf asumes data is evenly spaced.
 #'
-#' @param multipeak_period TRUE (default) use all positive peaks to find the period.
-#' FALSE use peak_of_interest to find period.
+#' @param multipeak_period TRUE, use all positive peaks to find the period.
+#' FALSE (default) use peak_of_interest to find period.
 #'
 #' @param peak_of_interest Positive peak on which we want to base the period calculation.
-#' If not peak is supplied it will use the peak next to the middle peak.
+#' If no peak is supplied it will use the peak next to the middle peak. The default is the second (2) peak.
+#'
+#' @param sampling_unit A charater string which indicates the sampling unit. For example: "seconds", "minutes", "hours" (default),
+#' "days", "months".
 #'
 #' @param window_vector A vector containing the windows to iterate over and to label the group
 #' to which each value belongs. Usually this will be the output from make_time_windows.
@@ -27,7 +30,9 @@
 #' @export
 #'
 #' @examples
-#' autocorrelations_multipeak <- acf_window(df = df_with_windows, multipeak_period = TRUE)
+#' autocorrelations_multipeak <- acf_window(df = df_with_windows,
+#' multipeak_period = FALSE, peak_of_interest = 2,
+#' sampling_unit = "hours")
 #'
 #' @import dplyr
 #' @import purrr
@@ -36,7 +41,8 @@
 #' @importFrom pracma movavg
 #' @importFrom rlang is_empty
 #'
-acf_window <- function(df = NULL,  multipeak_period = TRUE, peak_of_interest = Inf, window_vector = NULL, values = NULL){
+acf_window <- function(df = NULL,  multipeak_period = FALSE, peak_of_interest = 2,
+                       sampling_unit = "hours", window_vector = NULL, values = NULL){
 
 ##### Flow Control Parameters #####
   #1. Either a df or two lists with the time_series and values must be supplied. If a df is supplied,
@@ -52,7 +58,7 @@ acf_window <- function(df = NULL,  multipeak_period = TRUE, peak_of_interest = I
 
 # Get the autocorrelation values
 autocorrelations <- purrr::map(unique(df$window_vector), # Iterate over the windows
-                               .f =  ~ as.numeric(ccf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
+                               .f =  ~ as.numeric(acf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
                                                       y = dplyr::pull(dplyr::filter(df, window_vector == .), values),
                                                       na.action = na.pass,
                                                       type = "correlation",
@@ -65,11 +71,10 @@ autocorrelations <- purrr::map(unique(df$window_vector), # Iterate over the wind
 autocorrelations_no_na <- purrr::map(autocorrelations,  .f =  ~ dplyr::if_else(is.na(.) == TRUE, 0, .))
 
 # Find the peaks
-peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
+peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(., nups = 0, ndowns = 1)[,1])
 positive_peak_index <- map(1:length(peaks),
                       .f = ~ which(peaks[[.]] > 0))
-neg_peak_index <- map(1:length(peaks),
-                      .f = ~ which(peaks[[.]] < 0))
+
 # Keep only the positive peaks
 positive_peaks <-  map2(peaks, positive_peak_index,
      .f = ~ .x[.y])
@@ -80,11 +85,11 @@ mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length
 ############### Find lags in the autocorrelation #####
 # Get the lag that corresponds to each peak
 lags <- purrr::map(unique(df$window_vector), # Iterate over the windows
-                   .f =  ~ seq(from = - length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) + 1,
+                   .f =  ~ seq(from = 0,
                                to = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) - 1,
                                by = 1))
 
-peak_index <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,2])
+peak_index <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(., nups = 0, ndowns = 1)[,2])
 peak_lags <- purrr::map2(lags, peak_index, .f = ~ .x[.y])
 
 # calculate lag diff so that we can find the period
@@ -115,20 +120,25 @@ usable_windows <- purrr::discard(mean_peaks, rlang::is_empty) %>% names() %>% as
 period <- purrr::map_if(usable_windows,
                         .p = ~ !(mean_peaks[[.]] < 0), # If the mean_peaks (autopower) is negative, give out an NA
                         .else =  ~ NA,
-                        .f = ~ if (multipeak_period == TRUE) { mean(diff_lags[[.]]) #If we want the multipeak period, print out the mean of lags, I think it should be the median
+                        .f = ~ if (multipeak_period == TRUE) { mean(pos_diff_lags[[.]]) #If we want the multipeak period, print out the mean of lags, I think it should be the median
                         } else if (multipeak_period == FALSE) {
-                          if (length(diff_lags[[.]]) == 1) { .
-                          } else if (length(diff_lags[[.]]) >= peak_of_interest){ diff_lags[[.]][peak_of_interest] #print the lag of the peak of interest
-                          } else {diff_lags[[.]][length(diff_lags[[.]])/2] #We're trying to get the inner most lags which tend to be the most stable
-                            warning(paste("peak_of_interest is out of bounds. Will use peak =", length(diff_lags[[.]])/2, "instead"))
+                          if (length(pos_diff_lags[[.]]) == 1) { .
+                          } else if (length(pos_diff_lags[[.]]) >= peak_of_interest){pos_diff_lags[[.]][peak_of_interest] #print the lag of the peak of interest
+                          } else {pos_diff_lags[[.]][length(pos_diff_lags[[.]])/2] #We're trying to get the inner most lags which tend to be the most stable
+                            warning(paste("peak_of_interest is out of bounds. Will use peak =", length(pos_diff_lags[[.]])/2, "instead"))
                           }
                         }
 )
 
+# Transform the period into hours
+period <- map(1:length(period),
+    .f = ~ lubridate::duration(period[[.]], sampling_unit) %>% as.numeric("hours") %>% paste("hours")
+    )
+
 autocorrelation_power <- purrr::discard(mean_peaks, is.null)
 
-usable_peak_lags <- peak_lags[usable_windows]
-usable_peaks <- peaks[usable_windows]
+usable_peak_lags <- pos_peak_lags[usable_windows]
+usable_peaks <- positive_peaks[usable_windows]
 results <- tibble::tibble(window = usable_windows,
                           period = unlist(period),
                           autocorrelation_power = unlist(autocorrelation_power),

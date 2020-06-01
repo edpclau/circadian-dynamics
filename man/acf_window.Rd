@@ -11,11 +11,14 @@ acf_window(df = df_with_windows, multipeak_period = TRUE)
 Column 2 must supply the values. This parameter is optional if window_vector and values are supplied.
 df must not have gaps in the dates, acf asumes data is evenly spaced.}
 
-\item{multipeak_period}{TRUE (default) use all positive peaks to find the period.
-FALSE use peak_of_interest to find period.}
+\item{multipeak_period}{TRUE, use all positive peaks to find the period.
+FALSE (default) use peak_of_interest to find period.}
 
 \item{peak_of_interest}{Positive peak on which we want to base the period calculation.
-If not peak is supplied it will use the peak next to the middle peak.}
+If no peak is supplied it will use the peak next to the middle peak. The default is the second (2) peak.}
+
+\item{sampling_unit}{A charater string which indicates the sampling unit. For example: "seconds", "minutes", "hours" (default),
+"days", "months".}
 
 \item{window_vector}{A vector containing the windows to iterate over and to label the group
 to which each value belongs. Usually this will be the output from make_time_windows.}
@@ -30,7 +33,9 @@ power, lags for the peaks.
 Iterated autocorrelation over windowed (grouped) timeseries data.
 }
 \examples{
-autocorrelations_multipeak <- acf_window(df = df_with_windows, multipeak_period = TRUE)
+autocorrelations_multipeak <- acf_window(df = df_with_windows,
+multipeak_period = FALSE, peak_of_interest = 2,
+sampling_unit = "hours")
 
 }
 \seealso{

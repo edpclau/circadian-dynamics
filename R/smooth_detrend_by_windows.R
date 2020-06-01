@@ -2,16 +2,17 @@
 #' @usage smooth_detrend_by_windows(df = NULL, smooth_data = TRUE, detrend_data = TRUE, windows = NULL, values = NULL)
 #' @param df a data.frame with 2 columns. The first column must be the windows. The second column the values to process.
 #' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
+#' @param binning_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
 #' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
 #' @param windows Optional if a data.frame is supplied. A vector with the windows.
 #' @param values  Optional if a data.frame is supplied. A vector of values from a mesurement.
 #' @return
-#'A data.frame conatining:
+#'A data.frame conatining: /n
 #'
-#' window                 A vector with the windows.
-#' values                 The raw measurement values.
-#' smoothed               A column with the smoothed data.
-#' detrended              A column with the detrended data.
+#' window                 A vector with the windows. /n
+#' values                 The raw measurement values. /n
+#' smoothed               A column with the smoothed data. /n
+#' detrended              A column with the detrended data. /n
 #' smoothed_and_detrended A column with data that's been both smoothed and detrended.
 #'
 #' @export
@@ -19,7 +20,7 @@
 #' @examples
 #' smoothed_data <- smooth_detrend_by_windows(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
 #'
-smooth_detrend_by_windows <- function(df = NULL, smooth_data = TRUE,
+smooth_detrend_by_windows <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
                                       detrend_data = TRUE, windows = NULL, values = NULL) {
 
   ###### Flow control parameters######
@@ -40,7 +41,7 @@ if (smooth_data == TRUE & detrend_data == TRUE) {
   windowed_data <- windowed_data %>%
     dplyr::group_by(window) %>%
     dplyr::mutate(
-      smoothed =  pracma::movavg(values, n = 4, type = "s"),
+      smoothed =  pracma::movavg(values, n = binning_n, type = "s"),
       smoothed_and_detrended = pracma::detrend(smoothed)) %>%
     dplyr::ungroup()
 
@@ -48,7 +49,7 @@ if (smooth_data == TRUE & detrend_data == TRUE) {
   windowed_data <- windowed_data %>%
     dplyr::group_by(window) %>%
     dplyr::mutate(
-      smoothed =  pracma::movavg(values, n = 4, type = "s")) %>%
+      smoothed =  pracma::movavg(values, n = binning_n, type = "s")) %>%
     dplyr::ungroup()
 
 } else if (smooth_data == FALSE & detrend_data == TRUE) {
@@ -59,7 +60,8 @@ if (smooth_data == TRUE & detrend_data == TRUE) {
     dplyr::ungroup()
 
 } else {
-  stop("smooth_data and detrend_data must be TRUE or FALSE")
+  # If smooth and detrend are false, return the unchanged data.frame
+  return(windowed_data)
 }
 return(windowed_data)
 }
