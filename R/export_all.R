@@ -5,6 +5,7 @@
 #' export_all(processed_data = NULL, rythm_analysis_data = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
 #' cosinor_fit = c("lomb_scargle", "autocorrelation"), dir_choose_gui = TRUE, new_dir_name = "analysis")
 #'
+#' @param raw_data data.frame or tibble containing the raw data.
 #' @param processed_data data.frame returned from the process_timeseries or multivariate_process_timeseries functions.
 #' @param rythm_analysis_data data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.
 #' @param autocorrelation If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.
@@ -20,7 +21,7 @@
 #'
 #' @examples
 #' export_all(processed_data = processed_data, rythm_analysis_data = analysis_data, new_dir_name = "test")
-export_all <- function(processed_data = NULL, rythm_analysis_data = NULL,
+export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL,
                        autocorrelation = TRUE, lomb_scargle = TRUE,
                        cosinor_fit = c("lomb_scargle", "autocorrelation"),
                        dir_choose_gui = TRUE, new_dir_name = "analysis") {
@@ -36,6 +37,14 @@ if (dir_choose_gui) {
   directory <- rstudioapi::selectDirectory()
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
+} else {
+  directory <- getwd()
+  new_dir1 <- paste0(directory,"/", new_dir_name)
+  dir.create(new_dir1)
+}
+
+if (!is.null(raw_data)) {
+plot_actogram(raw_data)
 }
 
 for (name in names(processed_data)) {
