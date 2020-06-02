@@ -53,7 +53,7 @@
 #' lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
 #'
 lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = NULL, to = NULL,
-                          type = c("period", "frequency"), ofac = 1, alpha = 0.01, plot = FALSE) {
+                          type = c("period", "frequency"), ofac = 60, alpha = 0.01, plot = FALSE) {
 
   ###### Flow control parameters######
   #1. Either a df or 3 lists of: (1) windows, (2) values, and (3) times must be supplied. If a df is not supplied, turn the
@@ -131,5 +131,6 @@ results <- purrr::map_df(names(lomb_scargle_no_null),
                        sig_level = lomb_scargle_no_null[[.]]$sig.level)
            )
 
+results
 return(results)
 }

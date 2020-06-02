@@ -8,6 +8,8 @@ export_all(processed_data = NULL, rythm_analysis_data = NULL, autocorrelation = 
 cosinor_fit = c("lomb_scargle", "autocorrelation"), dir_choose_gui = TRUE, new_dir_name = "analysis")
 }
 \arguments{
+\item{raw_data}{data.frame or tibble containing the raw data.}
+
 \item{processed_data}{data.frame returned from the process_timeseries or multivariate_process_timeseries functions.}
 
 \item{rythm_analysis_data}{data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.}

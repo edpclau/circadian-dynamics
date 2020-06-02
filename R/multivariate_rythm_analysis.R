@@ -41,7 +41,7 @@
 #'
 #'
 multivariate_rythm_analysis <- function(df = NULL, sampling_rate = NULL, auto_correlation = TRUE, lomb_scargle = TRUE,
-         from = NULL, to = NULL, ofac = 1, multipeak_period = TRUE, peak_of_interest = Inf,
+         from = NULL, to = NULL, ofac = 60, multipeak_period = TRUE, peak_of_interest = Inf,
          datetime = NULL, window = NULL, values = NULL) {
 
   ###### Flow control parameters######

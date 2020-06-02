@@ -4,7 +4,10 @@
 \alias{read_trikinetics}
 \title{Import data from a Trikinetics tsv}
 \usage{
-read_trikinetics()
+read_trikinetics(file = NULL)
+}
+\arguments{
+\item{file}{a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.}
 }
 \description{
 Import data from a Trikinetics tsv

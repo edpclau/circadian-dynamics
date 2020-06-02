@@ -43,7 +43,9 @@ if (dir_choose_gui) {
   dir.create(new_dir1)
 }
 
+
 if (!is.null(raw_data)) {
+setwd(new_dir1)
 plot_actogram(raw_data)
 }
 

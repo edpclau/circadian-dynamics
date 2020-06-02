@@ -42,7 +42,7 @@
 #'
 
 rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_correlation = TRUE, lomb_scargle = TRUE,
-                                     from = NULL, to = NULL, ofac = 1, multipeak_period = TRUE, peak_of_interest = Inf,
+                                     from = NULL, to = NULL, ofac = 60, multipeak_period = TRUE, peak_of_interest = Inf,
                                      datetime = NULL, window = NULL, values = NULL) {
   ###### Flow control parameters######
   #1. Either a df or three lists with the datetimes, values, and windows must be supplied. If a df is not supplied, turn the
@@ -103,10 +103,13 @@ if (auto_correlation == TRUE & lomb_scargle == TRUE) {
   #2. Only auto
 } else if (auto_correlation == TRUE & lomb_scargle == FALSE) {
   results <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
-
+  results$method <- "autocorrelation"
+  results <- dplyr::select(method, dplyr::everything())
   #3. Only lomb
 } else {
   results <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
+  results$method <- "lomb_scargle"
+  results <- dplyr::select(method, dplyr::everything())
 }
 
 return(results)
