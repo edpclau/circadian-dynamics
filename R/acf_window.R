@@ -131,7 +131,7 @@ period <- purrr::map_if(usable_windows,
 )
 
 # Transform the period into hours
-period <- map(1:length(period),
+period_hours <- map(1:length(period),
     .f = ~ lubridate::duration(period[[.]], sampling_unit) %>% as.numeric("hours") %>% paste("hours")
     )
 
@@ -141,6 +141,7 @@ usable_peak_lags <- pos_peak_lags[usable_windows]
 usable_peaks <- positive_peaks[usable_windows]
 results <- tibble::tibble(window = usable_windows,
                           period = unlist(period),
+                          period_hours = unlist(period_hours),
                           autocorrelation_power = unlist(autocorrelation_power),
                           peak_lags = usable_peak_lags,
                           peaks = usable_peaks
