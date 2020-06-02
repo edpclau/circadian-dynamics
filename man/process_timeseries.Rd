@@ -19,12 +19,22 @@ process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, win
 
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
 
+\item{butterworth}{Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
+
+\item{period}{The period on which we want to draw the threshold (default = 24).}
+
+\item{type}{A string indicating if a low or high pass filter will be used. options: "low" (default), "high".}
+
+\item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
+
+\item{binning_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
+
 \item{datetime}{Optional if a data.frame is supplied. A POSIXct vector.}
 
 \item{values}{Optional if a data.frame is supplied. A vector of values from a mesurement.}
 }
 \value{
-A named list of data.frames containing the output of [find_gaps()], [makes_time_windows()], and [smooth_detrend_by_windows()] for each measurement value.
+A named list of data.frames containing the output of [circadiandynamics::butterworth], [find_gaps()], [makes_time_windows()], and [smooth_detrend_by_windows()] for each measurement value.
 }
 \description{
 Processes raw data in such a way that it can be directly inputted to the rythm_analysis_by_window function.

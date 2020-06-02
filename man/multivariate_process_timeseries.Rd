@@ -18,6 +18,16 @@ multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_
 \item{smooth_data}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
 
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
+
+\item{period}{The period on which we want to draw the threshold (default = 24).}
+
+\item{binning_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
+
+\item{type}{A string indicating if a low or high pass filter will be used. options: "low" (default), "high".}
+
+\item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
+
+\item{butterworth}{Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
 }
 \value{
 A named list of data.frames containing the output of [process_timeseries()] for each measurement value.
@@ -27,8 +37,8 @@ Processes raw data in such a way that it can be directly inputted to the multiva
 }
 \examples{
 
-processed_data <- multivariate_process_timeseries(df = raw_data, 
-sampling_rate = "30 min", window_size_in_days = 3, 
+processed_data <- multivariate_process_timeseries(df = raw_data,
+sampling_rate = "30 min", window_size_in_days = 3,
 window_step_in_days = 1, smooth_data = TRUE,
 detrend_data = TRUE)
 
