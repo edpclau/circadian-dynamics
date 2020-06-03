@@ -59,7 +59,7 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
   }
 
 
-if(buttwerworth){
+if(butterworth){
   df <- butterworth_filter(df, period = period, type = type, plot = plot)
 }
 

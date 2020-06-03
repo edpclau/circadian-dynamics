@@ -10,7 +10,7 @@ Description:
     Finds the period of univariate and multivariate timeseries (datetime) data by window.
     It will iterate of each window and find any changes in the period. Also fits a COSINOR 
     function to the data. After the analysis, plots which summarise the data can be exported.
-License: None
+License: GPL-3
 Encoding: UTF-8
 LazyData: false
 Depends: tidyverse, pracma, rstudioapi, lomb, lubridate, signal

@@ -102,7 +102,7 @@ points(
 
 legend("topright",
        legend = c(paste("Period = ",
-                        dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(period) %>% round(digits = 3)),
+                        dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(period_hours)),
                   paste("C.C. =",
                         dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(autocorrelation_power) %>% round(digits = 3))),
        bty = "n",
