@@ -97,7 +97,7 @@ warning("A from - to interval that is not in the same units as the data or is to
 if (!all(is.na(df$times))) {
 
 lomb_scargle <- {
-  setTimeLimit(300, transient = TRUE)
+
   map_if(unique(df$window),
               .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
               .f =  ~ lsp_mod(x = select(filter(df, window == .), times, values),
@@ -106,7 +106,7 @@ lomb_scargle <- {
 }
 } else {
   lomb_scargle <- {
-    setTimeLimit(300, transient = TRUE)
+
     map_if(unique(df$window),
                                 .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
                                 .f =  ~ lsp_mod(x = pull(filter(df, window == .), values), from = from,
