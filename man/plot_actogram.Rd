@@ -4,7 +4,8 @@
 \alias{plot_actogram}
 \title{Export/Plot Actogram}
 \usage{
-plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf")
+plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf",
+export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 }
 \arguments{
 \item{df}{A data.frame or tibble which contains a datetime column and measurement values.}
@@ -12,6 +13,16 @@ plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf")
 \item{datetime_column}{An integer which indicates the column that contains the datetime.}
 
 \item{filename}{A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)}
+
+\item{export}{Logical. If FALSE (default), it will open a window with the plots. If TRUE, saves the plots on the current directory in pdf format.}
+
+\item{width}{a numeric indicating the width of the page of the pdf file. default = 12}
+
+\item{height}{a numeric indicating height of the page of the pdf file. default = 12}
+
+\item{nrow}{a numeric indicating how many rows of plots to put in a page. default = 5}
+
+\item{ncol}{a numeric indicating how many columns of plots to put in a page. default = 5}
 }
 \description{
 Export/Plot Actogram
@@ -21,5 +32,7 @@ Exports actogram plots for each column of a data.frame of tibble with a datetime
 }
 \examples{
 plot_actogram(df = monitor,
-datetime_column = 1)
+datetime_column = 1, filename = "actogram.pdf",
+export = FALSE)
+
 }

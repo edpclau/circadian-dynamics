@@ -52,4 +52,5 @@ Iteratively computes the Lomb-Scargle periodogram for a time series with irregul
 \examples{
 lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
 
+
 }

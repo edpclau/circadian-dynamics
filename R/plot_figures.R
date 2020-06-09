@@ -18,6 +18,11 @@
 #' @examples
 #' export_plots(processed_data = df_processed, rythm_analysis_data = df_analysis)
 #'
+#' @importFrom rstudioapi selectDirectory
+#' @importFrom tidyr unnest
+#' @importFrom magrittr '%>%'
+#' @import dplyr
+#'
 export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL, rythm_analysis_data = NULL,
            autocorrelation = TRUE, lomb_scargle = TRUE,
            cosinor_fit = c("lomb_scargle", "autocorrelation"),
@@ -27,11 +32,11 @@ if (is.null(processed_data)) { stop("Must provide the output from 'process_times
 if (is.null(rythm_analysis_data)) { stop("Must provide the output from 'rythm_analysis_by_window'.")}
 
 # You can choose between lomb_scargle or autocorrelation for "method". Period is the default.
-cosinor_fit <- base::match.arg(cosinor_fit, choices = c("lomb_scargle", "autocorrelation"))
+cosinor_fit <- match.arg(cosinor_fit, choices = c("lomb_scargle", "autocorrelation"))
 
 ##### Select Where to save the figures #####
 if (dir_choose_gui == TRUE) {
-dir <- rstudioapi::selectDirectory()
+dir <- selectDirectory()
 setwd(dir)
 }
 
@@ -48,7 +53,7 @@ for (windows in unique(rythm_analysis_data$window)) {
 
 cosinor <- rythm_analysis_data %>% filter(method == cosinor_fit, window == windows) %>%
     select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period) %>%
-    tidyr::unnest(c(wave_x, wave_y))
+    unnest(c(wave_x, wave_y))
 
 raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, last_col(), 3)
 
@@ -65,7 +70,7 @@ mtext(text=paste(min(raw_data$dates),max(raw_data$dates),sep=" --- "),side=3,out
 if (ncol(processed_data) > 4) {
 # If the data is both smoothed and detrended, first show the smooth and then the smooth and detrended
 plot(
-  dplyr::filter(processed_data, window == windows) %>% dplyr::select(2,dplyr::last_col(1)),
+  filter(processed_data, window == windows) %>% select(2,last_col(1)),
     type="l",
     xlab="")
 
@@ -88,13 +93,13 @@ ccf(x = raw_data[2], #Select the values in the window
     na.action = na.pass,
     type = "correlation",
     plot = TRUE,
-    lag.max = length(dplyr::pull(dplyr::select(dplyr::filter(processed_data, window == windows), dplyr::last_col()))),
+    lag.max = length(pull(select(filter(processed_data, window == windows), last_col()))),
     main = "")
 
 
 points(
-  x= dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(peak_lags) %>% unlist(),
-  y= dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(peaks) %>% unlist(),
+  x= filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(peak_lags) %>% unlist(),
+  y= filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(peaks) %>% unlist(),
   pch=4,
   cex=3,
   col = 'red')
@@ -102,9 +107,9 @@ points(
 
 legend("topright",
        legend = c(paste("Period = ",
-                        dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(period_hours)),
+                        filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(period_hours)),
                   paste("C.C. =",
-                        dplyr::filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% dplyr::pull(autocorrelation_power) %>% round(digits = 3))),
+                        filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(autocorrelation_power) %>% round(digits = 3))),
        bty = "n",
        cex = 1)
 
@@ -117,22 +122,22 @@ legend("topright",
 # Plot Lomb-Scargle
 if (lomb_scargle == TRUE) {
 plot(
-  x = dplyr::filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% dplyr::pull(scanned) %>% unlist(),
-  y = dplyr::filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% dplyr::pull(normalized_power) %>% unlist(),
+  x = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(scanned) %>% unlist(),
+  y = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(normalized_power) %>% unlist(),
   log = "x",
   type = "l",
   xlab = "Period",
   ylab = "Power (lomb)")
 
 abline(
-  h = dplyr::filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% dplyr::pull(sig_level),
+  h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),
   lty = "dashed")
 
 legend("topright",
        legend = c(paste("Period = ",
-                        dplyr::filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% dplyr::pull(period) %>% round(digits = 3)),
+                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3)),
                   paste("Power =",
-                        dplyr::filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% dplyr::pull(power) %>% round(digits = 3))),
+                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% round(digits = 3))),
        bty = "n",
        cex = 1)
 }

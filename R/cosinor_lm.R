@@ -53,15 +53,20 @@
 #' @examples
 #' cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
 #'
-#'
-cosinor_lm <- function(df = NULL, timeseries_datetime = NULL, values = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
+#' @importFrom tibble tibble_row tibble
+#' @importFrom dplyr mutate
+#' @importFrom broom tidy glance
+#' @importFrom magrittr '%>%'
+#' @import lubridate
+cosinor_lm <- function(df = NULL, timeseries_datetime = NULL, values = NULL,
+                       sampling_rate = NULL, period = NULL, na.action = na.omit) {
 
 ###### Flow control parameters######
 #1. Either a df or two lists with the time_series and values must be supplied. If a df is not supplied, turn the
 # two lists into a df.
 if (is.null(df) & (is.null(timeseries_datetime) | is.null(values))) {
   stop("If a data.frame is not supplied. Must include both timeseries and values.")
-  } else if (is.null(df)) { df = tibble::tibble(timeseries_datetime, values) }
+  } else if (is.null(df)) { df = tibble(timeseries_datetime, values) }
 #2.must have sampling rate and period
 if (is.null(period)) {stop("Must include period. Period must be in the same units as the sampling rate")}
 if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes', '1 hour', '4 seconds', '100 days'.")}
@@ -73,7 +78,7 @@ if (!is.null(df)) {
 ##### Format the data so we can run the cosinor ####
 # Insert a sample number for every timepoint
 
-df <- df %>% dplyr::mutate(sample = 1:n())
+df <- df %>% mutate(sample = 1:n())
 
 # Calculate sin and cos widths
 # Period and time_value must be in the same units
@@ -88,8 +93,8 @@ model <- lm(df$values ~  sinw + cosw)
 MESOR <- as.numeric(model$coefficients[1])
 sin_coeff <- as.numeric(model$coefficients[2])
 cos_coeff <- as.numeric(model$coefficients[3])
-sin_se <- broom::tidy(model)$std.error[2]
-cos_se <- broom::tidy(model)$std.error[3]
+sin_se <- tidy(model)$std.error[2]
+cos_se <- tidy(model)$std.error[3]
 
 # Calculating Amplitude and phase
 # Amplitude of the function = square root of (sin_coeff^2 + cos_coeff^2)
@@ -112,17 +117,17 @@ if (cos_coeff < 0 & sin_coeff >= 0) {
 
 time_offset <- acrophase * period / (2*pi) # We translate the phase into time units
 time_offset_se <- acrophase_se * period / (2*pi)
-phase_in_seconds <- lubridate::period(sampling_rate) %>% lubridate::period_to_seconds() * time_offset
-phase_se_seconds <- lubridate::period(sampling_rate) %>% lubridate::period_to_seconds() * time_offset_se
+phase_in_seconds <- period(sampling_rate) %>% period_to_seconds() * time_offset
+phase_se_seconds <- period(sampling_rate) %>% period_to_seconds() * time_offset_se
 
 # Model fit variables
 # R-squared, how well the model matches the data
-adj_r_squared <- broom::glance(model)$adj.r.squared
+adj_r_squared <- glance(model)$adj.r.squared
 # p.value if that r-squared is significant
-model_p.value <- broom::glance(model)$p.value
+model_p.value <- glance(model)$p.value
 
 
-results <- tibble::tibble_row(MESOR, amplitude, amplitude_se, acrophase, acrophase_se, phase_in_seconds, phase_se_seconds,
+results <- tibble_row(MESOR, amplitude, amplitude_se, acrophase, acrophase_se, phase_in_seconds, phase_se_seconds,
                               adj_r_squared, cosinor_p_value = model_p.value, wave_y = list(MESOR + (amplitude*cosw)),
                               wave_x = list(df$timeseries_datetime + phase_in_seconds))
 

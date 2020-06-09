@@ -14,5 +14,4 @@ Import data from a Trikinetics tsv
 }
 \examples{
 trikinetics_data <- read_trikinetics()
-
 }

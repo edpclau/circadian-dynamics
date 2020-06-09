@@ -41,7 +41,6 @@ COSINOR analysis of a timeseries.
 \examples{
 cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
 
-
 }
 \seealso{
 Barnett, A. G., & Dobson, A. J. (2010).

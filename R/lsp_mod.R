@@ -54,7 +54,8 @@
 #'
 #' @author
 #' Original code by: Thomas Ruf thomas.ruf@vetmeduni.ac.at based on code by Press et al (1994).
-#' Modified by: Eddie Pérez Claudio eddieperezclaudio@gmail.com
+#'
+#' Modified by: Eddie Perez Claudio eddieperezclaudio@gmail.com
 #'
 #' @references
 #' Lomb N.R. (1976) Least-squares frequency analysis of unequally spaced data. Astrophysics and Space Science 39:447–462

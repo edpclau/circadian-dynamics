@@ -16,19 +16,23 @@
 #' @examples
 #' windowed_data <- function(data = df)
 #'
+#' @import lubridate
+#' @importFrom purrr map_df
+#' @importFrom dplyr filter
+#'
 make_time_windows <- function(data = NULL, window_size_in_days = 3, window_step_in_days = 1){
 
 # Set parameters
-window_size <- lubridate::days(window_size_in_days) #Width of the window
-window_step <- lubridate::days(window_step_in_days) #Days to move the window
+window_size <- days(window_size_in_days) #Width of the window
+window_step <- days(window_step_in_days) #Days to move the window
 
 # Finding dates where the window does not exceed the last time point in the data
-days_in_data <- seq(from = min(data[[1]]) - lubridate::days(1), to = max(data[[1]] + lubridate::days(1)), by = "1 day")
+days_in_data <- seq(from = min(data[[1]]) - days(1), to = max(data[[1]] + days(1)), by = "1 day")
 usable_dates <- days_in_data[!(days_in_data + window_step + window_size >= max(data[[1]]))]
 
 # Creating a new data.frame where data is partitioned by window
-windowed_data <- purrr::map_df(usable_dates,
-                               ~ dplyr::filter(data, datetime >= . + window_step & datetime <= . + window_step + window_size),
+windowed_data <- map_df(usable_dates,
+                               ~ filter(data, datetime >= . + window_step & datetime <= . + window_step + window_size),
                                .id = "window")
 
 

@@ -67,5 +67,6 @@ Scargle J.D. (1982) Studies in astronomical time series. II. Statistical aspects
 }
 \author{
 Original code by: Thomas Ruf thomas.ruf@vetmeduni.ac.at based on code by Press et al (1994).
-Modified by: Eddie Pérez Claudio eddieperezclaudio@gmail.com
+
+Modified by: Eddie Perez Claudio eddieperezclaudio@gmail.com
 }

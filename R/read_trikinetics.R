@@ -4,7 +4,11 @@
 #'
 #' @examples
 #' trikinetics_data <- read_trikinetics()
-#'
+#' @importFrom readr read_tsv
+#' @importFrom magrittr '%>%'
+#' @importFrom tidyr unite
+#' @importFrom dplyr mutate
+#' @importFrom lubridate parse_date_time
 read_trikinetics <- function(file = NULL){
 
 ##### Flow Control #####

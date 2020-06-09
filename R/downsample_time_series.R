@@ -29,7 +29,15 @@
 #' @export
 #'
 #' @examples
-#' df_downsampled <- downsample_time_series(data = raw_data, datetime_column = "datetime", amount = 30, units = "hour", method = "sum")
+#' df_downsampled <- downsample_time_series(data = raw_data,
+#' datetime_column = "datetime", amount = 30, units = "hour", method = "sum")
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import lubridate
+#' @importFrom rlang sym as_function
+#' @importFrom magrittr '%>%'
+#'
 downsample_time_series <- function(data = NULL,
                                  datetime_column = "datetime",
                                  amount = 30,
@@ -37,29 +45,26 @@ downsample_time_series <- function(data = NULL,
                                  method = c("mean", "sum", "median"))
 {
 
-#Make sure we have the required packages to run the function
-  require(lubridate)
-  require(tidyverse)
-  require(rlang)
+
 
 #Managing arguments
   #to work within the tidyverse symtems these chracters must be turned into symbols
-datetime_column <- rlang::sym(datetime_column)
+datetime_column <- sym(datetime_column)
 
 
   #choose a time point to roll back the time by a certain amount
-units <- base::match.arg(units, choices = c("minute", "hour", "day", "week"))
+units <- match.arg(units, choices = c("minute", "hour", "day", "week"))
 
   #handle the anonymous function naming
-method <- base::match.arg(method, choices = c("mean", "sum", "median"))
-method <- rlang::as_function(method)
-method <- base::match.fun(method, c(mean, sum, median))
+method <- match.arg(method, choices = c("mean", "sum", "median"))
+method <- as_function(method)
+method <- match.fun(method, c(mean, sum, median))
 
 
 #flooring dates
-floored_dates <- lubridate::floor_date(data %>% dplyr::pull(!!datetime_column),
-                                       unit = lubridate::period(amount, units = units))
-data[base::as.character(datetime_column)] <- floored_dates
+floored_dates <- floor_date(data %>% pull(!!datetime_column),
+                                       unit = period(amount, units = units))
+data[as.character(datetime_column)] <- floored_dates
 
 #pivot data longer for downsampling
 
@@ -69,10 +74,10 @@ data <- data %>%
 
 #downsampling
 data <- data %>%
-  dplyr::group_by(!!datetime_column, id) %>%
-  dplyr::summarise(downsampled_data =  method(values)) %>%
-  dplyr::ungroup() %>%
-  tidyr::pivot_wider(!!datetime_column, names_from = "id", values_from = "downsampled_data")
+  group_by(!!datetime_column, id) %>%
+  summarise(downsampled_data =  method(values)) %>%
+  ungroup() %>%
+  pivot_wider(!!datetime_column, names_from = "id", values_from = "downsampled_data")
 
 
   return(data)

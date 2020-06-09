@@ -17,7 +17,7 @@ butterworth_filter(df = NULL, period = 24,
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
 }
 \description{
-A helper function which wraps around the [signal::butter] and [signal::filfilt] functions.
+A helper function which wraps around the [signal::butter()] and [signal::filfilt()] functions.
 It can be either a low or high pass filter for a given period. (The function can take the period argument
 because it does the conversion to frequency automatically. (frequency = 1/period).
 }

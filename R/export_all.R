@@ -46,7 +46,7 @@ if (dir_choose_gui) {
 
 if (!is.null(raw_data)) {
 setwd(new_dir1)
-plot_actogram(raw_data)
+plot_actogram(raw_data, export = TRUE)
 }
 
 for (name in names(processed_data)) {
