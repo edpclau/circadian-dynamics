@@ -88,13 +88,19 @@ plot(
 
 # Plot autocorrelation
 if (autocorrelation == TRUE) {
-ccf(x = raw_data[2], #Select the values in the window
+autocor <- ccf(x = raw_data[2], #Select the values in the window
     y = raw_data[2],
     na.action = na.pass,
     type = "correlation",
-    plot = TRUE,
     lag.max = length(pull(select(filter(processed_data, window == windows), last_col()))),
-    main = "")
+    plot = FALSE)
+
+plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF")
+
+#Calculate and add confidence intervals
+error <- qnorm(0.95)*sd(autocor$acf)/sqrt(length(autocor$acf))
+abline(h = mean(autocor$acf) - error, lty=2, col = "red")
+abline(h = mean(autocor$acf) + error, lty=2, col = "red")
 
 
 points(
@@ -132,6 +138,13 @@ plot(
 abline(
   h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),
   lty = "dashed")
+
+points(
+  x= filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% unlist(),
+  y= filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% unlist(),
+  pch=4,
+  cex=3,
+  col = 'red')
 
 legend("topright",
        legend = c(paste("Period = ",

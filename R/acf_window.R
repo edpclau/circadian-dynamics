@@ -79,8 +79,11 @@ positive_peak_index <- map(1:length(peaks),
 positive_peaks <-  map2(peaks, positive_peak_index,
      .f = ~ .x[.y])
 # Find the average peak size (autopower)
+if (multipeak_period) {
 mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { mean(., na.rm = TRUE)} ) # We use map_if so that we don't process the NULL values
-
+} else {
+  mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { .[peak_of_interest]} ) # We use map_if so that we don't process the NULL values
+}
 
 ############### Find lags in the autocorrelation #####
 # Get the lag that corresponds to each peak
@@ -137,8 +140,15 @@ period_hours <- map(1:length(period),
 
 autocorrelation_power <- purrr::discard(mean_peaks, is.null)
 
+if (multipeak_period) {
 usable_peak_lags <- pos_peak_lags[usable_windows]
 usable_peaks <- positive_peaks[usable_windows]
+} else {
+  usable_peak_lags <- map(usable_windows, ~ pos_peak_lags[[.]][peak_of_interest])
+  usable_peaks <- map(usable_windows, ~ positive_peaks[[.]][peak_of_interest])
+}
+
+
 results <- tibble::tibble(window = usable_windows,
                           period = unlist(period),
                           period_hours = unlist(period_hours),

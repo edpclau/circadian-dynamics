@@ -57,6 +57,9 @@
 #' @importFrom rlang is_empty
 #' @importFrom tibble tibble
 #' @import lubridate
+#' @import dplyr
+#' @import tidyr
+#'
 lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = NULL, to = NULL,
                           type = c("period", "frequency"), ofac = 60, alpha = 0.01, plot = FALSE) {
 
@@ -86,16 +89,18 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
       }
   #4. You can choose between period or frequency for "Type". Period is the default.
   type <- base::match.arg(type, choices = c("period", "frequency"))
-  #5. The from - to interval should be in seconds whenever a datetime is given as times
-  if (!is.null(times) | !all(is.na(df$times))) {
-    warning("the from - to value must be in seconds whenever a datetime object is used as times. Otherwise the function may run infinitely.",
-            immediate. = TRUE) }
-warning("A from - to interval that is not in the same units as the data or is too small, may cause the function to hit the time limit.")
+
 #### Lomb Scargle periodogram by time windows #####
 
 # If there is no times, run without times, otherwise use times.
 if (!all(is.na(df$times))) {
 
+# Convert from-to to seconds.
+
+from <- as.numeric(duration(from, unit = str_remove(sampling_rate, "\\d.")))
+to  <- as.numeric(duration(to, unit = str_remove(sampling_rate, "\\d.")))
+
+# Calculate Lomb-scargle periodogram
 lomb_scargle <- {
 
   map_if(unique(df$window),
@@ -124,20 +129,23 @@ lomb_scargle_no_null <- discard(lomb_scargle, is_empty)
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
 results <- map_df(names(lomb_scargle_no_null),
            .f = ~ tibble(window = as.numeric(.),
-                       period = if (!is.null(from) | !is.null(to)) {
-                         lomb_scargle_no_null[[.]]$peak.at[1]
-                       } else if (is.POSIXct(df$times) | is.POSIXct(times)) {
+                       period = if (is.POSIXct(df$times) | is.POSIXct(times)) {
                          dseconds(lomb_scargle_no_null[[.]]$peak.at[1])/duration(sampling_rate)
                          } else {
                          lomb_scargle_no_null[[.]]$peak.at[1]
                          } ,
                        power = lomb_scargle_no_null[[.]]$peak,
                        lsp_p_value = lomb_scargle_no_null[[.]]$p.value,
-                       scanned = list(lomb_scargle_no_null[[.]]$scanned),
+                       scanned = if (is.POSIXct(df$times) | is.POSIXct(times)) {
+                         list(as.numeric(dseconds(lomb_scargle_no_null[[.]]$scanned), "hours"))
+                       } else {
+                         list(lomb_scargle_no_null[[.]]$scanned)
+                       },
                        normalized_power = list(lomb_scargle_no_null[[.]]$power),
-                       sig_level = lomb_scargle_no_null[[.]]$sig.level)
+                       sig_level = lomb_scargle_no_null[[.]]$sig.level,
+                       ofac = lomb_scargle_no_null[[.]]$ofac)
            )
 
-results
+
 return(results)
 }

@@ -152,6 +152,7 @@ freq <- seq(fr.d, f.max, by = step)
 if (!is.null(from))
     freq <- freq[freq >= from]
   n.out <- length(freq)
+
 while (n.out == 0 & type == "period" & !is.null(from)) {
   ofac <- ofac + 1
   step <- 1/(tspan * ofac)
@@ -162,6 +163,7 @@ while (n.out == 0 & type == "period" & !is.null(from)) {
 
   if (n.out == 0)
     stop("erroneous frequency range specified ")
+
   x <- t * 2 * pi
   y <- y - mean(y)
   norm <- 1/(2 * var(y))
