@@ -12,7 +12,7 @@ Description:
     function to the data. After the analysis, plots which summarise the data can be exported.
 License: GPL-3
 Encoding: UTF-8
-LazyData: false
+LazyData: FALSE
 Depends: tidyverse, pracma, rstudioapi, lomb, lubridate, signal
-Imports: 
+Imports: gridExtra
 RoxygenNote: 7.1.0
