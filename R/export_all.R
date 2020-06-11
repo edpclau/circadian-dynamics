@@ -59,7 +59,7 @@ for (name in names(processed_data)) {
   setwd(new_dir2)
 
   export_plots(filename = filename, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]],
-               autocorrelation = TRUE, lomb_scargle = TRUE,
+               autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
                cosinor_fit = cosinor_fit,
                dir_choose_gui = FALSE)
 

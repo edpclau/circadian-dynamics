@@ -27,8 +27,10 @@ readr::write_csv(processed_data, "processed_data.csv", col_names = TRUE)
 }
 
 if (!is.null(rythm_analysis_data)) {
-dplyr::select(rythm_analysis_data, -c(scanned, normalized_power, wave_y, wave_x, peak_lags, peaks)) %>%
-  dplyr::mutate(phase_in_hours = phase_in_seconds/3600) %>%
+dplyr::select(rythm_analysis_data,
+              c(method, window, period, power, lsp_p_value, sig_level, ofac, MESOR,
+                amplitude, amplitude_se, adj_r_squared, cosinor_p_value, phase_in_seconds)) %>%
+  dplyr::mutate(phase_in_hours = phase_in_seconds) %>%
   readr::write_csv("rythm_analysis.csv", col_names = TRUE)
 }
 

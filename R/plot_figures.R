@@ -126,6 +126,13 @@ legend("topright",
 
 
 # Plot Lomb-Scargle
+if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>%
+    pull(normalized_power) %>%
+    unlist() %>% is.na() %>%
+    all()) {
+  lomb_scargle = FALSE
+}
+
 if (lomb_scargle == TRUE) {
 plot(
   x = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(scanned) %>% unlist(),
@@ -160,18 +167,33 @@ legend("topright",
 
 # Cosinor Fit
 
+
 plot(x = raw_data[[1]], y = raw_data[[2]], type = "l", xlab = "Dates", ylab = "Values")
 lines(x = cosinor$wave_x, y = cosinor$wave_y, type = "l", col = "blue")
+
+if(all(is.na(cosinor$cosinor_p_value))){
+legend("topright",
+       legend = c(paste("Amplitude = ", unique(round(cosinor$amplitude, digits = 3))),
+                  paste("Phase =", "NA"),
+                  paste("PR = ", "NA"),
+                  paste("Period = ", unique(round(cosinor$period, digits = 3))),
+                    paste("p.value = ", "NA")
+                  ),
+       bty = "n",
+       cex = 0.9)
+} else {
+
 legend("topright",
        legend = c(paste("Amplitude = ", unique(round(cosinor$amplitude, digits = 3))),
                   paste("Phase =", unique(round(cosinor$phase_in_seconds, digits = 3))),
                   paste("PR = ", unique(round(cosinor$adj_r_squared, digits = 3))),
                   paste("Period = ", unique(round(cosinor$period, digits = 3))),
-                  paste("p.value = ", unique(signif(cosinor$cosinor_p_value, digits = 3)))),
+                  paste("p.value = ", unique(signif(cosinor$cosinor_p_value, digits = 3)))
+       ),
        bty = "n",
        cex = 0.9)
 
-
+}
 
 
 }

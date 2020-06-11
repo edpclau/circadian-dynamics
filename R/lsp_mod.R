@@ -108,11 +108,29 @@ lsp_mod <- function (x, times = NULL, from = NULL, to = NULL, type = c("frequenc
       x <- x[, 2]
     }
   }
+
+
+
+
   times <- times[!is.na(x)]
   x <- x[!is.na(x)]
   nobs <- length(x)
   if (nobs < 2)
     stop("time series must have at least two observations")
+
+ # if all numbers are exactly the same, return NA for the current window.
+ # x cannot have NA's
+    if (length(x) == rle(c(x))$lengths[1]) {
+      sp.out <- list(scanned = NA, power = NA, data = NA,
+                     n = NA, type = type, ofac = ofac, n.out = NA, alpha = alpha,
+                     sig.level = 0, peak = 0, peak.at = NA,
+                     p.value = NA)
+      class(sp.out) <- "lsp"
+
+      return(sp.out)
+    }
+
+
   times <- as.numeric(times)
   start <- min(times)
   end <- max(times)
@@ -182,7 +200,19 @@ while (n.out == 0 & type == "period" & !is.null(from)) {
     PN[i] <- A/B + C/D
   }
   PN <- norm * PN
-  PN.max <- max(PN)
+  PN.max <- max(pracma::findpeaks(c(PN))[,1])
+
+# If we can't find a peak, return NA.
+  if(rlang::is_null(PN.max)) {
+    sp.out <- list(scanned = PN, power = NA, data = NA,
+                   n = NA, type = type, ofac = ofac, n.out = NA, alpha = alpha,
+                   sig.level = NA, peak = NA, peak.at = NA,
+                   p.value = NA)
+    class(sp.out) <- "lsp"
+
+    return(sp.out)
+  }
+
   peak.freq <- freq[PN == PN.max]
   if (type == "period")
     peak.at <- c(1/peak.freq, peak.freq)
@@ -200,11 +230,14 @@ while (n.out == 0 & type == "period" & !is.null(from)) {
   p <- effm * exPN
   if (p > 0.01)
     p <- 1 - (1 - exPN)^effm
+
   sp.out <- list(scanned = scanned, power = PN, data = datanames,
                  n = n, type = type, ofac = ofac, n.out = n.out, alpha = alpha,
                  sig.level = level, peak = PN.max, peak.at = peak.at,
                  p.value = p)
   class(sp.out) <- "lsp"
+
+
   if (plot) {
     plot(sp.out, ...)
     return(invisible(sp.out))

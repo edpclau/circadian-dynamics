@@ -82,7 +82,8 @@ if (auto_correlation) {
 if (lomb_scargle) {
   lsp_results <- lsp_by_window(df %>% dplyr::select(window, datetime, values),
                                from = from, to = to, sampling_rate = sampling_rate, ofac = ofac)
- lsp_results <- tidyr::drop_na(lsp_results)
+ lsp_results <- mutate(lsp_results,
+                       period = ifelse(is.na(period), 24, period))
   # Fit Cosinor to lsp
   cosinor_fits_lsp <- purrr::map2_df(.x = unique(lsp_results$window), .y = lsp_results$period,
                                      .f = ~ cosinor_lm(dplyr::filter(df, window == .x) %>% dplyr::select(datetime, values),
@@ -101,7 +102,7 @@ if (auto_correlation & lomb_scargle) {
   results <-  dplyr::bind_rows(lomb_scargle = lsp, autocorrelation = auto, .id = "method")
 
   #2. Only auto
-} else if (auto_correlation & lomb_scargle == FALSE) {
+} else if (auto_correlation == TRUE & lomb_scargle == FALSE) {
   results <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
   results$method <- "autocorrelation"
   results <- dplyr::select(results, method, dplyr::everything())
