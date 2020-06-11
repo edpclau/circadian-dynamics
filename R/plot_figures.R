@@ -52,7 +52,7 @@ par(mar=c(2,4,1.75,2), mfrow = c(n_plots,1))
 for (windows in unique(rythm_analysis_data$window)) {
 
 cosinor <- rythm_analysis_data %>% filter(method == cosinor_fit, window == windows) %>%
-    select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period) %>%
+    select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period, cosinor_p_value) %>%
     unnest(c(wave_x, wave_y))
 
 raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, last_col(), 3)
@@ -166,9 +166,10 @@ legend("topright",
        legend = c(paste("Amplitude = ", unique(round(cosinor$amplitude, digits = 3))),
                   paste("Phase =", unique(round(cosinor$phase_in_seconds, digits = 3))),
                   paste("PR = ", unique(round(cosinor$adj_r_squared, digits = 3))),
-                  paste("Period = ", unique(round(cosinor$period, digits = 3)))),
+                  paste("Period = ", unique(round(cosinor$period, digits = 3))),
+                  paste("p.value = ", unique(signif(cosinor$cosinor_p_value, digits = 3)))),
        bty = "n",
-       cex = 1)
+       cex = 0.9)
 
 
 

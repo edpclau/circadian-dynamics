@@ -96,9 +96,13 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
 if (!all(is.na(df$times))) {
 
 # Convert from-to to seconds.
-
+if (!is.null(from)) {
 from <- as.numeric(duration(from, unit = str_remove(sampling_rate, "\\d.")))
+}
+
+if (!is.null(to)) {
 to  <- as.numeric(duration(to, unit = str_remove(sampling_rate, "\\d.")))
+}
 
 # Calculate Lomb-scargle periodogram
 lomb_scargle <- {

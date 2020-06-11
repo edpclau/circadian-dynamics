@@ -34,9 +34,11 @@ if (is.null(rythm_analysis_data)) { stop("Must provide the output from 'multivar
 cosinor_fit <- base::match.arg(cosinor_fit, choices = c("lomb_scargle", "autocorrelation"))
 
 if (dir_choose_gui) {
+  current_dir <- getwd()
   directory <- rstudioapi::selectDirectory()
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
+
 } else {
   directory <- getwd()
   new_dir1 <- paste0(directory,"/", new_dir_name)
@@ -65,4 +67,5 @@ for (name in names(processed_data)) {
 
 }
 
+setwd(current_dir)
 }
