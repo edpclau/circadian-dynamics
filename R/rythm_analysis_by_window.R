@@ -63,7 +63,7 @@ rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_corre
 
 
 ########### #Auto Correlation ######
-if (auto_correlation == TRUE) {
+if (auto_correlation) {
   acf_results <- acf_window(df = df %>% select(window, values),
                             multipeak_period = multipeak_period, peak_of_interest = peak_of_interest)
   acf_results <-  tidyr::drop_na(acf_results)
@@ -79,7 +79,7 @@ if (auto_correlation == TRUE) {
 
 
 ######## Lomb-Scargle Periodogram by windows #######
-if (lomb_scargle == TRUE) {
+if (lomb_scargle) {
   lsp_results <- lsp_by_window(df %>% dplyr::select(window, datetime, values),
                                from = from, to = to, sampling_rate = sampling_rate, ofac = ofac)
  lsp_results <- tidyr::drop_na(lsp_results)
@@ -95,21 +95,21 @@ if (lomb_scargle == TRUE) {
 ###### Prepare Results #######
 
 #1. auto and lomb results
-if (auto_correlation == TRUE & lomb_scargle == TRUE) {
+if (auto_correlation & lomb_scargle) {
   lsp <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   auto <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
   results <-  dplyr::bind_rows(lomb_scargle = lsp, autocorrelation = auto, .id = "method")
 
   #2. Only auto
-} else if (auto_correlation == TRUE & lomb_scargle == FALSE) {
+} else if (auto_correlation & lomb_scargle == FALSE) {
   results <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
   results$method <- "autocorrelation"
-  results <- dplyr::select(method, dplyr::everything())
+  results <- dplyr::select(results, method, dplyr::everything())
   #3. Only lomb
 } else {
   results <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   results$method <- "lomb_scargle"
-  results <- dplyr::select(method, dplyr::everything())
+  results <- dplyr::select(results, method, dplyr::everything())
 }
 
 return(results)
