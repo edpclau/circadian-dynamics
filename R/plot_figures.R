@@ -88,6 +88,13 @@ plot(
 
 # Plot autocorrelation
 if (autocorrelation == TRUE) {
+
+if(!(filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>%
+     pull(period_hours) %>%
+     unlist() %>%
+     is.na())) {
+
+
 autocor <- ccf(x = raw_data[2], #Select the values in the window
     y = raw_data[2],
     na.action = na.pass,
@@ -102,14 +109,30 @@ error <- qnorm(0.95)*sd(autocor$acf)/sqrt(length(autocor$acf))
 abline(h = mean(autocor$acf) - error, lty=2, col = "red")
 abline(h = mean(autocor$acf) + error, lty=2, col = "red")
 
+} else {
+  plot(x = seq(-length(raw_data[2]), length(raw_data[2]), by = 1),
+       y = rep(0, (length(raw_data[2])*2) + 1),
+       type = "l",
+       col = "blue",
+       main = " ",
+       xlab = "Lag",
+       ylab = "ACF")
+}
+
 
 points(
-  x= filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(peak_lags) %>% unlist(),
-  y= filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(peaks) %>% unlist(),
+  x= filter(rythm_analysis_data, window == windows, method == "autocorrelation")  %>% pull(peak_lags) %>% unlist(),
+  y= filter(rythm_analysis_data, window == windows, method == "autocorrelation")  %>% pull(peaks) %>% unlist(),
   pch=4,
   cex=3,
   col = 'red')
 
+
+
+if (!(filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>%
+      pull(period_hours) %>%
+      unlist() %>%
+      is.na())) {
 
 legend("topright",
        legend = c(paste("Period = ",
@@ -119,6 +142,14 @@ legend("topright",
        bty = "n",
        cex = 1)
 
+} else {
+legend("topright",
+       legend = c(paste("Period = ",
+                        filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>% pull(period_hours)),
+                  paste("C.C. =", "NA")),
+       bty = "n",
+       cex = 1)
+}
 }
 
 

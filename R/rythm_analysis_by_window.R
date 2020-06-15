@@ -66,7 +66,8 @@ rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_corre
 if (auto_correlation) {
   acf_results <- acf_window(df = df %>% select(window, values),
                             multipeak_period = multipeak_period, peak_of_interest = peak_of_interest)
-  acf_results <-  tidyr::drop_na(acf_results)
+  acf_results_full <- acf_results
+  acf_results <-tidyr::drop_na(acf_results)
   # Fit Cosinor to autocorrelation
   cosinor_fits_auto_corr <- purrr::map2_df(.x = unique(acf_results$window), .y = acf_results$period,
                                            .f = ~ cosinor_lm(dplyr::filter(df, window == .x) %>%
@@ -74,6 +75,7 @@ if (auto_correlation) {
                                                              sampling_rate = sampling_rate,
                                                              period = .y,
                                                              na.action = na.pass))
+  cosinor_fits_auto_corr$window <- acf_results$window
 
 }
 
@@ -98,12 +100,12 @@ if (lomb_scargle) {
 #1. auto and lomb results
 if (auto_correlation & lomb_scargle) {
   lsp <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
-  auto <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
+  auto <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results <-  dplyr::bind_rows(lomb_scargle = lsp, autocorrelation = auto, .id = "method")
 
   #2. Only auto
 } else if (auto_correlation == TRUE & lomb_scargle == FALSE) {
-  results <- dplyr::bind_cols(acf_results,cosinor_fits_auto_corr)
+  results <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results$method <- "autocorrelation"
   results <- dplyr::select(results, method, dplyr::everything())
   #3. Only lomb

@@ -41,8 +41,8 @@
 #' @importFrom pracma movavg
 #' @importFrom rlang is_empty
 #'
-acf_window <- function(df = NULL,  multipeak_period = FALSE, peak_of_interest = 2,
-                       sampling_unit = "hours", window_vector = NULL, values = NULL){
+acf_window <- function(df = NULL,  multipeak_period = FALSE, peak_of_interest = 3,
+                       sampling_unit = "hours", window_vector = NULL, values = NULL) {
 
 ##### Flow Control Parameters #####
   #1. Either a df or two lists with the time_series and values must be supplied. If a df is supplied,
@@ -78,11 +78,14 @@ positive_peak_index <- map(1:length(peaks),
 # Keep only the positive peaks
 positive_peaks <-  map2(peaks, positive_peak_index,
      .f = ~ .x[.y])
+
+#handle when there are less positive peaks than the peak_of_interest and multivariate_peaks = FALSE
+#In that case,don't draw any peaks.
 # Find the average peak size (autopower)
 if (multipeak_period) {
 mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { mean(., na.rm = TRUE)} ) # We use map_if so that we don't process the NULL values
 } else {
-  mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) <= 1)) { .[peak_of_interest]} ) # We use map_if so that we don't process the NULL values
+  mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.) | length(.) < peak_of_interest)) { .[peak_of_interest]} ) # We use map_if so that we don't process the NULL values
 }
 
 ############### Find lags in the autocorrelation #####
@@ -114,35 +117,43 @@ names(mean_peaks) <- seq_along(mean_peaks)
 
 
 
-usable_windows <- purrr::discard(mean_peaks, rlang::is_empty) %>% names() %>% as.numeric()
+windows <- mean_peaks %>% names() %>% as.numeric()
 
 
 
 # Now calculate the period.
 
 period <- purrr::map_if(usable_windows,
-                        .p = ~ !(mean_peaks[[.]] < 0), # If the mean_peaks (autopower) is negative, give out an NA
+                        .p = ~ !(is.null(mean_peaks[[.]])), # If the mean_peaks (autopower) is doesn't exist, give out an NA
                         .else =  ~ NA,
                         .f = ~ if (multipeak_period == TRUE) { mean(pos_diff_lags[[.]]) #If we want the multipeak period, print out the mean of lags, I think it should be the median
-                        } else if (multipeak_period == FALSE) {
-                          if (length(pos_diff_lags[[.]]) == 1) { .
-                          } else if (length(pos_diff_lags[[.]]) >= peak_of_interest){pos_diff_lags[[.]][peak_of_interest] #print the lag of the peak of interest
-                          } else {pos_diff_lags[[.]][length(pos_diff_lags[[.]])/2] #We're trying to get the inner most lags which tend to be the most stable
-                            warning(paste("peak_of_interest is out of bounds. Will use peak =", length(pos_diff_lags[[.]])/2, "instead"))
+                        } else if (multipeak_period == FALSE & length(positive_peaks[[.]]) < peak_of_interest) {
+                          24
+                          warning(paste("peak_of_interest is out of bounds. Will use period = 24",  "instead"))
+                        } else {
+                          pos_diff_lags[[.]][peak_of_interest-1]
                           }
-                        }
+
+
+
+
 )
 
 # Transform the period into hours
-period_hours <- map(1:length(period),
-    .f = ~ lubridate::duration(period[[.]], sampling_unit) %>% as.numeric("hours") %>% paste("hours")
+period_hours <- map_if(1:length(period),
+                    .p = ~ !is.na(period[[.]]), # If the period is NA, don't turn it into hours
+                    .else =  ~ NA,
+                    .f = ~ lubridate::duration(period[[.]], sampling_unit) %>% as.numeric("hours") %>% paste("hours")
     )
 
-autocorrelation_power <- purrr::discard(mean_peaks, is.null)
+autocorrelation_power <- map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[.]]), NA, mean_peaks[[.]]))
 
 if (multipeak_period) {
 usable_peak_lags <- pos_peak_lags[usable_windows]
 usable_peaks <- positive_peaks[usable_windows]
+} else if(length(positive_peaks) < peak_of_interest){
+  usable_peak_lags <- map(usable_windows, ~ 0)
+  usable_peaks <- map(usable_windows, ~ 0)
 } else {
   usable_peak_lags <- map(usable_windows, ~ pos_peak_lags[[.]][peak_of_interest])
   usable_peaks <- map(usable_windows, ~ positive_peaks[[.]][peak_of_interest])
