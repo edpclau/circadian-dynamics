@@ -42,7 +42,7 @@
 #' @importFrom rlang is_empty
 #'
 acf_window <- function(df = NULL,  multipeak_period = FALSE, peak_of_interest = 3,
-                       sampling_unit = "hours", window_vector = NULL, values = NULL) {
+                       sampling_rate = "1 hour", window_vector = NULL, values = NULL) {
 
 ##### Flow Control Parameters #####
   #1. Either a df or two lists with the time_series and values must be supplied. If a df is supplied,
@@ -53,6 +53,13 @@ acf_window <- function(df = NULL,  multipeak_period = FALSE, peak_of_interest = 
   } else if (is.null(df) & (is.null(window_vector) | is.null(values))) {
     stop("If a data.frame is not supplied. Must include both window_vector and values.")
   } else if (is.null(df)) { df = tibble::tibble(window_vector, values) }
+
+  #2. Sampling_rate must exist
+  if (is.null(sampling_rate)){
+    stop("must provide a sampling_rate")
+  } else {
+    sampling_rate = str_remove(sampling_rate, "\\d.")
+  }
 
 # Autocorrelation for a moving window of values
 
@@ -143,7 +150,7 @@ period <- purrr::map_if(usable_windows,
 period_hours <- map_if(1:length(period),
                     .p = ~ !is.na(period[[.]]), # If the period is NA, don't turn it into hours
                     .else =  ~ NA,
-                    .f = ~ lubridate::duration(period[[.]], sampling_unit) %>% as.numeric("hours") %>% paste("hours")
+                    .f = ~ lubridate::duration(period[[.]], sampling_rate) %>% as.numeric("hours") %>% paste("hours")
     )
 
 autocorrelation_power <- map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[.]]), NA, mean_peaks[[.]]))
