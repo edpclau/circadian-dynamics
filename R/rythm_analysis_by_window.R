@@ -65,7 +65,8 @@ rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_corre
 ########### #Auto Correlation ######
 if (auto_correlation) {
   acf_results <- acf_window(df = df %>% select(window, values),
-                            multipeak_period = multipeak_period, peak_of_interest = peak_of_interest)
+                            multipeak_period = multipeak_period, peak_of_interest = peak_of_interest,
+                            sampling_rate = sampling_rate)
   acf_results_full <- acf_results
   acf_results <-tidyr::drop_na(acf_results)
   # Fit Cosinor to autocorrelation
