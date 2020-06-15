@@ -89,17 +89,14 @@ plot(
 # Plot autocorrelation
 if (autocorrelation == TRUE) {
 
-if(!(filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>%
-     pull(period_hours) %>%
-     unlist() %>%
-     is.na())) {
+if(rle(c(drop_na(raw_data)[[2]]))$length[1] != length(drop_na(raw_data)[[2]])) {
 
 
 autocor <- ccf(x = raw_data[2], #Select the values in the window
     y = raw_data[2],
     na.action = na.pass,
     type = "correlation",
-    lag.max = length(pull(select(filter(processed_data, window == windows), last_col()))),
+    lag.max = length(pull(select(drop_na(filter(processed_data, window == windows)), last_col()))),
     plot = FALSE)
 
 plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF")
@@ -109,17 +106,21 @@ error <- qnorm(0.95)*sd(autocor$acf)/sqrt(length(autocor$acf))
 abline(h = mean(autocor$acf) - error, lty=2, col = "red")
 abline(h = mean(autocor$acf) + error, lty=2, col = "red")
 
+plot_points <- TRUE
+
 } else {
-  plot(x = seq(-length(raw_data[2]), length(raw_data[2]), by = 1),
-       y = rep(0, (length(raw_data[2])*2) + 1),
+  plot(x = seq(-length(raw_data[[2]]), length(raw_data[[2]]), by = 1),
+       y = rep(0, (length(raw_data[[2]])*2) + 1),
        type = "l",
        col = "blue",
        main = " ",
        xlab = "Lag",
        ylab = "ACF")
+
+  plot_points <- FALSE
 }
 
-
+if (plot_points) {
 points(
   x= filter(rythm_analysis_data, window == windows, method == "autocorrelation")  %>% pull(peak_lags) %>% unlist(),
   y= filter(rythm_analysis_data, window == windows, method == "autocorrelation")  %>% pull(peaks) %>% unlist(),
@@ -127,7 +128,7 @@ points(
   cex=3,
   col = 'red')
 
-
+}
 
 if (!(filter(rythm_analysis_data, window == windows, method == "autocorrelation") %>%
       pull(period_hours) %>%
