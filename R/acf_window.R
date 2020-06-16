@@ -113,7 +113,7 @@ diff_lags <- purrr::map_if(peak_lags, .p = ~ !is.null(.), .f = ~ if(length(.) ==
 pos_peak_lag_index <- purrr::map2(peak_index, positive_peak_index, .f = ~ .x[.y])
 pos_peak_lags <- purrr::map2(lags, pos_peak_lag_index, .f = ~ .x[.y])
 # calculate lag diff so that we can find the period of positive peaks
-pos_diff_lags <- purrr::map_if(peak_lags, .p = ~ !is.null(.), .f = ~ if(length(.) == 1){.} else {diff(.)})
+pos_diff_lags <- purrr::map_if(pos_peak_lags, .p = ~ !is.null(.), .f = ~ if(length(.) == 1){.} else {diff(.)})
 
 
 
