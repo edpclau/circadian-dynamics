@@ -102,7 +102,7 @@ autocor <- ccf(x = raw_data[2], #Select the values in the window
 plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF")
 
 #Calculate and add confidence intervals
-error <- qnorm(0.95)*sd(autocor$acf)/sqrt(length(autocor$acf))
+error <- 2/sqrt(length(autocor$acf))
 abline(h = mean(autocor$acf) - error, lty=2, col = "red")
 abline(h = mean(autocor$acf) + error, lty=2, col = "red")
 
