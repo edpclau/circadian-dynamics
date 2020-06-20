@@ -7,25 +7,18 @@
 #' datetime = NULL, window = NULL, values = NULL)
 #' @param df The output from multivariate_process_timeseries
 #' @param sampling_rate A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
-#' @param auto_correlation Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.
+#' @param autocorrelation Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.
 #' @param lomb_scargle Logical. If TRUE (default) runs the Lomb-Scargle Periodogram on each window on the data. If FALSE, does not run.
 #' @param from
 #' An optional numeric indicating from which period or frequency to start looking for peaks.
-#' Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 18 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  36 "30 minutes" period or frequency.
+#' Must be in hours. Default = 18.
+#'
 #' @param to
 #' An optional numeric indicating up to which period or frequency to start looking for peaks.
-#' Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 28 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  56 "30 minutes" period or frequency.
+#' Must be in hours. Default = 30.
+#'
 #' @param ofac
 #' [lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).
-#' @param multipeak_period TRUE (default) use all positive peaks to find the period.
-#' FALSE use peak_of_interest to find period.
-#'
-#' @param peak_of_interest Positive peak on which we want to base the period calculation.
-#' If not peak is supplied it will use the peak next to the middle peak.
 #'
 #' @param datetime optional if a data.frame is supplied. A list of multiple POSIXct vectors corresponding to each mearument variable.
 #' @param window optional if a data.frame is supplied. A list of multiple window vectors corresponding to each mearument variable.
@@ -41,9 +34,8 @@
 #'
 #'
 
-rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_correlation = TRUE, lomb_scargle = TRUE,
-                                     from = NULL, to = NULL, ofac = 60, multipeak_period = TRUE, peak_of_interest = Inf,
-                                     datetime = NULL, window = NULL, values = NULL) {
+rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
+                                     from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL) {
   ###### Flow control parameters######
   #1. Either a df or three lists with the datetimes, values, and windows must be supplied. If a df is not supplied, turn the
   # three lists into a df.
@@ -63,9 +55,8 @@ rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, auto_corre
 
 
 ########### #Auto Correlation ######
-if (auto_correlation) {
-  acf_results <- acf_window(df = df %>% select(window, values),
-                            multipeak_period = multipeak_period, peak_of_interest = peak_of_interest,
+if (autocorrelation) {
+  acf_results <- acf_window(df = df %>% select(window, values), from = from, to = to,
                             sampling_rate = sampling_rate)
   acf_results_full <- acf_results
   acf_results <-tidyr::drop_na(acf_results)
@@ -99,13 +90,13 @@ if (lomb_scargle) {
 ###### Prepare Results #######
 
 #1. auto and lomb results
-if (auto_correlation & lomb_scargle) {
+if (autocorrelation & lomb_scargle) {
   lsp <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   auto <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results <-  dplyr::bind_rows(lomb_scargle = lsp, autocorrelation = auto, .id = "method")
 
   #2. Only auto
-} else if (auto_correlation == TRUE & lomb_scargle == FALSE) {
+} else if (autocorrelation == TRUE & lomb_scargle == FALSE) {
   results <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results$method <- "autocorrelation"
   results <- dplyr::select(results, method, dplyr::everything())
