@@ -7,25 +7,19 @@
 #' datetime = NULL, window = NULL, values = NULL)
 #' @param df The output from multivariate_process_timeseries
 #' @param sampling_rate A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
-#' @param auto_correlation Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.
+#' @param autocorrelation Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.
 #' @param lomb_scargle Logical. If TRUE (default) runs the Lomb-Scargle Periodogram on each window on the data. If FALSE, does not run.
 #' @param from
 #' An optional numeric indicating from which period or frequency to start looking for peaks.
-#' Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 18 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  36 "30 minutes" period or frequency.
+#' Must be in hours. Default = 18.
+#'
 #' @param to
 #' An optional numeric indicating up to which period or frequency to start looking for peaks.
-#' Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 28 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  56 "30 minutes" period or frequency.
+#' Must be in hours. Default = 30.
+#'
 #' @param ofac
 #' [lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).
-#' @param multipeak_period TRUE (default) use all positive peaks to find the period.
-#' FALSE use peak_of_interest to find period.
 #'
-#' @param peak_of_interest Positive peak on which we want to base the period calculation.
-#' If not peak is supplied it will use the peak next to the middle peak.
 #'
 #' @param datetime optional if a data.frame is supplied. A list of multiple POSIXct vectors corresponding to each mearument variable.
 #' @param window optional if a data.frame is supplied. A list of multiple window vectors corresponding to each mearument variable.
@@ -36,13 +30,16 @@
 #' @export
 #'
 #' @examples
-#' analysis <- multivariate_rythm_analysis(df = processed_data, sampling_rate = "30 min", auto_correlation = TRUE,
-#' lomb_scargle = TRUE, from = 36, to = 48, multipeak_period = TRUE)
+#' analysis <- multivariate_rythm_analysis(df = processed_data, sampling_rate = "30 min", autocorrelation = TRUE,
+#' lomb_scargle = TRUE, from = 18, to = 30, multipeak_period = TRUE)
+#'
+#' @importFrom purrr map
+#' @importFrom tibble tibble
+#' @importFrom dplyr select last_col
 #'
 #'
-multivariate_rythm_analysis <- function(df = NULL, sampling_rate = NULL, auto_correlation = TRUE, lomb_scargle = TRUE,
-         from = NULL, to = NULL, ofac = 60, multipeak_period = TRUE, peak_of_interest = Inf,
-         datetime = NULL, window = NULL, values = NULL) {
+multivariate_rythm_analysis <- function(df = NULL, sampling_rate = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
+         from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL) {
 
   ###### Flow control parameters######
 #1. Either a df or three lists with the datetimes, values, and windows must be supplied. If a df is not supplied, turn the
@@ -67,8 +64,9 @@ df_short <- purrr::map(1:length(df),
 
 results <- purrr::map(1:length(df_short),
            .f = ~
-             rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate, auto_correlation = auto_correlation, lomb_scargle = lomb_scargle,
-                         from = from, to = to, ofac = ofac, multipeak_period = multipeak_period, peak_of_interest = peak_of_interest)
+             rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate,
+                                      autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
+                         from = from, to = to, ofac = ofac)
 )
 
 
