@@ -36,17 +36,29 @@
 #'
 #' @return
 #' A named list with the following components:
+#'
 #' scanned	 A vector containing the frequencies/periods scanned.
+#'
 #' power	   A vector containing the normalised power corresponding to scanned frequencies/periods.
+#'
 #' data	     Names of the data vectors analysed.
+#'
 #' n	       The length of the data vector.
+#'
 #' type	     The periodogram type used, either "frequency" or "period".
+#'
 #' ofac	     The oversampling factor used.
+#'
 #' n.out	   The length of the output (powers). This can be >n if ofac >1.
+#'
 #' alpha	   The false alarm probability used.
+#'
 #' sig.level Powers > sig.level can be considered significant peaks at p=alpha.
+#'
 #' peak	     The maximum power in the frequency/period interval inspected.
+#'
 #' peak.at	 The frequency/period at which the maximum peak occurred.
+#'
 #' p.value	 The probability that the maximum peak occurred by chance.
 #'
 #' @note
@@ -76,9 +88,11 @@
 #' lynx.spec <- lsp(lynx,type='period',from=2,to=20,ofac=5)
 #' summary(lynx.spec)
 #'
-lsp_mod <- function (x, times = NULL, from = NULL, to = NULL, type = c("frequency",
-                                                            "period"), ofac = 1, alpha = 0.01, plot = TRUE, ...)
+#' @importFrom pracma findpeaks
+lsp_mod <- function (x, times = NULL, from = NULL, to = NULL,
+                     type = c("frequency", "period" ), ofac = 1, alpha = 0.01, plot = TRUE, ...)
 {
+###### Flow Control
   type <- match.arg(type)
   if (ofac != floor(ofac)) {
     ofac <- floor(ofac)
@@ -109,7 +123,7 @@ lsp_mod <- function (x, times = NULL, from = NULL, to = NULL, type = c("frequenc
     }
   }
 
-
+# If no times are provided and
 
 
   times <- times[!is.na(x)]
@@ -200,13 +214,28 @@ while (n.out == 0 & type == "period" & !is.null(from)) {
     PN[i] <- A/B + C/D
   }
   PN <- norm * PN
-  PN.max <- max(pracma::findpeaks(c(PN))[,1])
-
+  PN.peaks <- pracma::findpeaks(c(PN))[,1]
+  if(all(is.na(PN.peaks))) {
+    PN.max = NA
+  } else {
+  PN.max <- max(PN.peaks)
+  }
+  # if (PN.max == -Inf) {PN.max = max(PN)}
 # If we can't find a peak, return NA.
-  if(rlang::is_null(PN.max)) {
-    sp.out <- list(scanned = PN, power = NA, data = NA,
+  if(rlang::is_null(PN.max) | is.na(PN.max)) {
+    scanned <- if (type == "frequency")
+      freq
+    else 1/freq
+    if (type == "period") {
+      scanned <- scanned[n.out:1]
+      PN <- PN[n.out:1]
+    }
+    effm <- 2 * n.out/ofac
+    level <- -log(1 - (1 - alpha)^(1/effm))
+
+    sp.out <- list(scanned = scanned, power = PN, data = NA,
                    n = NA, type = type, ofac = ofac, n.out = NA, alpha = alpha,
-                   sig.level = NA, peak = NA, peak.at = NA,
+                   sig.level = level, peak = NA, peak.at = NA,
                    p.value = NA)
     class(sp.out) <- "lsp"
 
