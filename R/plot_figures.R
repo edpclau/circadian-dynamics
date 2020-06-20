@@ -23,10 +23,9 @@
 #' @importFrom magrittr '%>%'
 #' @import dplyr
 #'
-export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL, rythm_analysis_data = NULL,
-           autocorrelation = TRUE, lomb_scargle = TRUE,
-           cosinor_fit = c("lomb_scargle", "autocorrelation"),
-           dir_choose_gui = TRUE) {
+export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL,
+                         rythm_analysis_data = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
+           cosinor_fit = c("lomb_scargle", "autocorrelation"), dir_choose_gui = TRUE) {
 ##### Flow Control ####)
 if (is.null(processed_data)) { stop("Must provide the output from 'process_timeseries'.")}
 if (is.null(rythm_analysis_data)) { stop("Must provide the output from 'rythm_analysis_by_window'.")}
