@@ -88,20 +88,17 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
     stop("data frame can contain at most 3 columns.")
       }
   #4. You can choose between period or frequency for "Type". Period is the default.
-  type <- base::match.arg(type, choices = c("period", "frequency"))
+  type <- match.arg(type, choices = c("period", "frequency"))
 
 #### Lomb Scargle periodogram by time windows #####
 
-# If there is no times, run without times, otherwise use times.
-if (!all(is.na(df$times))) {
-
 # Convert from-to to seconds.
 if (!is.null(from)) {
-from <- as.numeric(duration(from, unit = str_remove(sampling_rate, "\\d.")))
+from <- as.numeric(duration(from, units = "hours"), str_remove(sampling_rate, "\\d."))
 }
 
 if (!is.null(to)) {
-to  <- as.numeric(duration(to, unit = str_remove(sampling_rate, "\\d.")))
+to  <- as.numeric(duration(to, units = "hours"), str_remove(sampling_rate, "\\d."))
 }
 
 # Calculate Lomb-scargle periodogram
@@ -109,20 +106,11 @@ lomb_scargle <- {
 
   map_if(unique(df$window),
               .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
-              .f =  ~ lsp_mod(x = select(filter(df, window == .), times, values),
+              .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
                               from = from, to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
               .else = ~ NULL)
 }
-} else {
-  lomb_scargle <- {
 
-    map_if(unique(df$window),
-                                .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
-                                .f =  ~ lsp_mod(x = pull(filter(df, window == .), values), from = from,
-                                                to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
-                                .else = ~ NULL)
-  }
-}
 
 
 # Remove the NULL windows
@@ -133,15 +121,15 @@ lomb_scargle_no_null <- discard(lomb_scargle, is_empty)
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
 results <- map_df(names(lomb_scargle_no_null),
            .f = ~ tibble(window = as.numeric(.),
-                       period = if (is.POSIXct(df$times) | is.POSIXct(times)) {
-                         dseconds(lomb_scargle_no_null[[.]]$peak.at[1])/duration(sampling_rate)
+                       period = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !is.na(lomb_scargle_no_null[[.]]$peak.at[1])) {
+                         as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1], str_remove(sampling_rate, "\\d.")), "hours")
                          } else {
                          lomb_scargle_no_null[[.]]$peak.at[1]
                          } ,
                        power = lomb_scargle_no_null[[.]]$peak,
                        lsp_p_value = lomb_scargle_no_null[[.]]$p.value,
-                       scanned = if (is.POSIXct(df$times) | is.POSIXct(times)) {
-                         list(as.numeric(dseconds(lomb_scargle_no_null[[.]]$scanned), "hours"))
+                       scanned = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !any(is.na(lomb_scargle_no_null[[.]]$scanned))) {
+                         list(as.numeric(duration(lomb_scargle_no_null[[.]]$scanned, str_remove(sampling_rate, "\\d.")), "hours"))
                        } else {
                          list(lomb_scargle_no_null[[.]]$scanned)
                        },
