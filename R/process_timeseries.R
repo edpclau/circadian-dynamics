@@ -2,7 +2,10 @@
 #'
 #' @description Processes raw data in such a way that it can be directly inputted to the rythm_analysis_by_window function.
 #'
-#' @usage process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1, smooth_data = TRUE, detrend_data = FALSE, datetime = NULL, values = NULL)
+#' @usage process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
+#' movavg = TRUE, detrend_data = TRUE, butterworth = TRUE,
+#' f_low = 1/4, f_high = 1/73, plot = TRUE,
+#' smoothing_n = 4, datetime = NULL, values = NULL)
 #'
 #' @param df A data.frame where the first column is a POSIXct object and the rest are independent measurement values.
 #'
@@ -12,7 +15,7 @@
 #'
 #' @param window_step_in_days a numeric indicating the amount of day by which to move the window in day units.
 #'
-#' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
+#' @param movavg Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
 #'
 #' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
 #'
@@ -22,11 +25,11 @@
 #'
 #' @param values  Optional if a data.frame is supplied. A vector of values from a mesurement.
 #'
-#' @param binning_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
+#' @param smoothing_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
 #'
-#' @param period The period on which we want to draw the threshold (default = 24).
-#'
-#' @param type A string indicating if a low or high pass filter will be used. options: "low" (default), "high".
+#' @param order filter order. Default = 2.
+#' @param f_low Frequency for the low pass filter. Default = 1/4.
+#' @param f_high Frequency for the high pass filter. Default = 1/72.
 #'
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.
 #'
@@ -37,10 +40,12 @@
 #' @examples
 #' processed_data <- process_timeseries(df = raw_data, sampling_rate = "30 min")
 #'
+#' @importFrom dplyr select right_join bind_cols
+#'
 process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
-                               smooth_data = TRUE, detrend_data = TRUE, butterworth = TRUE,
-                               period = 24, type = "low", plot = TRUE,
-                               binning_n = 4, datetime = NULL, values = NULL) {
+                               movavg = FALSE, detrend_data = TRUE, butterworth = TRUE,
+                               f_low = 1/4, f_high = 1/73, order = 2, plot = TRUE,
+                               smoothing_n = 4, datetime = NULL, values = NULL) {
 
 
   ###### Flow control parameters######
@@ -60,7 +65,8 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
 
 
 if(butterworth){
-  df <- butterworth_filter(df, period = period, type = type, plot = plot)
+  df_origin <- df
+  df <- butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = plot)
 }
 
 completed_dates <- dplyr::right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
@@ -77,10 +83,16 @@ windowed_data <- make_time_windows(completed_dates,
 ##### Smooth or Detrend Data #####
 windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
-                                                            smooth_data = smooth_data, detrend_data = detrend_data,
-                                                            binning_n = binning_n))
+                                                            smooth_data = movavg, detrend_data = detrend_data,
+                                                            binning_n = smoothing_n))
 
+if (butterworth) {
+  windowed_data <- left_join(windowed_data, df_origin, by = "datetime")
+  windowed_data <- dplyr::rename(windowed_data, butterworth = values.x, values = values.y)
+  windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())
+} else {
 windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())
+}
 names(windowed_data)[names(windowed_data) %in% names(df)] <- original_names
 windowed_data$window <- as.numeric(windowed_data$window)
 return(windowed_data)
