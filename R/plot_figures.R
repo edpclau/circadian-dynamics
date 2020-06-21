@@ -19,9 +19,9 @@
 #' export_plots(processed_data = df_processed, rythm_analysis_data = df_analysis)
 #'
 #' @importFrom rstudioapi selectDirectory
-#' @importFrom tidyr unnest
+#' @importFrom tidyr unnest drop_na
 #' @importFrom magrittr '%>%'
-#' @import dplyr
+#' @importFrom dplyr pull filter select last_col
 #'
 export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL,
                          rythm_analysis_data = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
@@ -98,7 +98,9 @@ autocor <- ccf(x = raw_data[2], #Select the values in the window
     lag.max = length(pull(select(drop_na(filter(processed_data, window == windows)), last_col()))),
     plot = FALSE)
 
-plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF")
+plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF", xaxt = "n")
+axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 6), labels = FALSE)
+axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 12), labels = seq(min(autocor$lag), max(autocor$lag), by = 12))
 
 #Calculate and add confidence intervals
 error <- 2/sqrt(length(autocor$acf))
