@@ -34,7 +34,7 @@
 #' sampling_unit = "hours")
 #'
 #' @importFrom dplyr if_else pull filter
-#' @import purrr map map2 map_if
+#' @importFrom purrr map map2 map_if
 #' @importFrom lubridate duration
 #' @importFrom stringr str_remove
 #' @importFrom tibble tibble
