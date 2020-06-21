@@ -167,13 +167,20 @@ if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>%
 }
 
 if (lomb_scargle == TRUE) {
+  x = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(scanned) %>% unlist()
+  y = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(normalized_power) %>% unlist()
 plot(
-  x = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(scanned) %>% unlist(),
-  y = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(normalized_power) %>% unlist(),
+  x = x,
+  y = y,
   log = "x",
   type = "l",
   xlab = "Period",
-  ylab = "Power (lomb)")
+  ylab = "Power (lomb)",
+  xaxt = "n")
+  minor_ticks <- seq(min(round(x)), max(round(x)), by = 6)
+  major_ticks <- seq(min(round(x)), max(round(x)), by = 12)
+  axis(1, at = minor_ticks, labels = FALSE)
+  axis(1, at = major_ticks, labels = major_ticks)
 
 abline(
   h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),

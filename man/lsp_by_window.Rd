@@ -4,8 +4,10 @@
 \alias{lsp_by_window}
 \title{Lomb Scargle Periodogram by window}
 \usage{
-lsp_by_window(df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = NULL, to = NULL,
-type = c("period", "frequency"), ofac = 1)
+lsp_by_window(df = NULL, windows = NULL, values = NULL,
+times = NULL, sampling_rate = NULL,
+from = 18, to = 30, type = c("period", "frequency"),
+ofac = 60, alpha = 0.01, plot = FALSE)
 }
 \arguments{
 \item{df}{optional data.frame with 2 or 3 columns. If the data.frame has 2 columns, column 1 contains the windows, column 2
@@ -23,27 +25,30 @@ Usually this will be the output from make_time_windows. Optional if df is provid
 Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.}
 
 \item{from}{An optional numeric indicating from which period or frequency to start looking for peaks.
-Must be in the same units as the sampling rate.
-Examples: If the goal is to evaluate a 18 "hour" period or frequency but the sampling rate is "30 minutes",
-the period to use is a  36 "30 minutes" period or frequency.}
+Must be in hours. Default = 18.}
 
 \item{to}{An optional numeric indicating up to which period or frequency to start looking for peaks.
- Must be in the same units as the sampling rate.
-Examples: If the goal is to evaluate a 28 "hour" period or frequency but the sampling rate is "30 minutes",
-the period to use is a  56 "30 minutes" period or frequency.}
+Must be in hours. Default = 30.}
 
-\item{type}{Either “frequency” (the default) or “period”. Determines the type of the periodogram x-axis [lomb::lsp()].}
+\item{type}{Either “frequency” or “period” (default). Determines the type of the periodogram x-axis [lomb::lsp()].}
 
 \item{ofac}{[lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).}
 }
 \value{
 A data.frame with the following components:
+
 window           A vector containing the window to which the analysis corresponds.
+
 period           The period of the timeseries. Outputted in the same sampling rate as the data.
+
 power            The maximum power in the frequency/period interval inspected.
+
 lsp_p_value      The probability that the maximum peak occurred by chance.
+
 scanned          A vector containing the frequencies/period scanned.
+
 normalized_power A vector containing the normalized power corresponding to scanned frequencies/periods.
+
 sig_level        Powers > sig.level can considered significant peaks.
 }
 \description{

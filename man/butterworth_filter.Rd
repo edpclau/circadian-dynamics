@@ -4,17 +4,19 @@
 \alias{butterworth_filter}
 \title{Butterworth Filter Helper}
 \usage{
-butterworth_filter(df = NULL, period = 24,
-     type = c("low", "high"), plot = TRUE)
+butterworth_filter(df = NULL, order = 2,
+f_low= 1/4, f_high = 1/72, plot = TRUE)
 }
 \arguments{
 \item{df}{required. A data.frame object where column 1 is a POSIXct object and the other columns are measurement values.}
 
-\item{period}{The period on which we want to draw the threshold (default = 24).}
+\item{order}{filter order. Default = 2.}
 
-\item{type}{A string indicating if a low or high pass filter will be used. options: "low" (default), "high".}
+\item{f_low}{Frequency for the low pass filter. Default = 1/4.}
 
-\item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
+\item{f_high}{Frequency for the high pass filter. Default = 1/72.}
+
+\item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.}
 }
 \description{
 A helper function which wraps around the [signal::butter()] and [signal::filfilt()] functions.
@@ -23,8 +25,7 @@ because it does the conversion to frequency automatically. (frequency = 1/period
 }
 \examples{
 
-butter <- butterworth_filter(df = data,
-           period = 24, type = "low", plot = FALSE)
+butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
 print(butter)
 
 }

@@ -13,27 +13,17 @@ datetime = NULL, window = NULL, values = NULL)
 
 \item{sampling_rate}{A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.}
 
-\item{auto_correlation}{Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.}
+\item{autocorrelation}{Logical. If TRUE (default) runs an autocorrelation on each window of the data. If FALSE, does not run.}
 
 \item{lomb_scargle}{Logical. If TRUE (default) runs the Lomb-Scargle Periodogram on each window on the data. If FALSE, does not run.}
 
 \item{from}{An optional numeric indicating from which period or frequency to start looking for peaks.
-Must be in the same units as the sampling rate.
-Examples: If the goal is to evaluate a 18 "hour" period or frequency but the sampling rate is "30 minutes",
-the period to use is a  36 "30 minutes" period or frequency.}
+Must be in hours. Default = 18.}
 
 \item{to}{An optional numeric indicating up to which period or frequency to start looking for peaks.
-Must be in the same units as the sampling rate.
-Examples: If the goal is to evaluate a 28 "hour" period or frequency but the sampling rate is "30 minutes",
-the period to use is a  56 "30 minutes" period or frequency.}
+Must be in hours. Default = 30.}
 
 \item{ofac}{[lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).}
-
-\item{multipeak_period}{TRUE (default) use all positive peaks to find the period.
-FALSE use peak_of_interest to find period.}
-
-\item{peak_of_interest}{Positive peak on which we want to base the period calculation.
-If not peak is supplied it will use the peak next to the middle peak.}
 
 \item{datetime}{optional if a data.frame is supplied. A list of multiple POSIXct vectors corresponding to each mearument variable.}
 
@@ -49,8 +39,7 @@ Helper function which takes the output from multivariate_process_timeseries and 
 lomb-scargle periodogram, and COSINOR analysis.
 }
 \examples{
-analysis <- multivariate_rythm_analysis(df = processed_data, sampling_rate = "30 min", auto_correlation = TRUE,
-lomb_scargle = TRUE, from = 36, to = 48, multipeak_period = TRUE)
-
+analysis <- multivariate_rythm_analysis(df = processed_data, sampling_rate = "30 min", autocorrelation = TRUE,
+lomb_scargle = TRUE, from = 18, to = 30, multipeak_period = TRUE)
 
 }

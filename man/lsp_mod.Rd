@@ -27,17 +27,29 @@ lsp_mod(x, times = NULL, from = NULL, to = NULL, type = c("frequency", "period")
 }
 \value{
 A named list with the following components:
+
 scanned	 A vector containing the frequencies/periods scanned.
+
 power	   A vector containing the normalised power corresponding to scanned frequencies/periods.
+
 data	     Names of the data vectors analysed.
+
 n	       The length of the data vector.
+
 type	     The periodogram type used, either "frequency" or "period".
+
 ofac	     The oversampling factor used.
+
 n.out	   The length of the output (powers). This can be >n if ofac >1.
+
 alpha	   The false alarm probability used.
+
 sig.level Powers > sig.level can be considered significant peaks at p=alpha.
+
 peak	     The maximum power in the frequency/period interval inspected.
+
 peak.at	 The frequency/period at which the maximum peak occurred.
+
 p.value	 The probability that the maximum peak occurred by chance.
 }
 \description{

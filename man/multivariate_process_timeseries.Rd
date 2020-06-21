@@ -15,17 +15,19 @@ multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_
 
 \item{window_step_in_days}{(default=1) a numeric indicating the amount of day by which to move the window in day units.}
 
-\item{smooth_data}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
+\item{movavg}{Logical. If TRUE will smooth the measurement values useing a moving average. If FALSE (default) measurement values won't be smoothed.}
 
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
 
 \item{butterworth}{Logical. If TRUE (default) will apply a butterworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
 
-\item{period}{The period on which we want to draw the threshold (default = 24).}
+\item{f_low}{Frequency for the low pass filter. Default = 1/4.}
 
-\item{binning_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
+\item{f_high}{Frequency for the high pass filter. Default = 1/72.}
 
-\item{type}{A string indicating if a low or high pass filter will be used. options: "low" (default), "high".}
+\item{order}{filter order. Default = 2.}
+
+\item{smoothing_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
 
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
 }

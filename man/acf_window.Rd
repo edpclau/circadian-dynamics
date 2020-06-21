@@ -4,33 +4,32 @@
 \alias{acf_window}
 \title{Auto Correlation with a moving window}
 \usage{
-acf_window(df = df_with_windows, multipeak_period = TRUE)
+function(df = NULL,  from = 18, to = 30,
+sampling_rate = "1 hour", window_vector = NULL, values = NULL)
 }
 \arguments{
 \item{df}{A data.frame with 2 columns. Column 1 must contain the windows to iterate over.
 Column 2 must supply the values. This parameter is optional if window_vector and values are supplied.
 df must not have gaps in the dates, acf asumes data is evenly spaced.}
 
-\item{multipeak_period}{TRUE, use all positive peaks to find the period.
-FALSE (default) use peak_of_interest to find period.}
+\item{from}{The period (in hours) from which to start looking for peaks in the autocorrelation. Default = 18.}
 
-\item{peak_of_interest}{Positive peak on which we want to base the period calculation.
-If no peak is supplied it will use the peak next to the middle peak. The default is the second (2) peak.}
+\item{to}{The period (in hours) up to which  to look for peaks in the autocorrelation. Default = 30.}
 
-\item{sampling_unit}{A charater string which indicates the sampling unit. For example: "seconds", "minutes", "hours" (default),
-"days", "months".}
+\item{sampling_rate}{A charater string which indicates the sampling rate of the data.
+For example: "1 second", "2 minutes", "1 hour" (default),"3 days", "11 months".}
 
 \item{window_vector}{A vector containing the windows to iterate over and to label the group
 to which each value belongs. Usually this will be the output from make_time_windows.}
 
-\item{values}{The data to which we want to find the period.}
+\item{values}{The data for which we want to find the period.}
 }
 \value{
 A data.frame with the autocorrelation results for each window which include: period, peaks,
 power, lags for the peaks.
 }
 \description{
-Iterated autocorrelation over windowed (grouped) timeseries data.
+Uses autocorrelation to find a circadian period for a given timeseries
 }
 \examples{
 autocorrelations_multipeak <- acf_window(df = df_with_windows,
