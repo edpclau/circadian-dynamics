@@ -1,8 +1,11 @@
 #' Lomb Scargle Periodogram by window
 #'
 #' @description Iteratively computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
-#' @usage lsp_by_window(df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = NULL, to = NULL,
-#' type = c("period", "frequency"), ofac = 1)
+#' @usage
+#' lsp_by_window(df = NULL, windows = NULL, values = NULL,
+#' times = NULL, sampling_rate = NULL,
+#' from = 18, to = 30, type = c("period", "frequency"),
+#' ofac = 60, alpha = 0.01, plot = FALSE)
 #'
 #' @param df
 #' optional data.frame with 2 or 3 columns. If the data.frame has 2 columns, column 1 contains the windows, column 2
@@ -21,30 +24,33 @@
 #'
 #' @param from
 #' An optional numeric indicating from which period or frequency to start looking for peaks.
-#' Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 18 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  36 "30 minutes" period or frequency.
+#' Must be in hours. Default = 18.
 #'
 #' @param to
 #' An optional numeric indicating up to which period or frequency to start looking for peaks.
-#'  Must be in the same units as the sampling rate.
-#' Examples: If the goal is to evaluate a 28 "hour" period or frequency but the sampling rate is "30 minutes",
-#' the period to use is a  56 "30 minutes" period or frequency.
+#' Must be in hours. Default = 30.
 #'
 #' @param type
-#' Either “frequency” (the default) or “period”. Determines the type of the periodogram x-axis [lomb::lsp()].
+#' Either “frequency” or “period” (default). Determines the type of the periodogram x-axis [lomb::lsp()].
 #'
 #' @param ofac
 #' [lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).
 #'
 #' @return
 #' A data.frame with the following components:
+#'
 #' window           A vector containing the window to which the analysis corresponds.
+#'
 #' period           The period of the timeseries. Outputted in the same sampling rate as the data.
+#'
 #' power            The maximum power in the frequency/period interval inspected.
+#'
 #' lsp_p_value      The probability that the maximum peak occurred by chance.
+#'
 #' scanned          A vector containing the frequencies/period scanned.
+#'
 #' normalized_power A vector containing the normalized power corresponding to scanned frequencies/periods.
+#'
 #' sig_level        Powers > sig.level can considered significant peaks.
 #'
 #' @export
@@ -56,11 +62,10 @@
 #' @importFrom purrr map_if map_df discard
 #' @importFrom rlang is_empty
 #' @importFrom tibble tibble
-#' @import lubridate
-#' @import dplyr
-#' @import tidyr
+#' @import lubridate is.POSIXt is.POSIXct duration
+#' @importFrom  dplyr pull filter
 #'
-lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = NULL, to = NULL,
+lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = 18, to = 30,
                           type = c("period", "frequency"), ofac = 60, alpha = 0.01, plot = FALSE) {
 
   ###### Flow control parameters######
@@ -111,11 +116,23 @@ lomb_scargle <- {
               .else = ~ NULL)
 }
 
+if ( !(is.null(from) & is.null(to)) ) {
+lomb_scargle_full <- {
 
+  map_if(unique(df$window),
+         .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
+         .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
+                          ofac = ofac, type = type, plot = FALSE),
+         .else = ~ NULL)
+}
+names(lomb_scargle_full) <- seq_along(1:length(lomb_scargle_full))
+lomb_scargle_full_no_null <- purrr::discard(lomb_scargle_full, is_empty)
+}
 
 # Remove the NULL windows
 names(lomb_scargle) <- seq_along(1:length(lomb_scargle))
-lomb_scargle_no_null <- discard(lomb_scargle, is_empty)
+lomb_scargle_no_null <- purrr::discard(lomb_scargle, is_empty)
+
 
 
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
@@ -128,12 +145,12 @@ results <- map_df(names(lomb_scargle_no_null),
                          } ,
                        power = lomb_scargle_no_null[[.]]$peak,
                        lsp_p_value = lomb_scargle_no_null[[.]]$p.value,
-                       scanned = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !any(is.na(lomb_scargle_no_null[[.]]$scanned))) {
-                         list(as.numeric(duration(lomb_scargle_no_null[[.]]$scanned, str_remove(sampling_rate, "\\d.")), "hours"))
+                       scanned = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !any(is.na(lomb_scargle_full_no_null[[.]]$scanned))) {
+                         list(as.numeric(duration(lomb_scargle_full_no_null[[.]]$scanned, str_remove(sampling_rate, "\\d.")), "hours"))
                        } else {
-                         list(lomb_scargle_no_null[[.]]$scanned)
+                         list(lomb_scargle_full_no_null[[.]]$scanned)
                        },
-                       normalized_power = list(lomb_scargle_no_null[[.]]$power),
+                       normalized_power = list(lomb_scargle_full_no_null[[.]]$power),
                        sig_level = lomb_scargle_no_null[[.]]$sig.level,
                        ofac = lomb_scargle_no_null[[.]]$ofac)
            )
