@@ -32,9 +32,9 @@
 #' df_downsampled <- downsample_time_series(data = raw_data,
 #' datetime_column = "datetime", amount = 30, units = "hour", method = "sum")
 #'
-#' @import dplyr
-#' @import tidyr
-#' @import lubridate
+#' @importFrom dplyr pull summarise ungroup group_by
+#' @importFrom tidyr pivot_longer pivot_wider
+#' @importFrom lubridate floor_date
 #' @importFrom rlang sym as_function
 #' @importFrom magrittr '%>%'
 #'

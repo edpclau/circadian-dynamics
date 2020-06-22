@@ -42,5 +42,4 @@ lomb-scargle periodogram, and COSINOR analysis.
 analysis <- rythm_analysis(df = processed_data, sampling_rate = "30 min", auto_correlation = TRUE,
 lomb_scargle = TRUE, from = 36, to = 48, multipeak_period = TRUE)
 
-
 }

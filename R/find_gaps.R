@@ -11,6 +11,10 @@
 #'
 #' @examples
 #' completed_dates <- find_gaps(times = df$datetime, sampling_rate = "30 min")
+#'
+#' @importFrom tibble tibble
+#' @importFrom tidyr complete
+#' @importFrom magrittr "%>%"
 find_gaps <- function(times = NULL, sampling_rate = NULL) {
 
   completed_dates <- tibble::tibble(datetime = times) %>%

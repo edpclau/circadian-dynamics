@@ -22,4 +22,5 @@ Saves data outputted from the multivariate process_timeseries and multivariate_r
 \examples{
 export_multivariate_data(processed_data = processed_data, rythm_analysis_data = analysis_data,
 dir_choose_gui = TRUE, new_dir_name = "Sensor_project")
+
 }

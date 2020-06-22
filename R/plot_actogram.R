@@ -17,13 +17,14 @@
 #' datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE)
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline labs facet_grid scale_x_datetime scale_y_discrete theme element_blank element_text element_line ggsave
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom purrr map
-#' @import dplyr
+#' @importFrom dplyr group_by mutate case_when arrange ungroup filter
+#' @importFrom stringr str_remove
 #' @importFrom magrittr '%>%'
-#' @import tidyr
-#' @import lubridate
+#' @importFrom tidyr gather
+#' @importFrom lubridate ddays dminutes
 plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5) {
 

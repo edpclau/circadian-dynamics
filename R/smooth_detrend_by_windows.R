@@ -20,6 +20,11 @@
 #' @examples
 #' smoothed_data <- smooth_detrend_by_windows(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
 #'
+#' @importFrom tibble tibble
+#' @importFrom dplyr group_by mutate ungroup
+#' @importFrom magrittr "%>%"
+#' @importFrom pracma movavg detrend
+#'
 smooth_detrend_by_windows <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
                                       detrend_data = TRUE, windows = NULL, values = NULL) {
 

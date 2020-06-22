@@ -30,4 +30,5 @@ Creates a folder in which all the data and plots resulting from the analysis wil
 }
 \examples{
 export_all(processed_data = processed_data, rythm_analysis_data = analysis_data, new_dir_name = "test")
+
 }

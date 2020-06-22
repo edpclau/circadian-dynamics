@@ -32,6 +32,10 @@
 #' analysis <- rythm_analysis(df = processed_data, sampling_rate = "30 min", auto_correlation = TRUE,
 #' lomb_scargle = TRUE, from = 36, to = 48, multipeak_period = TRUE)
 #'
+#' @importFrom tibble tibble
+#' @importFrom dplyr select mutate filter bind_cols left_join bind_rows everything
+#' @importFrom tidyr drop_na
+#' @importFrom purrr map2_df
 #'
 
 rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
