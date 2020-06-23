@@ -19,4 +19,5 @@ Finds and fills gaps in a POSIXct vector.
 }
 \examples{
 completed_dates <- find_gaps(times = df$datetime, sampling_rate = "30 min")
+
 }

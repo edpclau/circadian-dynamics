@@ -40,7 +40,9 @@
 #' @examples
 #' processed_data <- process_timeseries(df = raw_data, sampling_rate = "30 min")
 #'
-#' @importFrom dplyr select right_join bind_cols
+#' @importFrom dplyr select right_join bind_cols rename left_join everything
+#' @importFrom tibble tibble
+#' @importFrom magrittr "%>%"
 #'
 process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
                                movavg = FALSE, detrend_data = TRUE, butterworth = TRUE,

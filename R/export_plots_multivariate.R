@@ -19,6 +19,8 @@
 #' @examples
 #' export_plots_multivariate(processed_data = processed_data, rythm_analysis_data = analysis_data,
 #' new_dir_name = "sensor_project")
+#'
+#' @importFrom rstudioapi selectDirectory
 export_plots_multivariate <- function(processed_data = NULL, rythm_analysis_data = NULL,
                                       autocorrelation = TRUE, lomb_scargle = TRUE,
                                       cosinor_fit = c("lomb_scargle", "autocorrelation"),

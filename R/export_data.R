@@ -13,6 +13,10 @@
 #'
 #' @examples
 #' export_data(processed_data = processed_data, rythm_analysis_data = analysis_data, dir_choose_gui = TRUE)
+#' @importFrom rstudioapi selectDirectory
+#' @importFrom readr write_csv
+#' @importFrom dplyr select mutate
+#' @importFrom magrittr '%>%'
 export_data <- function(processed_data = NULL, rythm_analysis_data = NULL, dir_choose_gui = TRUE) {
 
 

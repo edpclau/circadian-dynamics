@@ -21,6 +21,8 @@
 #'
 #' @examples
 #' export_all(processed_data = processed_data, rythm_analysis_data = analysis_data, new_dir_name = "test")
+#'
+#' @importFrom rstudioapi selectDirectory
 export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL,
                        autocorrelation = TRUE, lomb_scargle = TRUE,
                        cosinor_fit = c("lomb_scargle", "autocorrelation"),

@@ -16,7 +16,7 @@
 #' @examples
 #' windowed_data <- function(data = df)
 #'
-#' @import lubridate
+#' @importFrom lubridate days
 #' @importFrom purrr map_df
 #' @importFrom dplyr filter
 #'

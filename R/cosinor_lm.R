@@ -57,7 +57,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom broom tidy glance
 #' @importFrom magrittr '%>%'
-#' @import lubridate
+#' @importFrom lubridate duration
 cosinor_lm <- function(df = NULL, timeseries_datetime = NULL, values = NULL,
                        sampling_rate = NULL, period = NULL, na.action = na.omit) {
 
@@ -68,12 +68,15 @@ if (is.null(df) & (is.null(timeseries_datetime) | is.null(values))) {
   stop("If a data.frame is not supplied. Must include both timeseries and values.")
   } else if (is.null(df)) { df = tibble(timeseries_datetime, values) }
 #2.must have sampling rate and period
-if (is.null(period)) {stop("Must include period. Period must be in the same units as the sampling rate")}
+if (is.null(period)) {stop("Must include period. Period must be given in hours")}
 if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes', '1 hour', '4 seconds', '100 days'.")}
 #3. Change the names of the df columns so we can work with it inside the function
 if (!is.null(df)) {
   names(df) <- c("timeseries_datetime", "values")
 }
+
+#4. Update the period so that it matches the sampling rate
+period <- as.numeric(duration(period, units = "hours"), str_remove(sampling_rate, "\\d."))
 
 ##### Format the data so we can run the cosinor ####
 # Insert a sample number for every timepoint

@@ -62,8 +62,8 @@
 #' @importFrom purrr map_if map_df discard
 #' @importFrom rlang is_empty
 #' @importFrom tibble tibble
-#' @import lubridate is.POSIXt is.POSIXct duration
-#' @importFrom  dplyr pull filter
+#' @importFrom lubridate is.POSIXt is.POSIXct duration
+#' @importFrom dplyr pull filter
 #'
 lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NULL, sampling_rate = NULL, from = 18, to = 30,
                           type = c("period", "frequency"), ofac = 60, alpha = 0.01, plot = FALSE) {

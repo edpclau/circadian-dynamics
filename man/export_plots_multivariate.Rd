@@ -30,4 +30,5 @@ Creates a folder in which all plots resulting from the analysis will be saved.
 \examples{
 export_plots_multivariate(processed_data = processed_data, rythm_analysis_data = analysis_data,
 new_dir_name = "sensor_project")
+
 }

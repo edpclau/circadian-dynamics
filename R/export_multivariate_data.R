@@ -13,6 +13,8 @@
 #' @examples
 #' export_multivariate_data(processed_data = processed_data, rythm_analysis_data = analysis_data,
 #' dir_choose_gui = TRUE, new_dir_name = "Sensor_project")
+#'
+#' @importFrom rstudioapi selectDirectory
 export_multivariate_data <- function(processed_data = NULL, rythm_analysis_data = NULL, dir_choose_gui = TRUE,
                                      new_dir_name = "analysis") {
 
