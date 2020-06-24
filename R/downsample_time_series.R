@@ -34,7 +34,7 @@
 #'
 #' @importFrom dplyr pull summarise ungroup group_by
 #' @importFrom tidyr pivot_longer pivot_wider
-#' @importFrom lubridate floor_date
+#' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
 #' @importFrom magrittr '%>%'
 #'
