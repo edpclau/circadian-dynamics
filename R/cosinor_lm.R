@@ -54,7 +54,7 @@
 #' cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
 #'
 #' @importFrom tibble tibble_row tibble
-#' @importFrom dplyr mutate n context
+#' @importFrom dplyr mutate context
 #' @importFrom broom tidy glance
 #' @importFrom magrittr '%>%'
 #' @importFrom lubridate duration
@@ -81,7 +81,7 @@ period <- as.numeric(duration(period, units = "hours"), str_remove(sampling_rate
 ##### Format the data so we can run the cosinor ####
 # Insert a sample number for every timepoint
 
-df <- df %>% mutate(sample = 1:dplyr::n())
+df <- df %>% dplyr::mutate(sample = 1:dplyr::n())
 
 # Calculate sin and cos widths
 # Period and time_value must be in the same units
