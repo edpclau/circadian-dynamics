@@ -17,7 +17,7 @@
 #' datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE)
 #'
-#' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline labs facet_grid scale_x_datetime scale_y_discrete theme element_blank element_text element_line ggsave
+#' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline labs facet_grid scale_x_datetime scale_y_discrete theme element_blank element_text element_line ggsave unit
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom purrr map
 #' @importFrom dplyr group_by mutate case_when arrange ungroup filter
