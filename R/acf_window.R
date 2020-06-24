@@ -63,8 +63,8 @@ acf_window <- function(df = NULL,  from = 18, to = 30,
   }
 
   #3. the period must be calculated from the data on the second day.
-  from = from + 24
-  to = to + 24
+  from = from*2
+  to = to*2
 
 ########## Autocorrelation for a moving window of values ########
 

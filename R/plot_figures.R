@@ -21,7 +21,8 @@
 #' @importFrom rstudioapi selectDirectory
 #' @importFrom tidyr unnest drop_na
 #' @importFrom magrittr '%>%'
-#' @importFrom dplyr pull filter select last_col
+#' @importFrom dplyr pull filter select last_col mutate
+#' @importFrom lubridate hour dhours
 #'
 export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL,
                          rythm_analysis_data = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
@@ -56,9 +57,11 @@ cosinor <- rythm_analysis_data %>% filter(method == cosinor_fit, window == windo
 
 raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, last_col(), 3)
 
-
 # Raw Data
-plot(raw_data[,c(1,3)], type="l", xlab="")
+plot(raw_data[,c(1,3)], type="l", xlab="", xaxt = "n")
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
 
 # Headers for the pade. Window number and dates in those windows
 mtext(text = paste("Window number ", windows ,sep = ""), side=3, adj = 1, line = .5, cex = .5)
@@ -68,10 +71,14 @@ mtext(text=paste(min(raw_data$dates),max(raw_data$dates),sep=" --- "),side=3,out
 # Show the next to last column of the data when we do multiple processes on the data
 if (ncol(processed_data) > 4) {
 # If the data is both smoothed and detrended, first show the smooth and then the smooth and detrended
+x_axis <- filter(processed_data, window == windows) %>% pull(2)
 plot(
   filter(processed_data, window == windows) %>% select(2,last_col(1)),
     type="l",
-    xlab="")
+    xlab="", xaxt = "n")
+  axis(1, at = seq(min(x_axis), max(x_axis), by = lubridate::dhours(4)), labels = FALSE)
+  axis(1, at = seq(min(x_axis), max(x_axis), by = lubridate::dhours(12)),
+       labels = lubridate::hour(seq(min(x_axis), max(x_axis), by = lubridate::dhours(12))))
 
   }
 
@@ -81,7 +88,10 @@ plot(
 plot(
     raw_data[1:2],
     type="l",
-    xlab="")
+    xlab="", xaxt = "n")
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
 
 
 
@@ -99,7 +109,7 @@ autocor <- ccf(x = raw_data[2], #Select the values in the window
     plot = FALSE)
 
 plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF", xaxt = "n")
-axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 6), labels = FALSE)
+axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 4), labels = FALSE)
 axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 12), labels = seq(min(autocor$lag), max(autocor$lag), by = 12))
 
 #Calculate and add confidence intervals
@@ -177,8 +187,8 @@ plot(
   xlab = "Period",
   ylab = "Power (lomb)",
   xaxt = "n")
-  minor_ticks <- seq(min(round(x)), max(round(x)), by = 6)
-  major_ticks <- seq(min(round(x)), max(round(x)), by = 12)
+  minor_ticks <- seq(0, round(max(x)), by = 4)
+  major_ticks <- seq(0, round(max(x)), by = 12)
   axis(1, at = minor_ticks, labels = FALSE)
   axis(1, at = major_ticks, labels = major_ticks)
 
@@ -208,7 +218,11 @@ legend("topright",
 # Cosinor Fit
 
 
-plot(x = raw_data[[1]], y = raw_data[[2]], type = "l", xlab = "Dates", ylab = "Values")
+plot(x = raw_data[[1]], y = raw_data[[2]], type = "l", xlab = "Dates", ylab = "Values", xaxt = "n")
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
+
 lines(x = cosinor$wave_x, y = cosinor$wave_y, type = "l", col = "blue")
 
 if(all(is.na(cosinor$cosinor_p_value))){
