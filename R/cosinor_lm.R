@@ -81,7 +81,7 @@ period <- as.numeric(duration(period, units = "hours"), str_remove(sampling_rate
 ##### Format the data so we can run the cosinor ####
 # Insert a sample number for every timepoint
 
-df <- df %>% mutate(sample = 1:n())
+df <- df %>% mutate(sample = 1:dplyr::n())
 
 # Calculate sin and cos widths
 # Period and time_value must be in the same units
