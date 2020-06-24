@@ -164,13 +164,13 @@ names(mean_peaks) <- seq_along(mean_peaks)
 
 
 
-windows <- mean_peaks %>% names() %>% as.numeric()
+usable_windows <- mean_peaks %>% names() %>% as.numeric()
 
 
 
 # Now calculate the period.
 
-period <- purrr::map_if(windows,
+period <- purrr::map_if(usable_windows,
                         .p = ~ !(is.null(mean_peaks[[.]])), # If the mean_peaks (autopower) is doesn't exist, give out an NA
                         .else =  ~ NA,
                         .f = ~  pos_peak_lags[[.]][mean_peak_index[[.]]]/2
