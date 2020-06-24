@@ -54,7 +54,7 @@
 #' cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
 #'
 #' @importFrom tibble tibble_row tibble
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate n
 #' @importFrom broom tidy glance
 #' @importFrom magrittr '%>%'
 #' @importFrom lubridate duration
