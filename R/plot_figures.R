@@ -59,9 +59,8 @@ raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, l
 
 # Raw Data
 plot(raw_data[,c(1,3)], type="l", xlab="", xaxt = "n")
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
-     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
 # Headers for the pade. Window number and dates in those windows
 mtext(text = paste("Window number ", windows ,sep = ""), side=3, adj = 1, line = .5, cex = .5)
@@ -76,9 +75,8 @@ plot(
   filter(processed_data, window == windows) %>% select(2,last_col(1)),
     type="l",
     xlab="", xaxt = "n")
-  axis(1, at = seq(min(x_axis), max(x_axis), by = lubridate::dhours(4)), labels = FALSE)
-  axis(1, at = seq(min(x_axis), max(x_axis), by = lubridate::dhours(12)),
-       labels = lubridate::hour(seq(min(x_axis), max(x_axis), by = lubridate::dhours(12))))
+  axis(1, at = seq(min(x_axis), max(x_axis), by = lubridate::dhours(4)),
+       labels = lubridate::hour(seq(min(x_axis), max(x_axis), by = lubridate::dhours(4))))
 
   }
 
@@ -89,9 +87,8 @@ plot(
     raw_data[1:2],
     type="l",
     xlab="", xaxt = "n")
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
-     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
 
 
@@ -219,9 +216,8 @@ legend("topright",
 
 
 plot(x = raw_data[[1]], y = raw_data[[2]], type = "l", xlab = "Dates", ylab = "Values", xaxt = "n")
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)), labels = FALSE)
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12)),
-     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(12))))
+axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
+     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
 lines(x = cosinor$wave_x, y = cosinor$wave_y, type = "l", col = "blue")
 
