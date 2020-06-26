@@ -98,16 +98,31 @@ if (autocorrelation & lomb_scargle) {
   lsp <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   auto <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results <-  dplyr::bind_rows(lomb_scargle = lsp, autocorrelation = auto, .id = "method")
+  if(!is.null(from)) {
+    results$from <- from}
+  if(!is.null(to)) {
+    results$to <- to
+  }
 
   #2. Only auto
 } else if (autocorrelation == TRUE & lomb_scargle == FALSE) {
   results <- dplyr::left_join(acf_results_full,cosinor_fits_auto_corr, by = "window")
   results$method <- "autocorrelation"
+  if(!is.null(from)) {
+  results$from <- from}
+  if(!is.null(to)) {
+  results$to <- to
+  }
   results <- dplyr::select(results, method, dplyr::everything())
   #3. Only lomb
 } else {
   results <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   results$method <- "lomb_scargle"
+  if(!is.null(from)) {
+    results$from <- from}
+  if(!is.null(to)) {
+    results$to <- to
+  }
   results <- dplyr::select(results, method, dplyr::everything())
 }
 

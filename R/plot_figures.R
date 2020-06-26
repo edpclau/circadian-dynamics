@@ -106,6 +106,8 @@ autocor <- ccf(x = raw_data[2], #Select the values in the window
     plot = FALSE)
 
 plot(x = autocor$lag, y = autocor$acf, type = "l", col = "blue", main = " ", xlab = "Lag", ylab = "ACF", xaxt = "n")
+abline(v = (rythm_analysis_data %>% pull(from) %>% unique())*2)
+abline(v = (rythm_analysis_data %>% pull(to) %>% unique())*2)
 axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 4), labels = FALSE)
 axis(1, at = seq(min(autocor$lag), max(autocor$lag), by = 12), labels = seq(min(autocor$lag), max(autocor$lag), by = 12))
 
@@ -124,7 +126,8 @@ plot_points <- TRUE
        main = " ",
        xlab = "Lag",
        ylab = "ACF")
-
+  abline(v = (rythm_analysis_data %>% pull(from) %>% unique())*2)
+  abline(v = (rythm_analysis_data %>% pull(to) %>% unique())*2)
   plot_points <- FALSE
 }
 
@@ -188,6 +191,9 @@ plot(
   major_ticks <- seq(0, round(max(x)), by = 12)
   axis(1, at = minor_ticks, labels = FALSE)
   axis(1, at = major_ticks, labels = major_ticks)
+
+abline(v = (rythm_analysis_data %>% pull(from) %>% unique()))
+abline(v = (rythm_analysis_data %>% pull(to) %>% unique()))
 
 abline(
   h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),

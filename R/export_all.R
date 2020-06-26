@@ -65,6 +65,15 @@ for (name in names(processed_data)) {
                cosinor_fit = cosinor_fit,
                dir_choose_gui = FALSE)
 
+
+
+
+  analysis_data_short <- list(rythm_analysis_data[[name]])
+  names(analysis_data_short) <- name
+  plot_summarized_data(raw_data, analysis_data_short, dir_choose_gui = FALSE)
+
+
+
   export_data(processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]], dir_choose_gui = FALSE)
 
 }

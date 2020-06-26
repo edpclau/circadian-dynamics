@@ -52,9 +52,6 @@ plot(df[[1]], df[[i]], type = "l")
 lines(df[[1]], b1[[i-1]], col = "red", lwd = 1.5)
 lines(df[[1]], (b2[[i-1]]+mean(df[[i]])), col = "blue", lwd = 1.5)
 
-
-answer <- readline("Press 'Enter' to plot the next figure. Write 'done' to finish.")
-if (answer != "") {break()}
 }
 }
 
