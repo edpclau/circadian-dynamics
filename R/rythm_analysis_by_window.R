@@ -80,10 +80,12 @@ if (autocorrelation) {
 if (lomb_scargle) {
   lsp_results <- lsp_by_window(df %>% dplyr::select(window, datetime, values),
                                from = from, to = to, sampling_rate = sampling_rate, ofac = ofac)
- lsp_results <- mutate(lsp_results,
+
+  #Make sure cosinor always runs. If period = NA, set it to 24 and run cosinor
+ lsp_results_for_cosinor <- mutate(lsp_results,
                        period = ifelse(is.na(period), 24, period))
   # Fit Cosinor to lsp
-  cosinor_fits_lsp <- purrr::map2_df(.x = unique(lsp_results$window), .y = lsp_results$period,
+  cosinor_fits_lsp <- purrr::map2_df(.x = unique(lsp_results_for_cosinor$window), .y = lsp_results_for_cosinor$period,
                                      .f = ~ cosinor_lm(dplyr::filter(df, window == .x) %>% dplyr::select(datetime, values),
                                                        sampling_rate = sampling_rate,
                                                        period = .y,
@@ -102,6 +104,11 @@ if (autocorrelation & lomb_scargle) {
     results$from <- from}
   if(!is.null(to)) {
     results$to <- to
+   results <-  df %>%
+      dplyr::group_by(window) %>%
+      dplyr::summarise(window_starts = min(datetime),
+                       window_ends = max(datetime)) %>%
+      dplyr::right_join(results, by = "window")
   }
 
   #2. Only auto
@@ -112,6 +119,11 @@ if (autocorrelation & lomb_scargle) {
   results$from <- from}
   if(!is.null(to)) {
   results$to <- to
+  results <-  df %>%
+    dplyr::group_by(window) %>%
+    dplyr::summarise(window_starts = min(datetime),
+                     window_ends = max(datetime)) %>%
+    dplyr::right_join(results, by = "window")
   }
   results <- dplyr::select(results, method, dplyr::everything())
   #3. Only lomb
@@ -122,6 +134,11 @@ if (autocorrelation & lomb_scargle) {
     results$from <- from}
   if(!is.null(to)) {
     results$to <- to
+    results <-  df %>%
+      dplyr::group_by(window) %>%
+      dplyr::summarise(window_starts = min(datetime),
+                       window_ends = max(datetime)) %>%
+      dplyr::right_join(results, by = "window")
   }
   results <- dplyr::select(results, method, dplyr::everything())
 }

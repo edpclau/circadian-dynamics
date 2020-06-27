@@ -51,6 +51,8 @@ lay <- layout(rbind(c(1,1,1,1,1,1,1,1,1,1,1,1),
 plot(dplyr::pull(df1,datetime), dplyr::pull(df1,.), type="l",
      ylab = "", xlab = "", main = paste(., "Summary", sep = " "))
 
+
+
 # plot Cosinor amplitudes gotten from lomb_scargle
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
@@ -59,6 +61,7 @@ to_plot = df2[[.]] %>%
 plot(to_plot,type="s", main = "Cosinor Amplitudes", ylab = "Amplitude", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
+
 
 
 #plot cosinor acrophase calculated from lomb_scargle
