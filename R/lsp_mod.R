@@ -90,7 +90,7 @@
 #'
 #' @importFrom pracma findpeaks
 lsp_mod <- function (x, times = NULL, from = NULL, to = NULL,
-                     type = c("frequency", "period" ), ofac = 1, alpha = 0.000001, plot = TRUE, ...)
+                     type = c("frequency", "period" ), ofac = 1, alpha = 0.001, plot = TRUE, ...)
 {
 ###### Flow Control
   type <- match.arg(type)
