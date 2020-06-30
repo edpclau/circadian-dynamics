@@ -45,7 +45,7 @@
 #' @importFrom magrittr "%>%"
 #'
 process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
-                               movavg = FALSE, detrend_data = TRUE, butterworth = TRUE,
+                                detrend_data = TRUE, butterworth = TRUE,
                                f_low = 1/4, f_high = 1/73, order = 2, plot = TRUE,
                                smoothing_n = 4, datetime = NULL, values = NULL) {
 
@@ -71,6 +71,10 @@ if(butterworth){
   df <- butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = plot)
 }
 
+if (detrend_data) {
+   df_detrended <- tibble::tibble(datetime = df[[1]], detrended = pracma::detrend(df[[2]]))
+
+}
 completed_dates <- dplyr::right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
 # Insert NA for missing data points, this is necessary for the autocorrelation
 # Consider making this into an if statetment type thing that is only turned ON when "autocorrelation" == TRUE
@@ -83,10 +87,13 @@ windowed_data <- make_time_windows(completed_dates,
 
 
 ##### Smooth or Detrend Data #####
-windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
-                                  smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
-                                                            smooth_data = movavg, detrend_data = detrend_data,
-                                                            binning_n = smoothing_n))
+# windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
+#                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
+#                                                             smooth_data = movavg, detrend_data = detrend_data,
+#                                                             binning_n = smoothing_n))
+if (detrend_data) {
+  windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")
+}
 
 if (butterworth) {
   windowed_data <- left_join(windowed_data, df_origin, by = "datetime")

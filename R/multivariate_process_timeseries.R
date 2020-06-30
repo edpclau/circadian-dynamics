@@ -34,7 +34,7 @@
 #' @importFrom purrr map
 #'
 multivariate_process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3,
-                                window_step_in_days = 1, movavg = FALSE, detrend_data = TRUE,
+                                window_step_in_days = 1, detrend_data = TRUE,
                                 butterworth = FALSE, f_low = 1/4, f_high = 1/73, order = 2, smoothing_n = 4, plot = TRUE) {
 ###### Flow control parameters######
 #1. Must supply a data frame.
@@ -51,7 +51,7 @@ if (!lubridate::is.POSIXct(df[[1]])) {
 
 processed_df <- purrr::map(2:ncol(df),
            .f = ~ process_timeseries(df = df[,c(1,.)], sampling_rate = sampling_rate, window_size_in_days = window_size_in_days,
-                                     window_step_in_days = window_step_in_days, movavg = movavg, detrend_data = detrend_data,
+                                     window_step_in_days = window_step_in_days,  detrend_data = detrend_data,
                                      butterworth = butterworth, f_low = f_low, f_high = f_high, order = order,
                                      smoothing_n = smoothing_n, plot = plot))
 
