@@ -41,9 +41,9 @@ purrr::map(names(df2),
            ~ {
 pdf(paste( .,"Summarized Data.pdf", sep = " "), width = 9, height = 8)
 
-lay <- layout(rbind(c(1,1,1,1,1,1,1,1,1,1,1,1),
-                    c(2,2,2,2,3,3,3,3,4,4,4,4),
-                    c(5,5,5,6,6,6,7,7,7,8,8,8)))
+lay <- layout(rbind(c(1,1,1,1,1,1),
+                    c(2,2,3,3,4,4),
+                    c(5,5,5,6,6,6)))
 
 
 
@@ -69,9 +69,12 @@ to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(window,phase_in_seconds)
 
+
 plot(to_plot,type="s", main ="Cosinor Phases", ylab = "Phase in hours", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
+
+
 
 
 # plot Cosinor Percent Rythm
@@ -89,10 +92,15 @@ to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(window,period)
 
+if ( !all(is.na(to_plot[[2]]))) {
 plot(to_plot, type="s", main ="Lomb-Scargle Periods" , ylab = "Period in hours", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
 
+} else {
+  plot.new()
+  title("Lom-Scargle Periods = NA")
+}
 
 #plot period found by autocorrelation
 to_plot = df2[[.]] %>%
@@ -100,32 +108,37 @@ to_plot = df2[[.]] %>%
   dplyr::select(window,period_hours) %>%
   dplyr::mutate(period_hours = as.numeric(stringr::str_remove(period_hours, "hours" )))
 
+if (!all(is.na(to_plot[[2]]))) {
 plot(to_plot,type="s", main="Periods Autocorrelation", ylab = "Period in hours", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
 
+} else {
+  plot.new()
+  title("Periods Autocorrelation = NA")
+}
 
-# plot lomb_scargle p.value
-to_plot = df2[[.]] %>%
-  dplyr::filter(method == "lomb_scargle") %>%
-  dplyr::select(window,lsp_p_value)
-
-plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "P.value", xlab = "Window", xaxt = "n")
-points(to_plot)
-axis(1, at = to_plot$window)
-
-
-# plot aucocorrelation coefficients
-to_plot = df2[[.]] %>%
-  dplyr::filter(method == "autocorrelation") %>%
-  dplyr::select(window,autocorrelation_power)
-
-plot(to_plot,type="s", main ="Autocorrelation Coefficients" , ylab = "Correlation Coefficient",
-     xlab = "Window", xaxt = "n")
-points(to_plot)
-axis(1, at = to_plot$window)
-
-dev.off()
+# # plot lomb_scargle p.value
+# to_plot = df2[[.]] %>%
+#   dplyr::filter(method == "lomb_scargle") %>%
+#   dplyr::select(window,lsp_p_value)
+#
+# plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "P.value", xlab = "Window", xaxt = "n")
+# points(to_plot)
+# axis(1, at = to_plot$window)
+#
+#
+# # plot aucocorrelation coefficients
+# to_plot = df2[[.]] %>%
+#   dplyr::filter(method == "autocorrelation") %>%
+#   dplyr::select(window,autocorrelation_power)
+#
+# plot(to_plot,type="s", main ="Autocorrelation Coefficients" , ylab = "Correlation Coefficient",
+#      xlab = "Window", xaxt = "n")
+# points(to_plot)
+# axis(1, at = to_plot$window)
+#
+# dev.off()
 
 }
 
