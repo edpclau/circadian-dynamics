@@ -87,6 +87,8 @@ points(to_plot)
 axis(1, at = to_plot$window)
 
 
+
+
 # plot lomb_scargle periods
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
@@ -138,7 +140,8 @@ axis(1, at = to_plot$window)
 # points(to_plot)
 # axis(1, at = to_plot$window)
 #
-# dev.off()
+
+ dev.off()
 
 }
 
