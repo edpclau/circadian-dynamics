@@ -108,13 +108,13 @@ acrophase <- atan( sin_coeff / cos_coeff )
 acrophase_se <- ((cos_se^2 * sin_coeff^-2) + (cos_coeff^2 / sin_coeff^3 * sin_se^2)) / (1 + (cos_coeff/sin_coeff)^2)^2
 
 if (cos_coeff < 0 & sin_coeff < 0) {
-  acrophase <- acrophase + pi
+  acrophase <- acrophase - pi
 }
 # if (cos_coeff < 0 & sin_coeff > 0) {
 #   acrophase <- - acrophase
 # }
 if (cos_coeff < 0 & sin_coeff >= 0) {
-  acrophase <- pi - acrophase
+  acrophase <-  acrophase + pi
 }
 
 

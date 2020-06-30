@@ -122,7 +122,7 @@ lomb_scargle_full <- {
   map_if(unique(df$window),
          .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
          .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
-                          ofac = ofac, type = type, plot = FALSE),
+                          ofac = ofac, type = type, plot = FALSE, alpha = alpha),
          .else = ~ NULL)
 }
 names(lomb_scargle_full) <- seq_along(1:length(lomb_scargle_full))

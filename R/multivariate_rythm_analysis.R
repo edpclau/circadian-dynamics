@@ -39,7 +39,8 @@
 #'
 #'
 multivariate_rythm_analysis <- function(df = NULL, sampling_rate = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
-         from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL) {
+         from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL,
+         alpha = 0.01) {
 
   ###### Flow control parameters######
 #1. Either a df or three lists with the datetimes, values, and windows must be supplied. If a df is not supplied, turn the
@@ -66,7 +67,8 @@ results <- purrr::map(1:length(df_short),
            .f = ~
              rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate,
                                       autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
-                         from = from, to = to, ofac = ofac)
+                         from = from, to = to, ofac = ofac,
+                         alpha = alpha)
 )
 
 

@@ -39,7 +39,8 @@
 #'
 
 rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
-                                     from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL) {
+                                     from = 18, to = 30, ofac = 60, datetime = NULL, window = NULL, values = NULL,
+                                     alpha = 0.01) {
   ###### Flow control parameters######
   #1. Either a df or three lists with the datetimes, values, and windows must be supplied. If a df is not supplied, turn the
   # three lists into a df.
@@ -79,7 +80,8 @@ if (autocorrelation) {
 ######## Lomb-Scargle Periodogram by windows #######
 if (lomb_scargle) {
   lsp_results <- lsp_by_window(df %>% dplyr::select(window, datetime, values),
-                               from = from, to = to, sampling_rate = sampling_rate, ofac = ofac)
+                               from = from, to = to, sampling_rate = sampling_rate, ofac = ofac,
+                               alpha = alpha)
 
   #Make sure cosinor always runs. If period = NA, set it to 24 and run cosinor
  lsp_results_for_cosinor <- mutate(lsp_results,
