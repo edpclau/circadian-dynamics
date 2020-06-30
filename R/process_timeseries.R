@@ -71,10 +71,10 @@ if(butterworth){
   df <- butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = plot)
 }
 
-if (detrend_data) {
-   df_detrended <- tibble::tibble(datetime = df[[1]], detrended = pracma::detrend(df[[2]]))
-
-}
+# if (detrend_data) {
+#    df_detrended <- tibble::tibble(datetime = df[[1]], detrended = pracma::detrend(df[[2]]))
+#
+# }
 completed_dates <- dplyr::right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
 # Insert NA for missing data points, this is necessary for the autocorrelation
 # Consider making this into an if statetment type thing that is only turned ON when "autocorrelation" == TRUE
@@ -87,13 +87,13 @@ windowed_data <- make_time_windows(completed_dates,
 
 
 ##### Smooth or Detrend Data #####
-# windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
-#                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
-#                                                             smooth_data = movavg, detrend_data = detrend_data,
-#                                                             binning_n = smoothing_n))
-if (detrend_data) {
-  windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")
-}
+windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
+                                  smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
+                                                            smooth_data = movavg, detrend_data = detrend_data,
+                                                            binning_n = smoothing_n))
+# if (detrend_data) {
+#   windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")
+# }
 
 if (butterworth) {
   windowed_data <- left_join(windowed_data, df_origin, by = "datetime")
