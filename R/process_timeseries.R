@@ -89,7 +89,7 @@ windowed_data <- make_time_windows(completed_dates,
 ##### Smooth or Detrend Data #####
 windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
-                                                            smooth_data = movavg, detrend_data = detrend_data,
+                                                            smooth_data = FALSE, detrend_data = detrend_data,
                                                             binning_n = smoothing_n))
 # if (detrend_data) {
 #   windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")
