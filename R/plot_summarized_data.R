@@ -41,9 +41,9 @@ purrr::map(names(df2),
            ~ {
 pdf(paste( .,"Summarized Data.pdf", sep = " "), width = 9, height = 8)
 
-lay <- layout(rbind(c(1,1,1,1,1,1),
-                    c(2,2,3,3,4,4),
-                    c(5,5,5,6,6,6)))
+lay <- layout(rbind(c(1,1,1,1,1,1,1,1,1,1,1,1),
+                    c(2,2,2,2,3,3,3,3,4,4,4,4),
+                    c(5,5,5,6,6,6,7,7,7,8,8,8)))
 
 
 
@@ -120,26 +120,36 @@ axis(1, at = to_plot$window)
   title("Periods Autocorrelation = NA")
 }
 
-# # plot lomb_scargle p.value
-# to_plot = df2[[.]] %>%
-#   dplyr::filter(method == "lomb_scargle") %>%
-#   dplyr::select(window,lsp_p_value)
-#
-# plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "P.value", xlab = "Window", xaxt = "n")
-# points(to_plot)
-# axis(1, at = to_plot$window)
-#
-#
-# # plot aucocorrelation coefficients
-# to_plot = df2[[.]] %>%
-#   dplyr::filter(method == "autocorrelation") %>%
-#   dplyr::select(window,autocorrelation_power)
-#
-# plot(to_plot,type="s", main ="Autocorrelation Coefficients" , ylab = "Correlation Coefficient",
-#      xlab = "Window", xaxt = "n")
-# points(to_plot)
-# axis(1, at = to_plot$window)
-#
+# plot lomb_scargle p.value
+to_plot = df2[[.]] %>%
+  dplyr::filter(method == "lomb_scargle") %>%
+  dplyr::select(window,lsp_p_value)
+
+if ( !all(is.na(to_plot[[2]]))) {
+plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "P.value", xlab = "Window", xaxt = "n")
+points(to_plot)
+axis(1, at = to_plot$window)
+
+} else {
+  plot.new()
+  title("Lomb-Scargle P-value = NA")
+}
+
+# plot aucocorrelation coefficients
+to_plot = df2[[.]] %>%
+  dplyr::filter(method == "autocorrelation") %>%
+  dplyr::select(window,autocorrelation_power)
+
+if ( !all(is.na(to_plot[[2]]))) {
+plot(to_plot,type="s", main ="Autocorrelation Coefficients" , ylab = "Correlation Coefficient",
+     xlab = "Window", xaxt = "n")
+points(to_plot)
+axis(1, at = to_plot$window)
+
+} else {
+  plot.new()
+  title("Autocorrelation Coefficients = NA")
+}
 
  dev.off()
 
