@@ -66,10 +66,10 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
   }
 
 
-if(butterworth){
-  df_origin <- df
-  df <- butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = plot)
-}
+# if(butterworth){
+#   df_origin <- df
+#   df <- butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = plot)
+# }
 
 # if (detrend_data) {
 #    df_detrended <- tibble::tibble(datetime = df[[1]], detrended = pracma::detrend(df[[2]]))
@@ -86,7 +86,18 @@ windowed_data <- make_time_windows(completed_dates,
                                    window_step_in_days = window_step_in_days)
 
 
+#butterworth by window
+if (butterworth) {
+df_origin <- df
+windowed_data <-  purrr::map_df(unique(windowed_data$window),
+                ~ dplyr::filter(windowed_data, window == .) %>%
+                  dplyr::select(datetime, values) %>%
+                  butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
+                .id = "window"
+  )
+}
 ##### Smooth or Detrend Data #####
+
 windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
                                                             smooth_data = FALSE, detrend_data = detrend_data,
