@@ -50,8 +50,9 @@ data <- df %>% make_time_windows(window_size_in_days = 2, window_step_in_days = 
          )
          )  %>%
   ungroup() %>%
-  mutate(ind = as.numeric(str_remove(ind, "IND "))) %>%
-  arrange(ind)
+  mutate(ind = as.numeric(str_remove(ind, "IND ")),
+         window = as.numeric(window)) %>%
+  arrange(ind, window, datetime)
 
 
 #### Parameters for how the plots will look on the page
