@@ -210,7 +210,9 @@ legend("topright",
        legend = c(paste("Period = ",
                         filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3)),
                   paste("Power =",
-                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% round(digits = 3))),
+                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% round(digits = 3)),
+                  paste("p.value =",
+                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(lsp_p_value))),
        bty = "n",
        cex = 1)
 }
