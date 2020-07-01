@@ -206,13 +206,28 @@ points(
   cex=3,
   col = 'red')
 
+
+power = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power)
+sig_level = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level)
 legend("topright",
-       legend = c(paste("Period = ",
-                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3)),
-                  paste("Power =",
-                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% round(digits = 3)),
-                  paste("p.value =",
-                        filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(lsp_p_value))),
+       legend = c(
+         if (!is.na(power)){
+           if (power >= sig_level) {
+           paste("Period = ",
+                 filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3)) %>% paste("*")
+           } else {
+             paste("Period = ",
+                   filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3))
+           }
+             } else {
+           paste("Period = ",
+                 filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% round(digits = 3))
+         },
+         paste("Power =",
+                filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(power) %>% round(digits = 3)),
+
+         paste("p.value =",
+                filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(lsp_p_value))),
        bty = "n",
        cex = 1)
 }
