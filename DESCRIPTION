@@ -13,5 +13,5 @@ Description:
 License: GPL-3
 Encoding: UTF-8
 LazyData: false
-Imports: gridExtra, pracma, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, purrr, rlang, magrittr, tibble
+Imports: gridExtra, pracma, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, purrr, rlang, magrittr, tibble, forcats
 RoxygenNote: 7.1.0

@@ -18,8 +18,6 @@ smoothing_n = 4, datetime = NULL, values = NULL)
 
 \item{window_step_in_days}{a numeric indicating the amount of day by which to move the window in day units.}
 
-\item{movavg}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
-
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
 
 \item{butterworth}{Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
@@ -37,6 +35,8 @@ smoothing_n = 4, datetime = NULL, values = NULL)
 \item{datetime}{Optional if a data.frame is supplied. A POSIXct vector.}
 
 \item{values}{Optional if a data.frame is supplied. A vector of values from a mesurement.}
+
+\item{movavg}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
 }
 \value{
 A named list of data.frames containing the output of [circadiandynamics::butterworth], [find_gaps()], [makes_time_windows()], and [smooth_detrend_by_windows()] for each measurement value.

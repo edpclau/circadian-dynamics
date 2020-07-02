@@ -15,8 +15,6 @@ multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_
 
 \item{window_step_in_days}{(default=1) a numeric indicating the amount of day by which to move the window in day units.}
 
-\item{movavg}{Logical. If TRUE will smooth the measurement values useing a moving average. If FALSE (default) measurement values won't be smoothed.}
-
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
 
 \item{butterworth}{Logical. If TRUE (default) will apply a butterworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
@@ -30,6 +28,8 @@ multivariate_process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_
 \item{smoothing_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
 
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
+
+\item{movavg}{Logical. If TRUE will smooth the measurement values useing a moving average. If FALSE (default) measurement values won't be smoothed.}
 }
 \value{
 A named list of data.frames containing the output of [process_timeseries()] for each measurement value.

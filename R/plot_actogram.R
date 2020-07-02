@@ -25,6 +25,7 @@
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
+#' @importFrom forcats fct_reorder
 plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5) {
 
@@ -51,7 +52,7 @@ data <- df %>% make_time_windows(window_size_in_days = 2, window_step_in_days = 
          )  %>%
   ungroup() %>%
   mutate(ind = as.numeric(str_remove(ind, "IND ")),
-         window = as.numeric(window)) %>%
+         window = factor(window)) %>%
   arrange(ind, window, datetime)
 
 
@@ -69,7 +70,8 @@ pl <- map(.x = unique(data$ind),
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
   geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
-  facet_grid(window ~ date,  switch  = "y") +
+  facet_grid(
+    forcats::fct_reorder(window, as.numeric(window)) ~ date,  switch  = "y") +
 
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
