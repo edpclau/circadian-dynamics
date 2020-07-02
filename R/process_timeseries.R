@@ -86,29 +86,31 @@ windowed_data <- make_time_windows(completed_dates,
                                    window_step_in_days = window_step_in_days)
 
 
-#butterworth by window
-if (butterworth) {
-df_origin <- df
-windowed_data <-  purrr::map_df(unique(windowed_data$window),
-                ~ dplyr::filter(windowed_data, window == .) %>%
-                  dplyr::select(datetime, values) %>%
-                  butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
-                .id = "window"
-  )
-}
+
 ##### Smooth or Detrend Data #####
 
 windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
                                   smooth_detrend_by_windows(dplyr::select(windowed_data, -datetime) ,
                                                             smooth_data = FALSE, detrend_data = detrend_data,
                                                             binning_n = smoothing_n))
+
+
+#butterworth by window
+if (butterworth) {
+  buttered <-  purrr::map_df(unique(windowed_data$window),
+                                  ~ dplyr::filter(windowed_data, window == .) %>%
+                                    dplyr::select(datetime, dplyr::last_col()) %>%
+                                    butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
+                                  .id = "window"
+  )
+  buttered <- dplyr::rename(buttered, butterworth = detrended)
+}
 # if (detrend_data) {
 #   windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")
 # }
 
 if (butterworth) {
-  windowed_data <- left_join(windowed_data, df_origin, by = "datetime")
-  windowed_data <- dplyr::rename(windowed_data, butterworth = values.x, values = values.y)
+  windowed_data <- left_join(windowed_data, buttered, by = c( "window", "datetime"))
   windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())
 } else {
 windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())
