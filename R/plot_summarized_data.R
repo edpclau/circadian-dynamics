@@ -85,7 +85,7 @@ to_plot = df2[[.]] %>%
 plot(to_plot,type="s", main ="Percent Rythm", ylab = " Cosinor Adj. R-squared", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
-
+abline(h = 0.6, col = "red", lty = 2)
 
 
 
