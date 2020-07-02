@@ -52,7 +52,7 @@ data <- df %>% make_time_windows(window_size_in_days = 2, window_step_in_days = 
          )  %>%
   ungroup() %>%
   mutate(ind = as.numeric(str_remove(ind, "IND ")),
-         window = factor(window)) %>%
+         window = as.numeric(window)) %>%
   arrange(ind, window, datetime)
 
 
@@ -70,8 +70,7 @@ pl <- map(.x = unique(data$ind),
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
   geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
-  facet_grid(
-    forcats::fct_reorder(window, as.numeric(window)) ~ date,  switch  = "y") +
+  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y") +
 
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
