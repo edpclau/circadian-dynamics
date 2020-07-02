@@ -106,12 +106,14 @@ if (autocorrelation & lomb_scargle) {
     results$from <- from}
   if(!is.null(to)) {
     results$to <- to
+  }
+  results$alpha <- alpha
    results <-  df %>%
       dplyr::group_by(window) %>%
       dplyr::summarise(window_starts = min(datetime),
                        window_ends = max(datetime)) %>%
       dplyr::right_join(results, by = "window")
-  }
+
 
   #2. Only auto
 } else if (autocorrelation == TRUE & lomb_scargle == FALSE) {
@@ -121,27 +123,34 @@ if (autocorrelation & lomb_scargle) {
   results$from <- from}
   if(!is.null(to)) {
   results$to <- to
+  }
+  results$alpha <- alpha
+
   results <-  df %>%
     dplyr::group_by(window) %>%
     dplyr::summarise(window_starts = min(datetime),
                      window_ends = max(datetime)) %>%
     dplyr::right_join(results, by = "window")
-  }
+
   results <- dplyr::select(results, method, dplyr::everything())
   #3. Only lomb
-} else {
+
+  } else {
   results <- dplyr::bind_cols(lsp_results,cosinor_fits_lsp)
   results$method <- "lomb_scargle"
   if(!is.null(from)) {
     results$from <- from}
   if(!is.null(to)) {
     results$to <- to
+  }
+  results$alpha <- alpha
+
     results <-  df %>%
       dplyr::group_by(window) %>%
       dplyr::summarise(window_starts = min(datetime),
                        window_ends = max(datetime)) %>%
       dplyr::right_join(results, by = "window")
-  }
+
   results <- dplyr::select(results, method, dplyr::everything())
 }
 
