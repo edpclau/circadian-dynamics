@@ -123,10 +123,11 @@ axis(1, at = to_plot$window)
 # plot lomb_scargle p.value
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
-  dplyr::select(window,lsp_p_value)
+  dplyr::select(window,lsp_p_value) %>%
+  dplyr::mutate(lsp_p_value = log(lsp_p_value))
 
 if ( !all(is.na(to_plot[[2]]))) {
-plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "P.value", xlab = "Window", xaxt = "n")
+plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "Log P.value", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
 abline(h = unique(df2[[.]]$alpha), lty = 2, col = "red")
