@@ -198,11 +198,13 @@ abline(v = (rythm_analysis_data %>% pull(to) %>% unique()))
 if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level) <= max(y)) {
 abline(
   h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),
-  lty = "dashed")
+  lty = "dashed",
+  col = "red")
 } else {
   abline(
     h = max(y) + 1,
-    lty = "dashed")
+    lty = "dashed",
+    col = "red")
 }
 
 
