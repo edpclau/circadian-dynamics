@@ -130,7 +130,7 @@ if ( !all(is.na(to_plot[[2]]))) {
 plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "Log P.value", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
-abline(h = unique(df2[[.]]$alpha), lty = 2, col = "red")
+abline(h = log(unique(df2[[.]]$alpha)), lty = 2, col = "red")
 
 } else {
   plot.new()
