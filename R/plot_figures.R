@@ -195,9 +195,16 @@ plot(
 abline(v = (rythm_analysis_data %>% pull(from) %>% unique()))
 abline(v = (rythm_analysis_data %>% pull(to) %>% unique()))
 
+if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level) <= max(y)) {
 abline(
   h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),
   lty = "dashed")
+} else {
+  abline(
+    h = max(y) + 1,
+    lty = "dashed")
+}
+
 
 points(
   x= filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(period) %>% unlist(),
@@ -243,6 +250,7 @@ axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhour
      labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
 lines(x = cosinor$wave_x, y = cosinor$wave_y, type = "l", col = "blue")
+abline(v = unique(cosinor$phase_in_seconds), lty = 1, col = "black")
 
 if(all(is.na(cosinor$cosinor_p_value))){
 legend("topright",
