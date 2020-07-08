@@ -76,6 +76,7 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
 #
 # }
 completed_dates <- dplyr::right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
+completed_dates[[2]] <- ifelse(is.na(completed_dates[[2]]), 0, completed_dates[[2]])
 # Insert NA for missing data points, this is necessary for the autocorrelation
 # Consider making this into an if statetment type thing that is only turned ON when "autocorrelation" == TRUE
 
