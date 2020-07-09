@@ -1,5 +1,5 @@
 #' Export/Plot Actogram
-#'
+#' @export
 #' @details Exports actogram plots for each column of a data.frame of tibble with a datetime object.
 #' @usage plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
