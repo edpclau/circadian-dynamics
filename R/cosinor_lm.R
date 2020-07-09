@@ -76,6 +76,7 @@ if (!is.null(df)) {
 }
 
 #4. Update the period so that it matches the sampling rate
+
 period <- as.numeric(duration(period, units = "hours"), str_remove(sampling_rate, "\\d."))
 
 ##### Format the data so we can run the cosinor ####
@@ -107,20 +108,27 @@ amplitude_se <- sqrt((sin_coeff^2*sin_se^2) + (cos_coeff^2 * cos_se^2))/ amplitu
 acrophase <- atan( sin_coeff / cos_coeff )
 acrophase_se <- ((cos_se^2 * sin_coeff^-2) + (cos_coeff^2 / sin_coeff^3 * sin_se^2)) / (1 + (cos_coeff/sin_coeff)^2)^2
 
+
 if (cos_coeff < 0 & sin_coeff >= 0) {
-  acrophase <-  pi + acrophase
+  acrophase <-   acrophase + pi
 }
-# if (cos_coeff < 0 & sin_coeff > 0) {
-#   acrophase <- - acrophase
-# }
 if (cos_coeff < 0 & sin_coeff < 0) {
-  acrophase <-  pi - acrophase
+  acrophase <- pi + acrophase
 }
 
+if (cos_coeff >= 0 & sin_coeff < 0) {
+  acrophase <- 2*pi + acrophase
+}
+
+# if (cos_coeff >= 0 & sin_coeff >= 0) {
+#   acrophase <- acrophase + pi
+# }
 
 time_offset <- acrophase * period / (2*pi) # We translate the phase into time units
+
 time_offset_se <- acrophase_se * period / (2*pi)
 phase_in_seconds <- as.numeric(duration(sampling_rate) * time_offset, "hours")
+
 phase_se_seconds <- as.numeric(duration(sampling_rate)  * time_offset_se, "hours")
 
 # Model fit variables
@@ -133,7 +141,9 @@ model_p.value <- glance(model)$p.value
 results <- tibble_row(MESOR, amplitude, amplitude_se, acrophase, acrophase_se, phase_in_seconds, phase_se_seconds,
                               adj_r_squared, cosinor_p_value = model_p.value,
                       wave_y = list(MESOR + (sin_coeff*sinw) + (cos_coeff * cosw)),
-                              wave_x = list(df$timeseries_datetime))
+                              wave_x = list(df$timeseries_datetime),
+                      cos_coeff = cos_coeff,
+                      sin_coeff = sin_coeff)
 
 return(results)
 }
