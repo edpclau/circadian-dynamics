@@ -95,6 +95,15 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
   #4. You can choose between period or frequency for "Type". Period is the default.
   type <- match.arg(type, choices = c("period", "frequency"))
 
+  #5. If there is 0 variance in the data, skip window.
+  good_windows <- purrr::map_dbl(unique(df$window),
+                                 .f = ~ ifelse(var(dplyr::pull(dplyr::filter(df, window == .), values), na.rm = TRUE) == 0,
+                                               NA,
+                                               .
+                                 )
+  )
+  good_windows <- na.omit(good_windows)
+
 #### Lomb Scargle periodogram by time windows #####
 
 # Convert from-to to seconds.
@@ -109,7 +118,7 @@ to  <- as.numeric(duration(to, units = "hours"), str_remove(sampling_rate, "\\d.
 # Calculate Lomb-scargle periodogram
 lomb_scargle <- {
 
-  map_if(unique(df$window),
+  map_if(good_windows,
               .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
               .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
                               from = from, to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
@@ -119,25 +128,25 @@ lomb_scargle <- {
 if ( !(is.null(from) & is.null(to)) ) {
 lomb_scargle_full <- {
 
-  map_if(unique(df$window),
+  map_if(good_windows,
          .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
          .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
                           ofac = ofac, type = type, plot = FALSE, alpha = alpha),
          .else = ~ NULL)
 }
-names(lomb_scargle_full) <- seq_along(1:length(lomb_scargle_full))
+names(lomb_scargle_full) <- good_windows
 lomb_scargle_full_no_null <- purrr::discard(lomb_scargle_full, is_empty)
 }
 
 # Remove the NULL windows
-names(lomb_scargle) <- seq_along(1:length(lomb_scargle))
+names(lomb_scargle) <- good_windows
 lomb_scargle_no_null <- purrr::discard(lomb_scargle, is_empty)
 
 
 
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
-results <- map_df(names(lomb_scargle_no_null),
-           .f = ~ tibble(window = as.numeric(.),
+results <- map_df(1:length(lomb_scargle_full_no_null),
+           .f = ~ tibble(window = good_windows[.],
                        period = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !is.na(lomb_scargle_no_null[[.]]$peak.at[1])) {
                          as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1], str_remove(sampling_rate, "\\d.")), "hours")
                          } else {
@@ -154,7 +163,9 @@ results <- map_df(names(lomb_scargle_no_null),
                        sig_level = lomb_scargle_no_null[[.]]$sig.level,
                        ofac = lomb_scargle_no_null[[.]]$ofac)
            )
-
+results <- dplyr::bind_rows(results,
+                            tibble::tibble(window = unique(df$window)[!(unique(df$window) %in% good_windows)]))
+results <- dplyr::arrange(results, window)
 
 return(results)
 }
