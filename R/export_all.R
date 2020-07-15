@@ -53,6 +53,9 @@ setwd(new_dir1)
 plot_actogram(raw_data, export = TRUE)
 }
 
+bind_processed(processed_data, TRUE)
+bind_analysis(rythm_analysis_data, TRUE)
+
 for (name in names(processed_data)) {
 
   new_dir2 <- paste0(new_dir1,"/",name)
