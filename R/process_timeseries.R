@@ -75,6 +75,15 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
 #    df_detrended <- tibble::tibble(datetime = df[[1]], detrended = pracma::detrend(df[[2]]))
 #
 # }
+
+#Filter out dates before the first midnight.
+if (lubridate::hour(min(df$datetime)) != 0) {
+
+  df <- dplyr::filter(df, datetime >= lubridate::ceiling_date(min(df$datetime), unit = "1 day"))
+}
+
+
+
 completed_dates <- dplyr::right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
 completed_dates[[2]] <- ifelse(is.na(completed_dates[[2]]), 0, completed_dates[[2]])
 # Insert NA for missing data points, this is necessary for the autocorrelation
