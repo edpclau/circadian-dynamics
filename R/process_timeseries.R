@@ -113,7 +113,7 @@ if (butterworth) {
                                     butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
                                   .id = "window"
   )
-  buttered <- dplyr::rename(buttered, butterworth = detrended)
+  buttered <- dplyr::rename(buttered, butterworth = dplyr::last_col())
 }
 # if (detrend_data) {
 #   windowed_data <- left_join(windowed_data, df_detrended, by = "datetime")

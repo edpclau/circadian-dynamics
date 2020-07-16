@@ -36,6 +36,10 @@
 multivariate_process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3,
                                 window_step_in_days = 1, detrend_data = TRUE,
                                 butterworth = FALSE, f_low = 1/4, f_high = 1/73, order = 2, smoothing_n = 4, plot = TRUE) {
+
+
+
+
 ###### Flow control parameters######
 #1. Must supply a data frame.
 if (is.null(df)) {
@@ -48,6 +52,9 @@ if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes',
 if (!lubridate::is.POSIXct(df[[1]])) {
   stop("The first column must be a datetime object.")
 }
+
+# Create a mean column for the data.
+df <- average_of_group(df)
 
 processed_df <- purrr::map(2:ncol(df),
            .f = ~ process_timeseries(df = df[,c(1,.)], sampling_rate = sampling_rate, window_size_in_days = window_size_in_days,

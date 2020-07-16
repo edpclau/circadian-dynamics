@@ -37,24 +37,34 @@ plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.p
     stop("Must provide a data.frame or tibble.")
   )
 
+# Make date start at midnight
+  if (lubridate::hour(min(df$datetime)) != 0) {
 
+    df <- dplyr::filter(df, datetime >= lubridate::ceiling_date(min(df$datetime), unit = "1 day"))
+  }
 
 #Wrangle Data
 
-data <- df %>% make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>% gather("ind", "value", -c(window,datetime)) %>%
-  group_by(ind, window) %>%
-  mutate(time = format(datetime, "%H:%M:%S") %>% strptime("%H:%M:%S"),
-         date = case_when(
+data <- df %>%
+  make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
+  tidyr::gather("ind", "value", -c(window,datetime)) %>%
+  dplyr::group_by(ind, window) %>%
+  dplyr::mutate(
+         time = format(datetime, "%H:%M:%S") %>%
+                strptime("%H:%M:%S"),
+         date = dplyr::case_when(
            format(min(datetime), "%d") == format(datetime, "%d") ~ 1,
            format(max(datetime) - lubridate::ddays(1), "%d") == format(datetime, "%d") ~ 2,
            TRUE ~ 3
          )
          )  %>%
-  ungroup() %>%
-  mutate(window = as.numeric(window)) %>%
-  arrange(ind, window, datetime)
+  dplyr::ungroup() %>%
+  dplyr::mutate(window = as.numeric(window)) %>%
+  dplyr::arrange(ind, window, datetime)
 
-
+data <- dplyr::group_by(data, ind) %>%
+  dplyr::mutate(value = scale(value, center = FALSE)) %>%
+  dplyr::ungroup()
 #### Parameters for how the plots will look on the page
 
 
@@ -64,12 +74,12 @@ pl <- map(.x = unique(data$ind),
     filter(date != 3, ind == .x) %>%
 
   ggplot(aes(x = time, y = value/2, height = value)) +
-  geom_tile(fill = "black") +
+  geom_tile(fill = "black", na.rm = TRUE) +
 
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
   geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
-  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y") +
+  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE) +
 
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
