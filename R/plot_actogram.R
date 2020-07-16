@@ -62,9 +62,9 @@ data <- df %>%
   dplyr::mutate(window = as.numeric(window)) %>%
   dplyr::arrange(ind, window, datetime)
 
-data <- dplyr::group_by(data, window, ind) %>%
-  dplyr::mutate(value = scale(value, center = FALSE)) %>%
-  dplyr::ungroup()
+#data <- dplyr::group_by(data, window, ind) %>%
+#  dplyr::mutate(value = scale(value, center = FALSE)) %>%
+#  dplyr::ungroup()
 #### Parameters for how the plots will look on the page
 
 
@@ -79,7 +79,7 @@ pl <- map(.x = unique(data$ind),
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
   geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
-  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE) +
+  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE, scales = "free_y") +
 
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
