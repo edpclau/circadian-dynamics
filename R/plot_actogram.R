@@ -62,7 +62,7 @@ data <- df %>%
   dplyr::mutate(window = as.numeric(window)) %>%
   dplyr::arrange(ind, window, datetime)
 
-data <- dplyr::group_by(data, ind) %>%
+data <- dplyr::group_by(data, window, ind) %>%
   dplyr::mutate(value = scale(value, center = FALSE)) %>%
   dplyr::ungroup()
 #### Parameters for how the plots will look on the page
