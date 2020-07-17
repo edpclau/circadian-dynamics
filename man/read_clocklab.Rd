@@ -27,5 +27,6 @@ Import data from Clocklab
 }
 \examples{
 df <- read_clocklab()
+df <- read_clocklab_folder()
 
 }
