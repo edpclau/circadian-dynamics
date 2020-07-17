@@ -5,6 +5,7 @@
 #' export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 #' @param df A data.frame or tibble which contains a datetime column and measurement values.
 #' @param datetime_column An integer which indicates the column that contains the datetime.
+#' @param ld_column An integer which indicates the column that contains the light/dark data. (defult = NULL)
 #' @param filename A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)
 #' @param export Logical. If FALSE (default), it will open a window with the plots. If TRUE, saves the plots on the current directory in pdf format.
 #' @param width a numeric indicating the width of the page of the pdf file. default = 12
@@ -26,8 +27,8 @@
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
-plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
-                          width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5) {
+plot_actogram <- function(df = NULL, datetime_column = 1, ld_column = NULL, filename = "actogram.pdf", export = FALSE,
+                          width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
 
   ##### Flow Control #####
   if (!is.null(df)) {
@@ -36,7 +37,11 @@ plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.p
   } else (
     stop("Must provide a data.frame or tibble.")
   )
-
+if (!is.null(ld_column)) {
+  df =  dplyr::rename(df, ld = dplyr::all_of(ld_column))
+} else {
+  df =  dplyr::mutate(df, ld = NA)
+  }
 # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 
@@ -47,7 +52,7 @@ plot_actogram <- function(df = NULL, datetime_column = 1, filename = "actogram.p
 
 data <- df %>%
   make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
-  tidyr::gather("ind", "value", -c(window,datetime)) %>%
+  tidyr::gather("ind", "value", -c(window,datetime, ld)) %>%
   dplyr::group_by(ind, window) %>%
   dplyr::mutate(
          time = format(datetime, "%H:%M:%S") %>%
@@ -64,6 +69,15 @@ data <- df %>%
 
 data <- dplyr::group_by(data, window, ind) %>%
   dplyr::mutate(value = scale(value, center = FALSE)) %>%
+  dplyr::mutate(
+                ld = case_when(
+                  ld <= 0 | is.na(ld)  ~ (max(value, na.rm = TRUE) + 1),
+                  ld > 0 ~ 0
+
+                ),
+
+                 ld_y = max(value/2) + .5
+                ) %>%
   dplyr::ungroup()
 #### Parameters for how the plots will look on the page
 
@@ -74,13 +88,19 @@ pl <- map(.x = unique(data$ind),
     filter(date != 3, ind == .x) %>%
 
   ggplot(aes(x = time, y = value/2, height = value)) +
+  #LD bars
+  geom_tile(aes(x = time, y = ld_y, height = ld), fill = "grey") +
+
+  #Data
   geom_tile(fill = "black", na.rm = TRUE) +
+
+
+
 
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
   geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
-  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE) +
-
+  facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE, scales = "free_y") +
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
   scale_y_discrete(breaks = c(0), labels = c(0)) +
@@ -102,6 +122,10 @@ pl <- map(.x = unique(data$ind),
         plot.title = element_text(hjust = 0.5, vjust =  - 0.5),
         )
 )
+if (autosize) {
+  ncol = ceiling(25/max(data$window, na.rm = TRUE))
+  nrow = ceiling(25/max(data$window, na.rm = TRUE))
+}
 
 ml <- marrangeGrob(pl,  ncol = ncol, nrow = nrow)
 
