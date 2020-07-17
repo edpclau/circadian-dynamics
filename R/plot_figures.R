@@ -179,6 +179,10 @@ if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>%
 if (lomb_scargle == TRUE) {
   x = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(scanned) %>% unlist()
   y = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(normalized_power) %>% unlist()
+  y_max = max(y, na.rm = TRUE)
+  y_min = min(y, na.rm = TRUE)
+  sig_level = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level)
+
 plot(
   x = x,
   y = y,
@@ -186,7 +190,12 @@ plot(
   type = "l",
   xlab = "Period",
   ylab = "Power (lomb)",
-  xaxt = "n")
+  xaxt = "n",
+  ylim = if (sig_level > y_max) {
+    c(y_min,sig_level)
+  } else if (sig_level < y_min) {
+    c(sig_level, y_max)
+  } else { c(y_min, y_max)})
   minor_ticks <- seq(0, round(max(x)), by = 4)
   major_ticks <- seq(0, round(max(x)), by = 12)
   axis(1, at = minor_ticks, labels = FALSE)
@@ -197,7 +206,7 @@ abline(v = (rythm_analysis_data %>% pull(to) %>% unique()))
 
 if (filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level) <= max(y)) {
 abline(
-  h = filter(rythm_analysis_data, window == windows, method == "lomb_scargle") %>% pull(sig_level),
+  h = sig_level,
   lty = "dashed",
   col = "red")
 } else {
