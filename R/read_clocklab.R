@@ -15,10 +15,12 @@
 #' datatetime of the experiment
 #' ld : light switch status
 #' IND Name: measurement values
-#' @export
+#' @export read_clocklab
+#' @export read_clocklab_folder
 #'
 #' @examples
 #' df <- read_clocklab()
+#' df <- read_clocklab_folder()
 #'
 read_clocklab <- function(file = NULL) {
 
