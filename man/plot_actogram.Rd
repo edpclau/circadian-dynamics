@@ -12,6 +12,8 @@ export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 
 \item{datetime_column}{An integer which indicates the column that contains the datetime.}
 
+\item{ld_column}{An integer which indicates the column that contains the light/dark data. (defult = NULL)}
+
 \item{filename}{A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)}
 
 \item{export}{Logical. If FALSE (default), it will open a window with the plots. If TRUE, saves the plots on the current directory in pdf format.}

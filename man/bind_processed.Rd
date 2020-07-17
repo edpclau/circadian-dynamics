@@ -21,4 +21,5 @@ Allows for easy export and binding of rows from the outputs of process_data and 
 \examples{
 bind_processed(df = monitor_processed)
 bind_analysis(df = monitor_analysis)
+
 }

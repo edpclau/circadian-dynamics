@@ -14,6 +14,8 @@ cosinor_fit = c("lomb_scargle", "autocorrelation"), dir_choose_gui = TRUE, new_d
 
 \item{rythm_analysis_data}{data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.}
 
+\item{ld_column}{An integer which indicates the column of the raw_data which contains the light/dark data. (defult = NULL)}
+
 \item{autocorrelation}{If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.}
 
 \item{lomb_scargle}{If TRUE (default) plots lomb scargle periodogram. FALSE does not plot periodogram.}
