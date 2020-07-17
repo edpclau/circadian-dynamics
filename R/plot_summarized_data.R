@@ -86,7 +86,7 @@ plot(to_plot,type="s", main ="Percent Rythm", ylab = " Cosinor Adj. R-squared", 
      ylim = c(0,1))
 points(to_plot)
 axis(1, at = to_plot$window)
-abline(h = 0.6, col = "red", lty = 2)
+abline(h = 0.5, col = "red", lty = 2)
 
 
 
@@ -118,33 +118,37 @@ axis(1, at = to_plot$window)
 
 } else {
   plot.new()
-  title("Autocorrelation Perios = NA")
+  title("Autocorrelation Periods = NA")
 }
 
 # plot lomb_scargle p.value
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(window,lsp_p_value) %>%
-  dplyr::mutate(lsp_p_value = log(lsp_p_value))
+  dplyr::mutate(lsp_p_value = log(lsp_p_value/unique(df2[[1]]$alpha)))
 
 if ( !all(is.na(to_plot[[2]]))) {
 
-plot(to_plot, type="s", main ="Lomb-Scargle P-value", ylab = "Log P.value", xlab = "Window", xaxt = "n",
-     ylim = if (log(unique(df2[[.]]$alpha)) > max(to_plot$lsp_p_value, na.rm = TRUE)){
-       c(min(to_plot$lsp_p_value, na.rm = TRUE), log(unique(df2[[.]]$alpha)))
-     } else if (log(unique(df2[[.]]$alpha)) < min(to_plot$lsp_p_value, na.rm = TRUE)){
-       c(log(unique(df2[[.]]$alpha)), max(to_plot$lsp_p_value, na.rm = TRUE))
-     } else {
-       c(min(to_plot$lsp_p_value, na.rm = TRUE), max(to_plot$lsp_p_value, na.rm = TRUE))
+#max y value:
+  max_value = max(to_plot$lsp_p_value, na.rm = TRUE)
+  min_value = min(to_plot$lsp_p_value, na.rm = TRUE)
+
+plot(to_plot, type="s", main ="Lomb-Scargle Rythm Strength", ylab = "Log (P.value / Alpha)", xlab = "Window", xaxt = "n",
+     ylim = if (min_value < 1 & 1 < max_value) {
+       c(min_value, max_value)
+     } else if (1 > max_value) {
+       c(min_value, 1)
+     } else if (1 < min_value) {
+       c(1, max_value)
      })
 points(to_plot)
 axis(1, at = to_plot$window)
-abline(h = log(unique(df2[[.]]$alpha)), lty = 2, col = "red")
+abline(h = 1, lty = 2, col = "red")
 
 
 } else {
   plot.new()
-  title("Lomb-Scargle P-value = NA")
+  title("Lomb-Scarg. Rythm Strength = NA")
 }
 
 # plot Rythm Strength
@@ -153,14 +157,26 @@ to_plot = df2[[.]] %>%
   dplyr::select(window,rythm_strength)
 
 if ( !all(is.na(to_plot[[2]]))) {
-plot(to_plot,type="s", main ="Rythm Strength" , ylab = "C.C. / 95% C.I.",
-     xlab = "Window", xaxt = "n")
+  #max min y value:
+  max_value = max(to_plot$rythm_strength, na.rm = TRUE)
+  min_value = min(to_plot$rythm_strength, na.rm = TRUE)
+
+plot(to_plot,type="s", main ="Autocor Rythm Strength" , ylab = "C.C. / 95% C.I.",
+     xlab = "Window", xaxt = "n",
+     ylim = if (min_value < 1 & 1 < max_value) {
+       c(min_value, max_value)
+     } else if (1 < min_value) {
+       c(1, max_value)
+     } else if (1 > max_value) {
+       c(min_value, 1)
+     })
 points(to_plot)
 axis(1, at = to_plot$window)
+abline(h = 1, lty = 2, col = "red")
 
 } else {
   plot.new()
-  title("Rythm Strength = NA")
+  title("Autocorrelation Rythm Strength = NA")
 }
 
  dev.off()
