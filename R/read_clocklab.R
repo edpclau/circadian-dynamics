@@ -66,7 +66,10 @@ if (is.null(directory)) {
 
 files <- list.files(directory)
 paths <- paste0(directory, "/", files)
-df <- purrr::map_df(paths, read_clocklab)
+df <- purrr::map(paths, read_clocklab)
+df <- purrr::map_df(df, ~ tidyr::pivot_longer(., -c(1,2)))
+df <- tidyr::pivot_wider(df, c(datetime,ld))
+
 message("Make sure the experiments were run on the same dates")
 return(df)
 }
