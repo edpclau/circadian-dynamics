@@ -27,7 +27,7 @@
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
-plot_actogram <- function(df = NULL, datetime_column = 1, ld_column = NULL, filename = "actogram.pdf", export = FALSE,
+plot_actogram <- function(df = NULL, datetime_column = 1, ld_data = NULL, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
 
   ##### Flow Control #####
@@ -37,48 +37,57 @@ plot_actogram <- function(df = NULL, datetime_column = 1, ld_column = NULL, file
   } else (
     stop("Must provide a data.frame or tibble.")
   )
-if (!is.null(ld_column)) {
-  df =  dplyr::rename(df, ld = dplyr::all_of(ld_column))
-} else {
-  df =  dplyr::mutate(df, ld = NA)
-  }
+if (!is.null(ld_data)) {
+ ld_data <-  dplyr::rename(ld_data, ld = 2)
+ ld_data <- dplyr::filter(ld_data, ld_data$datetime >= lubridate::ceiling_date(min(ld_data$datetime), unit = "1 day"))
+}
 # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 
     df <- dplyr::filter(df, datetime >= lubridate::ceiling_date(min(df$datetime), unit = "1 day"))
+
   }
 
 #Wrangle Data
 
 data <- df %>%
   make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
-  tidyr::gather("ind", "value", -c(window,datetime, ld)) %>%
+  tidyr::gather("ind", "value", -c(window,datetime)) %>%
   dplyr::group_by(ind, window) %>%
   dplyr::mutate(
-         time = format(datetime, "%H:%M:%S") %>%
-                strptime("%H:%M:%S"),
          date = dplyr::case_when(
            format(min(datetime), "%d") == format(datetime, "%d") ~ 1,
            format(max(datetime) - lubridate::ddays(1), "%d") == format(datetime, "%d") ~ 2,
            TRUE ~ 3
-         )
+         ),
+         time = format(datetime, "%H:%M:%S") %>% strptime("%H:%M:%S")
          )  %>%
   dplyr::ungroup() %>%
   dplyr::mutate(window = as.numeric(window)) %>%
-  dplyr::arrange(ind, window, datetime)
-
-data <- dplyr::group_by(data, window, ind) %>%
-  dplyr::mutate(value = scale(value, center = FALSE)) %>%
-  dplyr::mutate(
-                ld = case_when(
-                  ld <= 0 | is.na(ld)  ~ (max(value, na.rm = TRUE) + 1),
-                  ld > 0 ~ 0
-
-                ),
-
-                 ld_y = max(value/2) + .5
-                ) %>%
+  dplyr::arrange(ind, window, datetime) %>%
+  dplyr::group_by( window, ind) %>%
+  dplyr::mutate(value = ((value - min(value, na.rm = TRUE)) / (max(value, na.rm = TRUE) - min(value, na.rm = TRUE)))
+  ) %>%
+  dplyr::mutate(value = ifelse(is.na(value), 0, value)) %>%
   dplyr::ungroup()
+
+if (!is.null(ld_data)) {
+data <- dplyr::left_join(data, ld_data, by = "datetime") %>%
+  dplyr::group_by(date) %>%
+    dplyr::mutate(
+    ld = case_when(
+      ld == 0 | is.na(ld)   ~ 1,
+      ld >= 1 ~ 0
+
+    ),
+
+    ld_y = 0.5
+  )
+}
+
+
+
+
 #### Parameters for how the plots will look on the page
 
 
@@ -86,13 +95,15 @@ data <- dplyr::group_by(data, window, ind) %>%
 pl <- map(.x = unique(data$ind),
            .f = ~ data %>%
     filter(date != 3, ind == .x) %>%
+    ggplot( aes(x = time, y = value/2, height = value)) +
+          #LD bars
+          {if (!is.null(ld_data)) geom_tile(aes(x = time, y = ld_y, height = ld), fill = "grey")} +
 
-  ggplot(aes(x = time, y = value/2, height = value)) +
-  #LD bars
-  geom_tile(aes(x = time, y = ld_y, height = ld), fill = "grey") +
 
-  #Data
-  geom_tile(fill = "black", na.rm = TRUE) +
+          #Data
+          geom_tile(fill = "black", na.rm = FALSE) +
+
+
 
 
 
@@ -119,9 +130,11 @@ pl <- map(.x = unique(data$ind),
         plot.margin = unit(c(0,0.5,0,0), "cm"),
         panel.border= element_blank(),
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5, vjust =  - 0.5),
+        plot.title = element_text(hjust = 0.5, vjust =  - 0.5)
         )
 )
+
+
 if (autosize) {
   ncol = ceiling(25/max(data$window, na.rm = TRUE))
   nrow = ceiling(25/max(data$window, na.rm = TRUE))
