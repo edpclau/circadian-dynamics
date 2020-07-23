@@ -8,8 +8,7 @@
 #' @param raw_data data.frame or tibble containing the raw data.
 #' @param processed_data data.frame returned from the process_timeseries or multivariate_process_timeseries functions.
 #' @param rythm_analysis_data data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.
-#'@param ld_column An integer which indicates the column of the raw_data which contains the light/dark data. (defult = NULL)
-#' @param autocorrelation If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.
+#' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)#' @param autocorrelation If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.
 #' @param lomb_scargle If TRUE (default) plots lomb scargle periodogram. FALSE does not plot periodogram.
 #' @param cosinor_fit Method to fit the COSINOR to the data. Either "lomb_scargle" (default) or "autocorrelation".
 #' @param dir_choose_gui If TRUE (default) a GUI will help select the folder in which to save the data and plots. If FALSE,
@@ -24,7 +23,7 @@
 #' export_all(processed_data = processed_data, rythm_analysis_data = analysis_data, new_dir_name = "test")
 #'
 #' @importFrom rstudioapi selectDirectory
-export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL, ld_column = NULL,
+export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL, ld_data = NULL,
                        autocorrelation = TRUE, lomb_scargle = TRUE,
                        cosinor_fit = c("lomb_scargle", "autocorrelation"),
                        dir_choose_gui = TRUE, new_dir_name = "analysis") {
@@ -53,11 +52,11 @@ if (dir_choose_gui) {
 
 #Create a 'raw data'column for the mean
 raw_data <- dplyr::left_join(raw_data, dplyr::distinct(processed_data$mean[2:3]), by = "datetime")
-raw_data <- dplyr::select(raw_data,1, ld_column, mean, dplyr::everything())
+raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 if (!is.null(raw_data)) {
 setwd(new_dir1)
 
-plot_actogram(raw_data, ld_column = ld_column, export = TRUE, autosize = TRUE)
+plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
 raw_data <- dplyr::select(raw_data, -ld_column)
 }
 

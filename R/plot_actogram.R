@@ -1,17 +1,20 @@
 #' Export/Plot Actogram
 #' @export
 #' @details Exports actogram plots for each column of a data.frame of tibble with a datetime object.
-#' @usage plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf",
+#' @usage plot_actogram(df = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
+#'
 #' @param df A data.frame or tibble which contains a datetime column and measurement values.
-#' @param datetime_column An integer which indicates the column that contains the datetime.
-#' @param ld_column An integer which indicates the column that contains the light/dark data. (defult = NULL)
+#' @param datetime_column An integer which indicates the column that contains the datetime. Default = 1.
+#' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)
 #' @param filename A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)
 #' @param export Logical. If FALSE (default), it will open a window with the plots. If TRUE, saves the plots on the current directory in pdf format.
 #' @param width a numeric indicating the width of the page of the pdf file. default = 12
 #' @param height a numeric indicating height of the page of the pdf file. default = 12
 #' @param nrow a numeric indicating how many rows of plots to put in a page. default = 5
 #' @param ncol a numeric indicating how many columns of plots to put in a page. default = 5
+#' @param autosize Logical. If TRUE, will make the figures bigger as the number of days increase. If FALSE
+#' (default) will plot 25 figures per page.
 #'
 #' @examples
 #' plot_actogram(df = monitor,
@@ -27,7 +30,7 @@
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
-plot_actogram <- function(df = NULL, datetime_column = 1, ld_data = NULL, filename = "actogram.pdf", export = FALSE,
+plot_actogram <- function(df = NULL,  ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
 
   ##### Flow Control #####

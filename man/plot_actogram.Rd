@@ -4,15 +4,15 @@
 \alias{plot_actogram}
 \title{Export/Plot Actogram}
 \usage{
-plot_actogram(df = NULL, datetime_column = 1, filename = "actogram.pdf",
+plot_actogram(df = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
 export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 }
 \arguments{
 \item{df}{A data.frame or tibble which contains a datetime column and measurement values.}
 
-\item{datetime_column}{An integer which indicates the column that contains the datetime.}
+\item{ld_data}{A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)}
 
-\item{ld_column}{An integer which indicates the column that contains the light/dark data. (defult = NULL)}
+\item{datetime_column}{An integer which indicates the column that contains the datetime. Default = 1.}
 
 \item{filename}{A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)}
 
@@ -25,6 +25,9 @@ export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 \item{nrow}{a numeric indicating how many rows of plots to put in a page. default = 5}
 
 \item{ncol}{a numeric indicating how many columns of plots to put in a page. default = 5}
+
+\item{autosize}{Logical. If TRUE, will make the figures bigger as the number of days increase. If FALSE
+(default) will plot 25 figures per page.}
 }
 \description{
 Export/Plot Actogram
