@@ -46,7 +46,7 @@ start_date <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 2
 
 # Extract datetime
 df <- suppressMessages(readr::read_csv(file, skip = 3))
-df <- df %>% dplyr::mutate(datetime = start_date + (lubridate::days(df$Day) - lubridate::days(df$Day)[1]) + lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
+df <- df %>% dplyr::mutate(datetime = start_date + suppressMessages(lubridate::days(df$Day) - lubridate::days(df$Day)[1]) + lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
   dplyr::select(datetime, ld = Lights, `Cnts/min`)
 names(df)[3] <- ind_label
 

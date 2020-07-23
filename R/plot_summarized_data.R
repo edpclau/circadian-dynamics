@@ -47,9 +47,28 @@ lay <- layout(rbind(c(1,1,1,1,1,1,1,1,1,1,1,1),
 
 
 
-# plot raw data
-plot(dplyr::pull(df1,datetime), dplyr::pull(df1,.), type="l",
-     ylab = "", xlab = "", main = paste(., "Summary", sep = " "))
+###### plot raw data #####
+
+#axis
+raw_x = dplyr::pull(df1,datetime)
+raw_x_min = lubridate::floor_date(min(raw_x, na.rm = TRUE), unit = "day")
+raw_x_max = lubridate::floor_date(max(raw_x, na.rm = TRUE), unit = "day")
+raw_y = dplyr::pull(df1,.)
+
+# plot
+plot(raw_x, raw_y, type="l",
+     ylab = "", xlab = "", main = paste(., "Summary", sep = " "), xaxt = "n")
+
+# axis breaks and labels
+axis(1, at = seq(raw_x_min, raw_x_max, by = lubridate::ddays(1)), labels = NA)
+axis(1, at = lubridate::round_date(seq(raw_x_min, raw_x_max,
+                 by = lubridate::ddays(lubridate::as.interval(raw_x_min, raw_x_max) / lubridate::ddays(15))),
+                 unit = "day"),
+     labels = format(
+       lubridate::round_date(seq(raw_x_min, raw_x_max,
+                                 by = lubridate::ddays(lubridate::as.interval(raw_x_min, raw_x_max) / lubridate::ddays(15))),
+                             unit = "day"),
+               "%b %d"))
 
 
 
@@ -69,12 +88,15 @@ to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(window,phase_in_seconds)
 
-
+if ( !all(is.na(to_plot[[2]]))) {
 plot(to_plot,type="s", main ="Cosinor Phases", ylab = "Phase in hours", xlab = "Window", xaxt = "n")
 points(to_plot)
 axis(1, at = to_plot$window)
 
-
+} else {
+  plot.new()
+  title("Cosinor Phases = NA")
+}
 
 
 # plot Cosinor Percent Rythm
@@ -127,7 +149,7 @@ to_plot = df2[[.]] %>%
   dplyr::select(window,lsp_p_value) %>%
   dplyr::mutate(lsp_p_value = log(lsp_p_value/unique(df2[[1]]$alpha)))
 
-if ( !all(is.na(to_plot[[2]]))) {
+if ( !all(is.na(to_plot[[2]])) ) {
 
 #max y value:
   max_value = max(to_plot$lsp_p_value, na.rm = TRUE)
@@ -140,7 +162,7 @@ plot(to_plot, type="s", main ="Lomb-Scargle Rythm Strength", ylab = "Log (P.valu
        c(min_value, 1)
      } else if (1 < min_value) {
        c(1, max_value)
-     })
+     } )
 points(to_plot)
 axis(1, at = to_plot$window)
 abline(h = 1, lty = 2, col = "red")

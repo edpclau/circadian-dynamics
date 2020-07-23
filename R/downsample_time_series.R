@@ -40,8 +40,8 @@
 #'
 downsample_time_series <- function(data = NULL,
                                  datetime_column = "datetime",
-                                 amount = 30,
-                                 units = c("minute", "hour", "day", "week"),
+                                 amount = 1,
+                                 units = "hour",
                                  method = c("mean", "sum", "median"))
 {
 
@@ -53,7 +53,7 @@ datetime_column <- sym(datetime_column)
 
 
   #choose a time point to roll back the time by a certain amount
-units <- match.arg(units, choices = c("minute", "hour", "day", "week"))
+units <- stringr::str_remove(units, "\\d")
 
   #handle the anonymous function naming
 method <- match.arg(method, choices = c("mean", "sum", "median"))

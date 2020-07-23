@@ -75,9 +75,13 @@ if (!is.null(df)) {
   names(df) <- c("timeseries_datetime", "values")
 }
 
+#$. Sampling Rate
+  sampling_bin_size = as.numeric(stringr::str_extract(sampling_rate, "\\d*"))
+  sampling_rate = stringr::str_remove(sampling_rate, "\\d* *")
+
 #4. Update the period so that it matches the sampling rate
 
-period <- as.numeric(duration(period, units = "hours"), str_remove(sampling_rate, "\\d."))
+period <- as.numeric(duration(period, units = "hours"), sampling_rate) / sampling_bin_size
 
 ##### Format the data so we can run the cosinor ####
 # Insert a sample number for every timepoint
@@ -127,9 +131,9 @@ if (cos_coeff >= 0 & sin_coeff < 0) {
 time_offset <- acrophase * period / (2*pi) # We translate the phase into time units
 
 time_offset_se <- acrophase_se * period / (2*pi)
-phase_in_seconds <- as.numeric(duration(sampling_rate) * time_offset, "hours")
+phase_in_seconds <- as.numeric(duration(paste(sampling_bin_size, sampling_rate, sep = " ")) * time_offset, "hours")
 
-phase_se_seconds <- as.numeric(duration(sampling_rate)  * time_offset_se, "hours")
+phase_se_seconds <- as.numeric(duration(paste(sampling_bin_size, sampling_rate, sep = " "))  * time_offset_se, "hours")
 
 # Model fit variables
 # R-squared, how well the model matches the data

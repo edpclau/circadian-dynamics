@@ -59,12 +59,14 @@ acf_window <- function(df = NULL,  from = 18, to = 30,
   if (is.null(sampling_rate)){
     stop("must provide a sampling_rate")
   } else {
-    sampling_rate = str_remove(sampling_rate, "\\d.")
+
+    sampling_bin_size = as.numeric(stringr::str_extract(sampling_rate, "\\d*"))
+    sampling_rate = stringr::str_remove(sampling_rate, "\\d* *")
   }
 
   #3. the period must be calculated from the data on the second day.
-  from = from*2
-  to = to*2
+  from <- from*2
+  to <- to*2
 
   #4. If there is 0 variance in the data, skip window.
  good_windows <- purrr::map_dbl(unique(df$window_vector),
@@ -73,7 +75,27 @@ acf_window <- function(df = NULL,  from = 18, to = 30,
                     .
                     )
       )
+
+
+ #5. If no window has more than 0 variance, return empty:
+
+if ( all(is.na(good_windows)) ) {
+ results <- tibble::tibble(window = unique(df$window_vector),
+                           period = NA,
+                           period_hours = NA,
+                           autocorrelation_power = NA,
+                           peak_lags = NA,
+                           peaks = NA,
+                           rythm_strength = NA
+ )
+ results <- dplyr::arrange(results, window)
+
+ return(results)
+
+}
+
  good_windows <- na.omit(good_windows)
+
 ########## Autocorrelation for a moving window of values ########
 
 # Get the autocorrelation values
@@ -91,18 +113,18 @@ autocor_lags_lengths <- map(c(1:length(autocorrelations)),
 autocor_iterator <- 1:length(autocorrelations)
 # Case when we are interested in looking at a specific range of lags/periods.
 if (!is.null(to) &  !is.null(from) ) {
-
+start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
+end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
 
 autocorrelations <- purrr::map(autocor_iterator,
-~ autocorrelations[[.]][(as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1):(as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)]
-)
+~ autocorrelations[[.]][seq(start, end)])
 } else if (!is.null(to) & is.null(from)) {
  autocorrelations <- purrr::map(autocor_iterator,
-~ autocorrelations[[.]][1:(as.numeric(lubridate::duration(to, "hours"), sampling_rate + 1))]
+~ autocorrelations[[.]][1:round(as.numeric(lubridate::duration(to, "hours"), sampling_rate + 1)/sampling_bin_size)]
 )
 } else if (is.null(to) & !is.null(from)) {
 autocorrelations <-  purrr::map(autocor_iterator,
- ~  autocorrelations[[.]][(as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1):length(autocorrelations[[.]])]
+ ~  autocorrelations[[.]][round((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size):length(autocorrelations[[.]])]
   )
   }
 
@@ -139,23 +161,23 @@ lags <- purrr::map(autocor_iterator, # Iterate over the windows
                                to = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) - 1,
                                by = 1))
 } else if (!is.null(to) &  !is.null(from) ) {
+  start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
+  end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
+
   lags <- purrr::map(autocor_iterator,
-                     .f =  ~ seq(from = as.numeric(lubridate::duration(from, "hours"), sampling_rate),
-                                 to = as.numeric(lubridate::duration(to, "hours"), sampling_rate),
-                                 by = 1)
+                     .f =  ~ seq(start, end)
                      )
 
 } else if (!is.null(to) & is.null(from)) {
+  start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
+  end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
+
   lags <- purrr::map(autocor_iterator,
-                     .f =  ~ seq(from = 0,
-                                 to = as.numeric(lubridate::duration(to, "hours"), sampling_rate),
-                                 by = 1))
+                     .f =  ~ seq(start, end))
 
 } else if (is.null(to) & !is.null(from)) {
   lags <- purrr::map(good_windows,
-                     .f =  ~ seq(from = as.numeric(lubridate::duration(from, "hours"), sampling_rate) - 1,
-                                 to = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) - 1,
-                                 by = 1))
+                     .f =  ~ seq(start, end))
 }
 
 peak_index <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,2])
@@ -197,7 +219,7 @@ period <- purrr::map_if(usable_windows,
 period_hours <- map_if(1:length(period),
                     .p = ~ !is.na(period[[.]]), # If the period is NA, don't turn it into hours
                     .else =  ~ NA,
-                    .f = ~ lubridate::duration(period[[.]], sampling_rate) %>% as.numeric("hours") %>% paste("hours")
+                    .f = ~ lubridate::duration(period[[.]] * sampling_bin_size, sampling_rate) %>% as.numeric("hours") %>% paste("hours")
     )
 
 

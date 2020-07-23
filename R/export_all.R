@@ -8,7 +8,8 @@
 #' @param raw_data data.frame or tibble containing the raw data.
 #' @param processed_data data.frame returned from the process_timeseries or multivariate_process_timeseries functions.
 #' @param rythm_analysis_data data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.
-#' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)#' @param autocorrelation If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.
+#' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)
+#' @param autocorrelation If TRUE (default) plots autocorrelation. FALSE does not plot autocorrelation.
 #' @param lomb_scargle If TRUE (default) plots lomb scargle periodogram. FALSE does not plot periodogram.
 #' @param cosinor_fit Method to fit the COSINOR to the data. Either "lomb_scargle" (default) or "autocorrelation".
 #' @param dir_choose_gui If TRUE (default) a GUI will help select the folder in which to save the data and plots. If FALSE,
@@ -57,7 +58,6 @@ if (!is.null(raw_data)) {
 setwd(new_dir1)
 
 plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
-raw_data <- dplyr::select(raw_data, -ld_column)
 }
 
 bind_processed(processed_data, TRUE)

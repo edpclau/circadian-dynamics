@@ -18,7 +18,7 @@
 find_gaps <- function(times = NULL, sampling_rate = NULL) {
 
   completed_dates <- tibble::tibble(datetime = times) %>%
-    tidyr::complete(datetime = seq(min(datetime),max(datetime), by = sampling_rate))
+    tidyr::complete(datetime = seq(min(datetime),max(datetime), by = lubridate::as.duration(sampling_rate)))
 
   return(completed_dates)
 }

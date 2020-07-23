@@ -102,17 +102,37 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
                                                .
                                  )
   )
+
+  #6. If all windows have 0 variance, return NA.
+  if ( all(is.na(good_windows)) ) {
+    results <- tibble(window = unique(df$window),
+                                    period = NA ,
+                                    power = NA,
+                                    lsp_p_value = NA,
+                                    normalized_power = NA,
+                                    sig_level = NA,
+                                    ofac = NA)
+
+    results <- dplyr::arrange(results, window)
+
+    return(results)
+
+  }
   good_windows <- na.omit(good_windows)
+
+ #7. Sampling_rate
+  sampling_bin_size = as.numeric(stringr::str_extract(sampling_rate, "\\d*"))
+  sampling_rate = stringr::str_remove(sampling_rate, "\\d* *")
 
 #### Lomb Scargle periodogram by time windows #####
 
 # Convert from-to to seconds.
 if (!is.null(from)) {
-from <- as.numeric(duration(from, units = "hours"), str_remove(sampling_rate, "\\d."))
+from <- as.numeric(duration(from, units = "hours"), sampling_rate)/ sampling_bin_size
 }
 
 if (!is.null(to)) {
-to  <- as.numeric(duration(to, units = "hours"), str_remove(sampling_rate, "\\d."))
+to  <- as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_size
 }
 
 # Calculate Lomb-scargle periodogram
@@ -121,7 +141,7 @@ lomb_scargle <- {
   map_if(good_windows,
               .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
               .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
-                              from = from, to = to, ofac = ofac, type = type, alpha = alpha, plot = plot),
+                             from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = plot),
               .else = ~ NULL)
 }
 
@@ -147,18 +167,10 @@ lomb_scargle_no_null <- purrr::discard(lomb_scargle, is_empty)
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
 results <- map_df(1:length(lomb_scargle_full_no_null),
            .f = ~ tibble(window = good_windows[.],
-                       period = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !is.na(lomb_scargle_no_null[[.]]$peak.at[1])) {
-                         as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1], str_remove(sampling_rate, "\\d.")), "hours")
-                         } else {
-                         lomb_scargle_no_null[[.]]$peak.at[1]
-                         } ,
+                       period = as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
                        power = lomb_scargle_no_null[[.]]$peak,
                        lsp_p_value = lomb_scargle_no_null[[.]]$p.value,
-                       scanned = if ((is.POSIXct(df$times) | is.POSIXct(times)) & !any(is.na(lomb_scargle_full_no_null[[.]]$scanned))) {
-                         list(as.numeric(duration(lomb_scargle_full_no_null[[.]]$scanned, str_remove(sampling_rate, "\\d.")), "hours"))
-                       } else {
-                         list(lomb_scargle_full_no_null[[.]]$scanned)
-                       },
+                       scanned = list(as.numeric(duration(lomb_scargle_full_no_null[[.]]$scanned * sampling_bin_size, sampling_rate), "hours")),
                        normalized_power = list(lomb_scargle_full_no_null[[.]]$power),
                        sig_level = lomb_scargle_no_null[[.]]$sig.level,
                        ofac = lomb_scargle_no_null[[.]]$ofac)
