@@ -41,13 +41,12 @@ ind_label <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 1,
 
 #Extract Date
 start_date <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 2, n_max = 1)) %>%
-  tidyr::unite("start_date", c(1,2), sep = " ") %>%
   dplyr::pull(1) %>%
-  lubridate::dmy_hms()
+  lubridate::dmy()
 
 # Extract datetime
-df <- suppressMessages(readr::read_csv(file, skip = 3)) %>%
-  dplyr::mutate(datetime = start_date + lubridate::days(Day) + lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
+df <- suppressMessages(readr::read_csv(file, skip = 3))
+df <- df %>% dplyr::mutate(datetime = start_date + (lubridate::days(df$Day) - lubridate::days(df$Day)[1]) + lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
   dplyr::select(datetime, ld = Lights, `Cnts/min`)
 names(df)[3] <- ind_label
 
