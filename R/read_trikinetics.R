@@ -1,7 +1,6 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
-#' @export read_trikinetics
-#' @export read_trikinetics_folder
+#' @export
 #'
 #' @examples
 #' trikinetics_data <- read_trikinetics()
@@ -26,7 +25,11 @@ read_trikinetics <- function(file = NULL){
   return(df)
 }
 
-read_tikinetics_folder <- function(directory = NULL) {
+
+
+
+
+read_trikinetics_folder <- function(directory = NULL) {
 
 message("Make sure, all monitors were run on the same dates with the same LD/DD settings.")
 
