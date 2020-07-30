@@ -52,8 +52,11 @@ if (dir_choose_gui) {
 }
 
 #Create a 'raw data'column for the mean
+if (!rlang::is_empty(processed_data$mean) ) {
 raw_data <- dplyr::left_join(raw_data, dplyr::distinct(processed_data$mean[2:3]), by = "datetime")
 raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
+}
+
 if (!is.null(raw_data)) {
 setwd(new_dir1)
 
