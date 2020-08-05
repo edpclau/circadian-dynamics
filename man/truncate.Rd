@@ -9,6 +9,8 @@ truncate(df = NULL, from = NULL, to = NULL)
 \arguments{
 \item{df}{a data.frame/tibble with a column named datetime which is also a datetime object.}
 
+\item{from}{,}
+
 \item{to}{a string which indicates a date in the ISO 8601 format.}
 }
 \value{
