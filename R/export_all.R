@@ -33,6 +33,10 @@ export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_da
 if (is.null(processed_data)) { stop("Must provide the output from 'multivariate_process_timeseries'.")}
 if (is.null(rythm_analysis_data)) { stop("Must provide the output from 'multivariate_rythm_analysis'.")}
 if (is.null(raw_data)) { stop("Must provide the raw data.")}
+if (length(processed_data) == 1 & is.null(names(processed_data))) {
+  names(processed_data) <- names(processed_data[[1]])[3]
+  names(rythm_analysis_data) <- names(processed_data[[1]])[3]
+}
 
 
 
