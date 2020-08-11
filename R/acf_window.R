@@ -100,7 +100,7 @@ if ( all(is.na(good_windows)) ) {
 
 # Get the autocorrelation values
 autocorrelations <- purrr::map(good_windows, # Iterate over the windows
-                               .f =  ~ as.numeric(ccf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
+                               .f =  ~ as.numeric(acf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
                                                       y = dplyr::pull(dplyr::filter(df, window_vector == .), values),
                                                       na.action = na.pass,
                                                       type = "correlation",
@@ -157,7 +157,7 @@ if (is.null(from) & is.null(to)) {
 
 # Get the lag that corresponds to each peak
 lags <- purrr::map(autocor_iterator, # Iterate over the windows
-                   .f =  ~ seq(from = -length(dplyr::pull(dplyr::filter(df, window_vector == .), values)),
+                   .f =  ~ seq(from = 0,
                                to = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) ,
                                by = 1))
 } else if (!is.null(to) &  !is.null(from) ) {
