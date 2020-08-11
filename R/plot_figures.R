@@ -51,9 +51,9 @@ par(mar=c(2,4,1.75,2), mfrow = c(n_plots,1))
 
 for (windows in unique(rythm_analysis_data$window)) {
 
-cosinor <- rythm_analysis_data %>% filter(method == cosinor_fit, window == windows) %>%
-    select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period, cosinor_p_value) %>%
-    unnest(c(wave_x, wave_y))
+cosinor <- rythm_analysis_data %>% dplyr::filter(method == cosinor_fit, window == windows) %>%
+    dplyr::select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period, cosinor_p_value) %>%
+    tidyr::unnest(c(wave_x, wave_y))
 
 raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, last_col(), 3)
 

@@ -10,7 +10,7 @@
 #'
 arbitrary_noise_subtraction <- function(df, noise = 0) {
 
-noise_reduced <- map_df(df[-1], ~ ifelse(. == 0 | is.na(.), ., . - noise))
+noise_reduced <- map_df(df[-1], ~ ifelse(. - noise < 0 | is.na(.), 0, . - noise))
 
 noise_reduced$datetime <- df[[1]]
 

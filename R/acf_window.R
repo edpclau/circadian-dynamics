@@ -207,7 +207,7 @@ usable_windows <- mean_peaks %>% names() %>% as.numeric()
 period <- purrr::map_if(usable_windows,
                         .p = ~ !(is.null(mean_peaks[[.]])), # If the mean_peaks (autopower) is doesn't exist, give out an NA
                         .else =  ~ NA,
-                        .f = ~  pos_peak_lags[[.]][mean_peak_index[[.]]]/2
+                        .f = ~  (pos_peak_lags[[.]][mean_peak_index[[.]]] - 1) /2
 )
 
 
@@ -226,7 +226,7 @@ period_hours <- map_if(1:length(period),
 ###### Arranging Data #####
 autocorrelation_power <- map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[.]]), NA, mean_peaks[[.]]))
 
-usable_peak_lags <- map(usable_windows, ~ pos_peak_lags[[.]][mean_peak_index[[.]]])
+usable_peak_lags <- map(usable_windows, ~ (pos_peak_lags[[.]][mean_peak_index[[.]]] - 1))
 usable_peaks <- map(usable_windows, ~ positive_peaks[[.]][mean_peak_index[[.]]])
 
 rythm_strength <- map(usable_windows, ~ usable_peaks[[.]]/(1.965/sqrt(autocor_lags_lengths[[.]])))
@@ -240,12 +240,22 @@ results <- tibble::tibble(window = good_windows,
                           autocorrelation_power = unlist(autocorrelation_power),
                           peak_lags = usable_peak_lags,
                           peaks = usable_peaks,
-                          rythm_strength = rythm_strength
+                          rythm_strength = rythm_strength,
+                          from_acf = start,
+                          to_acf = end
                           )
 results <- tidyr::unnest(results, cols = c(peak_lags, peaks, rythm_strength), keep_empty = TRUE)
 
 results <- dplyr::bind_rows(results,
           tibble::tibble(window = unique(df$window_vector)[!(unique(df$window_vector) %in% good_windows)]))
+
+
+#add the input data.frame to the results
+input_values <- tidyr::nest(df, acf_input_values = 2)
+
+results <- dplyr::left_join(results, input_values, by = c("window" = "window_vector"))
+
+#order the data by windows
 results <- dplyr::arrange(results, window)
 
 return(results)

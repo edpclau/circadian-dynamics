@@ -38,6 +38,14 @@ if (length(processed_data) == 1 & is.null(names(processed_data))) {
   names(rythm_analysis_data) <- names(processed_data[[1]])[3]
 }
 
+################################################################################################################
+#######*******#### Temporary!!!! Drop problematic columns from rythm_analysis_data. In the future, we should
+  #incorporate this columns into the pipeline
+
+ rythm_analysis_data <- purrr::map(rythm_analysis_data,
+             .f = ~ dplyr::select(., -c(from_acf, to_acf, acf_input_values,)))
+
+###############################################################################################################
 
 
 # You can choose between lomb_scargle or autocorrelation for "method". Period is the default.
