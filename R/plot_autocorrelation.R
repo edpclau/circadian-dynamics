@@ -50,7 +50,7 @@ names(autocor) <- acf_results$window
 autocor_df <- purrr::map_if(names(autocor),
        .p = ~ !is.na(autocor[.]),
        .f = ~ tibble::tibble(window = as.numeric(.), lag = autocor[[.]][[4]], acf = autocor[[.]][[1]]),
-       .else = ~ tibble::tibble(window = as.numeric(.)))
+       .else = ~ tibble::tibble(window = as.numeric(.), lag = NA, acf = NA))
 
 #join the autocor_df to acf_results
 acf_df <- dplyr::bind_rows(autocor_df) %>% tidyr::nest(acf = c("lag", "acf")) %>% right_join(acf_results, by = "window")
@@ -67,7 +67,7 @@ if (export) {
   #Directory Management
   if (dir_choose_gui) {
     dir <- selectDirectory()
-    filename <- paste0(current_dir, "/", filename)
+    filename <- paste0(dir, "/", filename)
   }  else {
     filename <- paste0(path, "/", filename)
   }
