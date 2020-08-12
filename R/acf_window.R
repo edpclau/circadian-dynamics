@@ -101,6 +101,7 @@ if ( all(is.na(good_windows)) ) {
 # Get the autocorrelation values
 autocorrelations <- purrr::map(good_windows, # Iterate over the windows
                                .f =  ~ as.numeric(acf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
+                                                      y = dplyr::pull(dplyr::filter(df, window_vector == .), values),
                                                       na.action = na.pass,
                                                       type = "correlation",
                                                       plot = FALSE,
@@ -206,7 +207,7 @@ usable_windows <- mean_peaks %>% names() %>% as.numeric()
 period <- purrr::map_if(usable_windows,
                         .p = ~ !(is.null(mean_peaks[[.]])), # If the mean_peaks (autopower) is doesn't exist, give out an NA
                         .else =  ~ NA,
-                        .f = ~  (pos_peak_lags[[.]][mean_peak_index[[.]]]) /2
+                        .f = ~  ((pos_peak_lags[[.]][mean_peak_index[[.]]]) - 1 )/2
 )
 
 
