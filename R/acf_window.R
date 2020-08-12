@@ -101,11 +101,10 @@ if ( all(is.na(good_windows)) ) {
 # Get the autocorrelation values
 autocorrelations <- purrr::map(good_windows, # Iterate over the windows
                                .f =  ~ as.numeric(acf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
-                                                      y = dplyr::pull(dplyr::filter(df, window_vector == .), values),
                                                       na.action = na.pass,
                                                       type = "correlation",
                                                       plot = FALSE,
-                                                      lag.max = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)))$acf)) #$acf is to keep only the acf values. We can infer lag position from those
+                                                       lag.max = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)))$acf)) #$acf is to keep only the acf values. We can infer lag position from those
 
 autocor_lags_lengths <- map(c(1:length(autocorrelations)),
     ~ length(autocorrelations[[.]])
