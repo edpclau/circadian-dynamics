@@ -138,6 +138,7 @@ autocorrelations_no_na <- purrr::map(autocorrelations,  .f =  ~ dplyr::if_else(i
 
 # Find the peaks
 peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
+print("found peaks")
 positive_peak_index <- purrr::map(1:length(peaks),
                       .f = ~ which(peaks[[.]] > 0))
 
