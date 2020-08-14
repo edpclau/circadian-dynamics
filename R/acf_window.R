@@ -138,7 +138,26 @@ autocorrelations_no_na <- purrr::map(autocorrelations,  .f =  ~ dplyr::if_else(i
 
 # Find the peaks
 peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
-print("found peaks")
+
+
+# Handle the case when there are no peaks ########################################
+if(all(purrr::map_lgl(peaks, rlang::is_empty))){
+  results <- tibble::tibble(window = unique(df$window_vector),
+                            period = NA,
+                            period_hours = NA,
+                            autocorrelation_power = NA,
+                            peak_lags = NA,
+                            peaks = NA,
+                            rythm_strength = NA,
+                            from_acf = start,
+                            to_acf = end
+  )
+  results <- dplyr::arrange(results, window)
+
+  return(results)
+}
+###################################################################
+
 positive_peak_index <- purrr::map(1:length(peaks),
                       .f = ~ which(peaks[[.]] > 0))
 
@@ -230,8 +249,9 @@ autocorrelation_power <- map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[
 usable_peak_lags <- map(usable_windows, ~ (pos_peak_lags[[.]][mean_peak_index[[.]]] - 1))
 usable_peaks <- map(usable_windows, ~ positive_peaks[[.]][mean_peak_index[[.]]])
 
-rythm_strength <- map(usable_windows, ~ usable_peaks[[.]]/(1.965/sqrt(autocor_lags_lengths[[.]])))
 
+
+rythm_strength <- map(usable_windows, ~ usable_peaks[[.]]/(1.965/sqrt(autocor_lags_lengths[[.]])))
 
 
 ##### Results ####
