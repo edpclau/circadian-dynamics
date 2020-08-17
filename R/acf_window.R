@@ -86,8 +86,15 @@ if ( all(is.na(good_windows)) ) {
                            autocorrelation_power = NA,
                            peak_lags = NA,
                            peaks = NA,
-                           rythm_strength = NA
+                           rythm_strength = NA,
+                           from_acf = NA,
+                           to_acf = NA
  )
+
+ #add the input data.frame to the results
+ input_values <- tidyr::nest(df, acf_input_values = 2)
+
+ results <- dplyr::left_join(results, input_values, by = c("window" = "window_vector"))
  results <- dplyr::arrange(results, window)
 
  return(results)
@@ -152,6 +159,11 @@ if(all(purrr::map_lgl(peaks, rlang::is_empty))){
                             from_acf = start,
                             to_acf = end
   )
+
+  #add the input data.frame to the results
+  input_values <- tidyr::nest(df, acf_input_values = 2)
+
+  results <- dplyr::left_join(results, input_values, by = c("window" = "window_vector"))
   results <- dplyr::arrange(results, window)
 
   return(results)
