@@ -31,11 +31,20 @@ readr::write_csv(processed_data, "processed_data.csv", col_names = TRUE)
 }
 
 if (!is.null(rythm_analysis_data)) {
-dplyr::select(rythm_analysis_data,
-              c(method, window, period, power, lsp_p_value, sig_level, ofac, MESOR,
+df_select <-  dplyr::select(rythm_analysis_data,
+              c(method, window, period, period_hours, power, lsp_p_value, sig_level, ofac, MESOR,
                 amplitude, amplitude_se, adj_r_squared, cosinor_p_value, phase_in_seconds)) %>%
-  dplyr::mutate(phase_in_hours = phase_in_seconds) %>%
-  readr::write_csv("rythm_analysis.csv", col_names = TRUE)
+  dplyr::rename(phase_in_hours = phase_in_seconds) %>%
+  dplyr::rename(PR = adj_r_squared)
+
+df_autocor <- df_select %>% dplyr::filter(method == "autocorrelation") %>%
+  dplyr::select(-c(power, lsp_p_value, sig_level, ofac, method))
+
+df_lsp <- df_select %>% dplyr::filter(method == "lomb_scargle") %>%
+  dplyr::select(-c(period_hours, method))
+
+readr::write_csv(df_lsp, "rythm_analysis_lsp.csv", col_names = TRUE)
+readr::write_csv(df_autocor, "rythm_analysis_autocor.csv", col_names = TRUE)
 }
 
 }
