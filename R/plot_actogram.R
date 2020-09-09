@@ -113,7 +113,7 @@ pl <- map(.x = unique(data$ind),
 
   labs(title = paste(.x), y = "Days", x = "Clock Time (Hr)") +
   geom_hline(yintercept = 0, lty = "solid") +
-  geom_vline(xintercept = min(data$time) - lubridate::dminutes(30)) +
+  geom_vline(xintercept = min(data$time)) +
   facet_grid(forcats::fct_reorder(factor(window), as.numeric(window)) ~ date,  switch  = "y", drop = FALSE, scales = "free_y") +
 
   scale_x_datetime(date_labels = "%k", expand = c(0,0)) +
