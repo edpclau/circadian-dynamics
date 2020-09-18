@@ -56,6 +56,7 @@ if (!is.null(ld_data)) {
 data <- df %>%
   make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
   tidyr::gather("ind", "value", -c(window,datetime)) %>%
+  dplyr::mutate(ind = stringr::str_replace(ind,'mean', '99999')) %>%
   dplyr::mutate(ind = as.numeric(stringr::str_extract(ind,'\\d+'))) %>%
   dplyr::group_by(ind, window) %>%
   dplyr::mutate(
