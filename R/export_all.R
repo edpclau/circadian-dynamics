@@ -58,8 +58,8 @@ if (dir_choose_gui) {
   dir.create(new_dir1)
 
 } else {
-  directory <- getwd()
-  new_dir1 <- paste0(directory,"/", new_dir_name)
+  current_dir <- getwd()
+  new_dir1 <- paste0(current_dir,"/", new_dir_name)
   dir.create(new_dir1)
 }
 
