@@ -57,9 +57,7 @@ if (dir_choose_gui) {
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
 
-} else {
-current_dir <- getwd()
-new_dir1 = path}
+} else {new_dir1 = path}
 # else {
 #   current_dir <- path
 #   setwd(path)
