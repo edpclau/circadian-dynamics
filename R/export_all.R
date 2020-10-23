@@ -72,8 +72,7 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 }
 
 if (!is.null(raw_data)) {
-new_dir1 = path
-setwd(new_dir1)
+setwd(path)
 
 plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
 }
