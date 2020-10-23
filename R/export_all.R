@@ -27,7 +27,7 @@
 export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL, ld_data = NULL,
                        autocorrelation = TRUE, lomb_scargle = TRUE,
                        cosinor_fit = c("lomb_scargle", "autocorrelation"),
-                       dir_choose_gui = TRUE, new_dir_name = "analysis", path = NULL) {
+                       dir_choose_gui = TRUE, new_dir_name = "analysis") {
 
 ##### Flow Control ####)
 if (is.null(processed_data)) { stop("Must provide the output from 'multivariate_process_timeseries'.")}
@@ -57,13 +57,11 @@ if (dir_choose_gui) {
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
 
+} else {
+  current_dir <- getwd()
+  new_dir1 <- paste0(current_dir,"/", new_dir_name)
+  dir.create(new_dir1)
 }
-# else {
-#   current_dir <- path
-#   setwd(path)
-#   new_dir1 <- paste0(current_dir,"/", new_dir_name)
-#   dir.create(new_dir1)
-# }
 
 #Create a 'raw data'column for the mean
 if (!rlang::is_empty(processed_data$mean) ) {
@@ -72,7 +70,7 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 }
 
 if (!is.null(raw_data)) {
-setwd(path)
+setwd(new_dir1)
 
 plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
 }
