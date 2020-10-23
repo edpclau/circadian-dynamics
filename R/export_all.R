@@ -57,7 +57,7 @@ if (dir_choose_gui) {
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
 
-}
+} else {new_dir1 = path}
 # else {
 #   current_dir <- path
 #   setwd(path)
@@ -72,7 +72,6 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 }
 
 if (!is.null(raw_data)) {
-new_dir1 = path
 setwd(new_dir1)
 
 plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
