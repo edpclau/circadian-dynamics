@@ -18,7 +18,7 @@
 #' @importFrom dplyr select mutate filter pull
 #' @importFrom magrittr '%>%'
 #'
-plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, dir_choose_gui = TRUE) {
+plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, path = getwd()) {
 
 ##### Flow Control ####
   if (is.null(raw_data)) { stop("Must provide the raw data. The first column must be the datetime.")}
@@ -26,20 +26,11 @@ plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, dir_choo
   df1 <- raw_data
   df2 <- analyzed_data
 
-  if (dir_choose_gui) {
-    current_dir <- getwd()
-    directory <- rstudioapi::selectDirectory()
-    new_dir1 <- paste0(directory,"/", "Summary_plots")
-    dir.create(new_dir1)
-    setwd(new_dir1)
-
-  }
-
 
 ###### Plotting #####
 purrr::map(names(df2),
            ~ {
-pdf(paste( .,"Summarized Data.pdf", sep = " "), width = 9, height = 8)
+pdf(paste0(path,"/", paste( .,"Summarized Data.pdf", sep = " ")), width = 9, height = 8)
 
 lay <- layout(rbind(c(1,1,1,1,1,1,1,1,1,1,1,1),
                     c(2,2,2,2,3,3,3,3,4,4,4,4),

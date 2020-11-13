@@ -16,28 +16,29 @@
 #' bind_processed(df = monitor_processed)
 #' bind_analysis(df = monitor_analysis)
 #'
- bind_processed <- function(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(df),".csv")) {
+ bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
 
   df_bound <-  purrr::map_df(df, ~ dplyr::rename(., raw = 3), .id = "ID")
+  filename = paste0(path,"/",substitute(df),".csv")
 
-
-  if (export) {readr::write_csv(df_bound, path)
+  if (export) {readr::write_csv(df_bound, filename)
     } else {return(df_bound) }
 
 
  }
 
 
- bind_analysis <- function(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(df),".csv")) {
+ bind_analysis <- function(df = NULL, export = FALSE, path = getwd()) {
 
    df_bound <-  dplyr::bind_rows(df, .id = "ID")
+   filename = paste0(path,"/",substitute(df),".csv")
 
 
    if (export) {
      df_bound <- dplyr::select(df_bound, -c(scanned, normalized_power, wave_y, wave_x))
      df_bound <- dplyr::rename(df_bound, phase_hours = phase_in_seconds, phase_hours_se = phase_se_seconds)
      df_bound <- dplyr::arrange(df_bound, ID)
-     readr::write_csv(df_bound, path)
+     readr::write_csv(df_bound, filename)
      } else {return(df_bound)}
 
 

@@ -30,7 +30,7 @@
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
-plot_actogram <- function(df = NULL,  ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
+plot_actogram <- function(path = getwd(), df = NULL,  ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
 
   ##### Flow Control #####
@@ -148,7 +148,7 @@ if (autosize) {
 ml <- marrangeGrob(pl,  ncol = ncol, nrow = nrow)
 
 if (export) {
-ggsave(filename, ml, dpi = dpi, width = width, height = height)
+ggsave(filename, ml, dpi = dpi, width = width, height = height, path = path)
 } else {ml}
 
 }

@@ -27,7 +27,8 @@
 export_all <- function(raw_data = NULL, processed_data = NULL, rythm_analysis_data = NULL, ld_data = NULL,
                        autocorrelation = TRUE, lomb_scargle = TRUE,
                        cosinor_fit = c("lomb_scargle", "autocorrelation"),
-                       dir_choose_gui = TRUE, new_dir_name = "analysis") {
+                       dir_choose_gui = TRUE, new_dir_name = "analysis",
+                       path = getwd()) {
 
 ##### Flow Control ####)
 if (is.null(processed_data)) { stop("Must provide the output from 'multivariate_process_timeseries'.")}
@@ -52,14 +53,12 @@ if (length(processed_data) == 1 & is.null(names(processed_data))) {
 cosinor_fit <- base::match.arg(cosinor_fit, choices = c("lomb_scargle", "autocorrelation"))
 
 if (dir_choose_gui) {
-  current_dir <- getwd()
   directory <- rstudioapi::selectDirectory()
   new_dir1 <- paste0(directory,"/", new_dir_name)
   dir.create(new_dir1)
 
 } else {
-  current_dir <- getwd()
-  new_dir1 <- paste0(current_dir,"/", new_dir_name)
+  new_dir1 <- paste0(path,"/", new_dir_name)
   dir.create(new_dir1)
 }
 
@@ -70,22 +69,30 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 }
 
 if (!is.null(raw_data)) {
-setwd(new_dir1)
 
-plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE)
+#Function to export actogram
+plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE, path = new_dir1)
 }
 
-bind_processed(processed_data, TRUE)
-bind_analysis(rythm_analysis_data, TRUE)
+#Functions to save data
+bind_processed(processed_data, TRUE, path = new_dir1)
+bind_analysis(rythm_analysis_data, TRUE, path = new_dir1)
 
+
+
+# Saving Files!
 for (name in names(processed_data)) {
 
   new_dir2 <- paste0(new_dir1,"/",name)
   filename <- paste0("plots_", name, ".pdf")
   dir.create(new_dir2)
-  setwd(new_dir2)
 
-  export_plots(filename = filename, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]],
+  #Here I am changing directory to save in that dir. We need to change it so that it saves directly to this dir even
+  # if it's not the working dir.
+  # setwd(new_dir2)
+
+  #First Function that we call for saving.
+  export_plots(path = new_dir2, filename = filename, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]],
                autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
                cosinor_fit = cosinor_fit,
                dir_choose_gui = FALSE)
@@ -95,13 +102,14 @@ for (name in names(processed_data)) {
 
   analysis_data_short <- list(rythm_analysis_data[[name]])
   names(analysis_data_short) <- name
-  plot_summarized_data(raw_data, analysis_data_short, dir_choose_gui = FALSE)
+  # Second function function that we call for saving
+  plot_summarized_data(raw_data, analysis_data_short, path = new_dir2)
 
 
-
-  export_data(processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]], dir_choose_gui = FALSE)
+  #Third function that we call for saving
+  export_data(path = new_dir2, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]])
 
 }
 
-setwd(current_dir)
+# setwd(current_dir)
 }

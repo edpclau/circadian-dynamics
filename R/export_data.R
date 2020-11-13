@@ -17,17 +17,13 @@
 #' @importFrom readr write_csv
 #' @importFrom dplyr select mutate
 #' @importFrom magrittr '%>%'
-export_data <- function(processed_data = NULL, rythm_analysis_data = NULL, dir_choose_gui = TRUE) {
+export_data <- function(path = getwd(), processed_data = NULL, rythm_analysis_data = NULL) {
 
 
-if (dir_choose_gui) {
-    directory <- rstudioapi::selectDirectory()
-    new_dir1 <- paste0(directory,"/analysis")
-    dir.create(new_dir1)
-  }
-
+##### Actually saving files ####
 if (!is.null(processed_data))  {
-readr::write_csv(processed_data, "processed_data.csv", col_names = TRUE)
+  #First time we write a csv
+readr::write_csv(processed_data, paste0(path, "/","processed_data.csv"), col_names = TRUE)
 }
 
 if (!is.null(rythm_analysis_data)) {
@@ -43,8 +39,10 @@ df_autocor <- df_select %>% dplyr::filter(method == "autocorrelation") %>%
 df_lsp <- df_select %>% dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(-c(period_hours, method))
 
-readr::write_csv(df_lsp, "rythm_analysis_lsp.csv", col_names = TRUE)
-readr::write_csv(df_autocor, "rythm_analysis_autocor.csv", col_names = TRUE)
+#Second time we write a csv
+readr::write_csv(df_lsp, paste0(path, "/", "rythm_analysis_lsp.csv"), col_names = TRUE)
+#Third time we write a csv
+readr::write_csv(df_autocor, paste0(path, "/", "rythm_analysis_autocor.csv"), col_names = TRUE)
 }
 
 }

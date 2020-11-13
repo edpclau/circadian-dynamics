@@ -24,7 +24,7 @@
 #' @importFrom dplyr pull filter select last_col mutate
 #' @importFrom lubridate hour dhours
 #'
-export_plots <- function(filename = "processed_and_analyzed_data.pdf", processed_data = NULL,
+export_plots <- function(path = getwd(), filename = "processed_and_analyzed_data.pdf", processed_data = NULL,
                          rythm_analysis_data = NULL, autocorrelation = TRUE, lomb_scargle = TRUE,
            cosinor_fit = c("lomb_scargle", "autocorrelation"), dir_choose_gui = TRUE) {
 ##### Flow Control ####)
@@ -37,11 +37,11 @@ cosinor_fit <- match.arg(cosinor_fit, choices = c("lomb_scargle", "autocorrelati
 ##### Select Where to save the figures #####
 if (dir_choose_gui == TRUE) {
 dir <- selectDirectory()
-setwd(dir)
+path = dir
 }
 
 ##### publish the figures #####
-pdf(file = filename)
+pdf(file = paste0(path,"/",filename))
 #### Parameters for how the plots will look on the page
 n_plots = 3 + lomb_scargle + autocorrelation + (ncol(processed_data) > 4)
 par(mar=c(2,4,1.75,2), mfrow = c(n_plots,1))
