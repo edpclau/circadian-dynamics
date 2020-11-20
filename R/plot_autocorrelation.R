@@ -13,7 +13,6 @@
 #'
 #' @return
 #' @export
-#'re
 #'
 plot_autocorrelation <- function(df, path = NULL, filename = "actogram.pdf", dir_choose_gui = TRUE,
                                  export = TRUE, window_of_interest = NULL) {
