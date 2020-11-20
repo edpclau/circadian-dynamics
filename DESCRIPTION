@@ -1,7 +1,7 @@
 Package: circadiandynamics
 Type: Package
 Title: Period and Rythm Analysis of Timeseries Data
-Version: 0.3.0
+Version: 1.0.0
 Author: José L. Agosto-Rivera 
         Eddie Pérez Claudio
         Jonathan Alemán
