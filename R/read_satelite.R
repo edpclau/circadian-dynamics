@@ -7,7 +7,9 @@
 #'
 #' @examples
 #'
-import_satellite <- function(path = NULL) {
+read_satellite <- function(path = NULL) {
   if (is.null(path)) path = rstudioapi::selectFile()
-  readr::read_csv(path, skip = 9)
+  df <- readr::read_csv(path, skip = 9)
+  df$time <- lubridate::mdy_hm(df$time)
+  return(df)
 }
