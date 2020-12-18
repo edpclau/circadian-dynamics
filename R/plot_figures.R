@@ -43,7 +43,7 @@ path = dir
 ##### publish the figures #####
 pdf(file = paste0(path,"/",filename))
 #### Parameters for how the plots will look on the page
-n_plots = 3 + lomb_scargle + autocorrelation + (ncol(processed_data) > 4)
+n_plots = 2 + lomb_scargle + autocorrelation + (ncol(processed_data) > 4) + (ncol(processed_data) > 3)
 par(mar=c(2,4,1.75,2), mfrow = c(n_plots,1))
 
 
@@ -55,10 +55,10 @@ cosinor <- rythm_analysis_data %>% dplyr::filter(method == cosinor_fit, window =
     dplyr::select(wave_x, wave_y, amplitude, phase_in_seconds, adj_r_squared, period, cosinor_p_value) %>%
     tidyr::unnest(c(wave_x, wave_y))
 
-raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, last_col(), 3)
+raw_data <- processed_data %>% filter(window == windows) %>% select(dates = 2, 3)
 
 # Raw Data
-plot(raw_data[,c(1,3)], type="l", xlab="", xaxt = "n")
+plot(raw_data, type="l", xlab="", xaxt = "n")
 axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
      labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
@@ -83,14 +83,15 @@ plot(
 
 
 # Show the last column of the data, detrended, smooth, smooth and detrended
+if (ncol(processed_data) > 3) {
 plot(
-    raw_data[1:2],
+    filter(processed_data, window == windows) %>% select(2,last_col()),
     type="l",
     xlab="", xaxt = "n")
 axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
      labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
 
-
+}
 
 # Plot autocorrelation
 if (autocorrelation == TRUE) {
@@ -254,11 +255,11 @@ legend("topright",
 
 
 # Cosinor Fit
+data_for_cos_fit <- filter(processed_data, window == windows) %>% select(dates = 2,last_col())
 
-
-plot(x = raw_data[[1]], y = raw_data[[2]], type = "l", xlab = "Dates", ylab = "Values", xaxt = "n")
-axis(1, at = seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4)),
-     labels = lubridate::hour(seq(min(raw_data$dates), max(raw_data$dates), by = lubridate::dhours(4))))
+plot(x = data_for_cos_fit[[1]], y = data_for_cos_fit[[2]], type = "l", xlab = "Dates", ylab = "Values", xaxt = "n")
+axis(1, at = seq(min(data_for_cos_fit$dates), max(data_for_cos_fit$dates), by = lubridate::dhours(4)),
+     labels = lubridate::hour(seq(min(data_for_cos_fit$dates), max(data_for_cos_fit$dates), by = lubridate::dhours(4))))
 
 lines(x = cosinor$wave_x, y = cosinor$wave_y, type = "l", col = "blue")
 abline(v = unique(cosinor$phase_in_seconds), lty = 1, col = "black")
