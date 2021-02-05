@@ -78,6 +78,8 @@ plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE, path 
 bind_processed(processed_data, TRUE, path = new_dir1)
 bind_analysis(rythm_analysis_data, TRUE, path = new_dir1)
 
+#Plotting the Phase for all individuals in one PDF
+plot_phase(path = new_dir1, analysis = rythm_analysis_data)
 
 
 # Saving Files!
