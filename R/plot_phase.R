@@ -16,7 +16,7 @@ samples <- names(analysis)
 
 ### Setting up the pdf dimensions
 pdf(file = paste0(path,"/phase_plots.pdf"))
-par(mar=c(2,4,1.75,2), mfrow = c(4,4))
+par(mfrow = c(3,3))
 
 
 
@@ -32,7 +32,7 @@ to_plot <- filter(analysis[[sample]], method == "lomb_scargle") %>%
 plot(x = to_plot$window, y = to_plot$phase_in_seconds, type = "s",
      main = paste(sample), xlab = "Window", ylab = "Phase in Hours", xaxt = "n")
 # X-axis specifications. Jump every 2 days
-x_labs = seq(min(to_plot$window), max(to_plot$window), by = 2)
+x_labs = seq(min(to_plot$window), max(to_plot$window), by = 1)
 axis(1, at = x_labs)
 
 }
