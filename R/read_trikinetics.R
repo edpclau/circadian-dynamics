@@ -1,6 +1,7 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
-#' @export
+#' @export read_trikinetics
+#' @export read_trikinetics_folder
 #'
 #' @examples
 #' trikinetics_data <- read_trikinetics()
