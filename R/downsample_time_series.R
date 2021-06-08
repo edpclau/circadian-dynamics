@@ -75,7 +75,7 @@ data <- data %>%
 #downsampling
 data <- data %>%
   group_by(!!datetime_column, id) %>%
-  summarise(downsampled_data =  method(values)) %>%
+  summarise(downsampled_data =  method(values, na.rm = TRUE)) %>%
   ungroup() %>%
   pivot_wider(!!datetime_column, names_from = "id", values_from = "downsampled_data")
 
