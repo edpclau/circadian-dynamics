@@ -28,18 +28,38 @@
  }
 
 
+
  bind_analysis <- function(df = NULL, export = FALSE, path = getwd()) {
 
-   df_bound <-  dplyr::bind_rows(df, .id = "ID")
-   filename = paste0(path,"/",substitute(df),".csv")
+   df_lomb <-  dplyr::bind_rows(df, .id = "ID") %>%
+     dplyr::filter(method == 'lomb_scargle') %>%
+     dplyr::select_if(~!(all(is.na(.)) | all(is.list(.)))) %>%
+     select(-window_starts, -window_ends, -method, -from, -to) %>%
+     tidyr::pivot_longer(-c(ID,window)) %>%
+     tidyr::pivot_wider(id_cols = c(ID, name), names_from = window, values_from = value) %>%
+     dplyr::arrange(name) %>%
+     dplyr::rename(Variables = name)
+
+  df_acf <-  dplyr::bind_rows(df, .id = "ID") %>%
+     dplyr::filter(method == 'autocorrelation') %>%
+     dplyr::select_if(~!(all(is.na(.)) | all(is.list(.)))) %>%
+     select(-window_starts, -window_ends, -method, -period_hours, -from, -to) %>%
+     tidyr::pivot_longer(-c(ID,window)) %>%
+     tidyr::pivot_wider(id_cols = c(ID, name), names_from = window, values_from = value) %>%
+     dplyr::arrange(name) %>%
+     dplyr::rename(Variables = name)
+
+  names(df_acf) = stringr::str_replace(names(df_acf), '\\d', paste('Window', names(df_acf)))
+  names(df_lomb) = stringr::str_replace(names(df_lomb), '\\d', paste('Window', names(df_lomb)))
+
+  lomb_filename = paste0(path,"/","lomb_scargle.csv")
+  acf_filename = paste0(path,"/","autocorrelation.csv")
 
 
    if (export) {
-     df_bound <- dplyr::select(df_bound, -c(scanned, normalized_power, wave_y, wave_x))
-     df_bound <- dplyr::rename(df_bound, phase_hours = phase_in_seconds, phase_hours_se = phase_se_seconds)
-     df_bound <- dplyr::arrange(df_bound, ID)
-     readr::write_csv(df_bound, filename)
-     } else {return(df_bound)}
+     readr::write_csv(df_acf, acf_filename)
+     readr::write_csv(df_lomb, lomb_filename)
+     } else {return(list(df_lomb, df_acf))}
 
 
  }
