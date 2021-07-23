@@ -25,10 +25,11 @@ plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, path = g
   if (is.null(analyzed_data)) { stop("Must provide the output from 'multivariate_rythm_analysis' or 'rythm_analysis'.")}
   df1 <- raw_data
   df2 <- analyzed_data
-
+  #Plan for paralellization
+  future::plan(future::multisession)
 
 ###### Plotting #####
-purrr::map(names(df2),
+furrr::future_map(names(df2),
            ~ {
 pdf(paste0(path,"/", paste( .,"Summarized Data.pdf", sep = " ")), width = 9, height = 8)
 

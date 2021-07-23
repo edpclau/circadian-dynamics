@@ -10,10 +10,12 @@
 #'
 #'
 rm_inactive <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
+  #Plan for paralellization
+future::plan(future::multisession)
 
     inactivity_threshold <- lubridate::duration(inactivity_period) / lubridate::duration(sampling_rate)
-    rles <- map(df[-1], ~ rle( .))
-    rles <- map_df(rles, ~ tibble(lengths = .[[1]], values = .[[2]]), .id = "IND")
+    rles <- furrr::future_map(df[-1], ~ rle( .))
+    rles <- furrr::future_map_df(rles, ~ tibble(lengths = .[[1]], values = .[[2]]), .id = "IND")
     active_inds <- dplyr::filter(rles, values == 0) %>%
       dplyr::group_by(IND) %>%
       dplyr::summarize(max_zeroes = max(lengths), .groups = "drop") %>%

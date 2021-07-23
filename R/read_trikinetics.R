@@ -17,6 +17,8 @@ read_trikinetics <- function(file = NULL){
   if (is.null(file)) {
   file <- file.choose()
   }
+  #Plan for paralellization
+  future::plan(future::multisession)
 
 # Import the file
   df <- read_tsv(file,col_names = FALSE)
@@ -44,7 +46,7 @@ message("Make sure, all monitors were run on the same dates with the same LD/DD 
   paths <- paste0(directory, "/", files)
   df <- suppressMessages(purrr::map(paths, read_trikinetics))
   names(df) <- stringr::str_remove(files, "\\.txt")
-  df <- purrr::map_df(df, ~ tidyr::pivot_longer(., -c(1,2)), .id = "monitor")
+  df <- furrr::future_map_df(df, ~ tidyr::pivot_longer(., -c(1,2)), .id = "monitor")
   df <-  tidyr::unite(df, "name", c(monitor, name), sep = " ")
   df <- tidyr::pivot_wider(df, c(datetime, tidyr::matches("dd|ld")))
   return(df)

@@ -54,7 +54,8 @@ rythm_analysis_by_window <- function(df = NULL, sampling_rate = NULL, autocorrel
     original_names <- names(df)
     names(df) <- c("window", "datetime", "values")
   }
-
+  #Plan for paralellization
+  future::plan(future::multisession)
 
 
 
@@ -66,7 +67,7 @@ if (autocorrelation) {
   acf_results_full <- acf_results
   acf_results <-tidyr::drop_na(acf_results)
   # Fit Cosinor to autocorrelation
-  cosinor_fits_auto_corr <- purrr::map2_df(.x = unique(acf_results$window), .y = acf_results$period,
+  cosinor_fits_auto_corr <- furrr::future_map2_df(.x = unique(acf_results$window), .y = acf_results$period,
                                            .f = ~ cosinor_lm(dplyr::filter(df, window == .x) %>%
                                                                dplyr::select(datetime, values),
                                                              sampling_rate = sampling_rate,
@@ -87,7 +88,7 @@ if (lomb_scargle) {
  lsp_results_for_cosinor <- mutate(lsp_results,
                        period = ifelse(is.na(period), 24, period))
   # Fit Cosinor to lsp
-  cosinor_fits_lsp <- purrr::map2_df(.x = unique(lsp_results$window), .y = lsp_results_for_cosinor$period,
+  cosinor_fits_lsp <- furrr::future_map2_df(.x = unique(lsp_results$window), .y = lsp_results_for_cosinor$period,
                                      .f = ~ cosinor_lm(dplyr::filter(df, window == .x) %>% dplyr::select(datetime, values),
                                                        sampling_rate = sampling_rate,
                                                        period = .y,

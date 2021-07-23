@@ -52,15 +52,19 @@ if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes',
 if (!lubridate::is.POSIXct(df[[1]])) {
   stop("The first column must be a datetime object.")
 }
+#4. Plan for paralellization
+future::plan(future::multisession)
 
 # Create a mean column for the data.
 df <- average_of_group(df)
 
-processed_df <- purrr::map(2:ncol(df),
+processed_df <- furrr::future_map(2:ncol(df),
            .f = ~ process_timeseries(df = df[,c(1,.)], sampling_rate = sampling_rate, window_size_in_days = window_size_in_days,
                                      window_step_in_days = window_step_in_days,  detrend_data = detrend_data,
                                      butterworth = butterworth, f_low = f_low, f_high = f_high, order = order,
-                                     smoothing_n = smoothing_n, plot = plot))
+                                     smoothing_n = smoothing_n, plot = plot),
+           .options = furrr::furrr_options(seed = TRUE)
+           )
 
 names(processed_df) <- names(df)[-1]
 

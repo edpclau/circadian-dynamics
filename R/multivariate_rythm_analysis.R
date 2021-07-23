@@ -51,19 +51,21 @@ if (is.null(df) & (is.null(datetime) | is.null(values) | is.null(window))) {
 #2.must have sampling rate and period
 if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes', '1 hour', '4 seconds', '100 days'.")}
 
+#3. Plan for paralellization
+future::plan(future::multisession)
 
 
 
 
 
-df_short <- purrr::map(1:length(df),
+df_short <- furrr::future_map(1:length(df),
            .f = ~ dplyr::select(df[[.]], 1:2, dplyr::last_col())
 )
 
 
 
 
-results <- purrr::map(1:length(df_short),
+results <- furrr::future_map(1:length(df_short),
            .f = ~
              rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate,
                                       autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,

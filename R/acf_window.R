@@ -103,10 +103,13 @@ if ( all(is.na(good_windows)) ) {
 
  good_windows <- na.omit(good_windows)
 
+ #6. Plan for paralellization
+ future::plan(future::multisession)
+
 ########## Autocorrelation for a moving window of values ########
 
 # Get the autocorrelation values
-autocorrelations <- purrr::map(good_windows, # Iterate over the windows
+autocorrelations <- furrr::future_map(good_windows, # Iterate over the windows
                                .f =  ~ as.numeric(acf(x = dplyr::pull(dplyr::filter(df, window_vector == .), values), #Select the values in the window
                                                       y = dplyr::pull(dplyr::filter(df, window_vector == .), values),
                                                       na.action = na.pass,
@@ -123,14 +126,14 @@ if (!is.null(to) &  !is.null(from) ) {
 start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
 end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
 
-autocorrelations <- purrr::map(autocor_iterator,
+autocorrelations <- furrr::future_map(autocor_iterator,
 ~ autocorrelations[[.]][seq(start, end)])
 } else if (!is.null(to) & is.null(from)) {
- autocorrelations <- purrr::map(autocor_iterator,
+ autocorrelations <- furrr::future_map(autocor_iterator,
 ~ autocorrelations[[.]][1:round(as.numeric(lubridate::duration(to, "hours"), sampling_rate + 1)/sampling_bin_size)]
 )
 } else if (is.null(to) & !is.null(from)) {
-autocorrelations <-  purrr::map(autocor_iterator,
+autocorrelations <-  furrr::future_map(autocor_iterator,
  ~  autocorrelations[[.]][round((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size):length(autocorrelations[[.]])]
   )
   }
@@ -139,16 +142,16 @@ autocorrelations <-  purrr::map(autocor_iterator,
 # Change change all NA autocorrelations to 0
 # The function that looks for peaks doesn't allow NA, 0 would be ignored if we put a threshold, therefoere it won't affect
 # the results
-autocorrelations_no_na <- purrr::map(autocorrelations,  .f =  ~ dplyr::if_else(is.na(.) == TRUE, 0, .))
+autocorrelations_no_na <- furrr::future_map(autocorrelations,  .f =  ~ dplyr::if_else(is.na(.) == TRUE, 0, .))
 
 
 
 # Find the peaks
-peaks <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
+peaks <- furrr::future_map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,1])
 
 
 # Handle the case when there are no peaks ########################################
-if(all(purrr::map_lgl(peaks, rlang::is_empty))){
+if(all(furrr::future_map_lgl(peaks, rlang::is_empty))){
   results <- tibble::tibble(window = unique(df$window_vector),
                             period = NA,
                             period_hours = NA,
@@ -170,25 +173,25 @@ if(all(purrr::map_lgl(peaks, rlang::is_empty))){
 }
 ###################################################################
 
-positive_peak_index <- purrr::map(1:length(peaks),
+positive_peak_index <- furrr::future_map(1:length(peaks),
                       .f = ~ which(peaks[[.]] > 0))
 
 # Keep only the positive peaks
-positive_peaks <-  purrr::map2(peaks, positive_peak_index,
+positive_peaks <-  furrr::future_map2(peaks, positive_peak_index,
      .f = ~ .x[.y])
 
 #handle when there are less positive peaks than the peak_of_interest and multivariate_peaks = FALSE
 #In that case,don't draw any peaks.
 # Find the average peak size (autopower)
-mean_peaks <- purrr::map(positive_peaks, .f = ~ if(!(rlang::is_empty(.))) { max(.)} ) # We use map_if so that we don't process the NULL values
-mean_peak_index <- purrr::map(autocor_iterator, ~ which(positive_peaks[[.]] == mean_peaks[[.]]))
+mean_peaks <- furrr::future_map(positive_peaks, .f = ~ if(!(rlang::is_empty(.))) { max(.)} ) # We use map_if so that we don't process the NULL values
+mean_peak_index <- furrr::future_map(autocor_iterator, ~ which(positive_peaks[[.]] == mean_peaks[[.]]))
 
 
 ############### Find lags in the autocorrelation #####
 if (is.null(from) & is.null(to)) {
 
 # Get the lag that corresponds to each peak
-lags <- purrr::map(autocor_iterator, # Iterate over the windows
+lags <- furrr::future_map(autocor_iterator, # Iterate over the windows
                    .f =  ~ seq(from = 0,
                                to = length(dplyr::pull(dplyr::filter(df, window_vector == .), values)) ,
                                by = 1))
@@ -196,7 +199,7 @@ lags <- purrr::map(autocor_iterator, # Iterate over the windows
   start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
   end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
 
-  lags <- purrr::map(autocor_iterator,
+  lags <- furrr::future_map(autocor_iterator,
                      .f =  ~ seq(start, end)
                      )
 
@@ -204,22 +207,22 @@ lags <- purrr::map(autocor_iterator, # Iterate over the windows
   start <- round(((as.numeric(lubridate::duration(from, "hours"), sampling_rate) + 1)/sampling_bin_size))
   end <- round((as.numeric(lubridate::duration(to, "hours"), sampling_rate) + 1)/sampling_bin_size)
 
-  lags <- purrr::map(autocor_iterator,
+  lags <- furrr::future_map(autocor_iterator,
                      .f =  ~ seq(start, end))
 
 } else if (is.null(to) & !is.null(from)) {
-  lags <- purrr::map(good_windows,
+  lags <- furrr::future_map(good_windows,
                      .f =  ~ seq(start, end))
 }
 
-peak_index <- purrr::map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,2])
-peak_lags <- purrr::map2(lags, peak_index, .f = ~ .x[.y])
+peak_index <- furrr::future_map(autocorrelations_no_na, .f = ~ pracma::findpeaks(.)[,2])
+peak_lags <- furrr::future_map2(lags, peak_index, .f = ~ .x[.y])
 
 
 
 # Positive Peak Lags
-pos_peak_lag_index <- purrr::map2(peak_index, positive_peak_index, .f = ~ .x[.y])
-pos_peak_lags <- purrr::map2(lags, pos_peak_lag_index, .f = ~ .x[.y])
+pos_peak_lag_index <- furrr::future_map2(peak_index, positive_peak_index, .f = ~ .x[.y])
+pos_peak_lags <- furrr::future_map2(lags, pos_peak_lag_index, .f = ~ .x[.y])
 
 
 
@@ -236,7 +239,7 @@ usable_windows <- mean_peaks %>% names() %>% as.numeric()
 
 # Now calculate the period.
 
-period <- purrr::map_if(usable_windows,
+period <- furrr::future_map_if(usable_windows,
                         .p = ~ !(is.null(mean_peaks[[.]])), # If the mean_peaks (autopower) is doesn't exist, give out an NA
                         .else =  ~ NA,
                         .f = ~  ((pos_peak_lags[[.]][mean_peak_index[[.]]]) - 1 )/2
@@ -248,7 +251,7 @@ period <- purrr::map_if(usable_windows,
 
 
 # Transform the period into hours
-period_hours <- map_if(1:length(period),
+period_hours <- furrr::future_map_if(1:length(period),
                     .p = ~ !is.na(period[[.]]), # If the period is NA, don't turn it into hours
                     .else =  ~ NA,
                     .f = ~ lubridate::duration(period[[.]] * sampling_bin_size, sampling_rate) %>% as.numeric("hours") %>% paste("hours")
@@ -256,14 +259,14 @@ period_hours <- map_if(1:length(period),
 
 
 ###### Arranging Data #####
-autocorrelation_power <- map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[.]]), NA, mean_peaks[[.]]))
+autocorrelation_power <- furrr::future_map(1:length(mean_peaks), ~ ifelse(is.null(mean_peaks[[.]]), NA, mean_peaks[[.]]))
 
-usable_peak_lags <- map(usable_windows, ~ (pos_peak_lags[[.]][mean_peak_index[[.]]] - 1))
-usable_peaks <- map(usable_windows, ~ positive_peaks[[.]][mean_peak_index[[.]]])
+usable_peak_lags <- furrr::future_map(usable_windows, ~ (pos_peak_lags[[.]][mean_peak_index[[.]]] - 1))
+usable_peaks <- furrr::future_map(usable_windows, ~ positive_peaks[[.]][mean_peak_index[[.]]])
 
 
 
-rythm_strength <- map(usable_windows, ~ usable_peaks[[.]]/(1.965/sqrt(autocor_lags_lengths[[.]])))
+rythm_strength <- furrr::future_map(usable_windows, ~ usable_peaks[[.]]/(1.965/sqrt(autocor_lags_lengths[[.]])))
 
 
 ##### Results ####

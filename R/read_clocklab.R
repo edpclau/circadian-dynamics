@@ -31,7 +31,8 @@ read_clocklab <- function(file = NULL) {
 if (is.null(file)) {
   file <- file.choose()
 }
-
+  #Plan for paralellization
+future::plan(future::multisession)
 
 ####### Import the file #####
 # Extract IND name
@@ -65,8 +66,8 @@ if (is.null(directory)) {
 
 files <- list.files(directory)
 paths <- paste0(directory, "/", files)
-df <- purrr::map(paths, read_clocklab)
-df <- purrr::map_df(df, ~ tidyr::pivot_longer(., -c(1,2)))
+df <- furrr::future_map(paths, read_clocklab)
+df <- furrr::future_map_df(df, ~ tidyr::pivot_longer(., -c(1,2)))
 df <- tidyr::pivot_wider(df, c(datetime,ld))
 
 message("Make sure the experiments were run on the same dates")

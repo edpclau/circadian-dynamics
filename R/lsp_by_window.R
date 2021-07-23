@@ -124,6 +124,8 @@ lsp_by_window <- function (df = NULL, windows = NULL, values = NULL, times = NUL
   sampling_bin_size = as.numeric(stringr::str_extract(sampling_rate, "\\d*"))
   sampling_rate = stringr::str_remove(sampling_rate, "\\d* *")
 
+  #8. Plan for paralellization
+  future::plan(future::multisession)
 #### Lomb Scargle periodogram by time windows #####
 
 # Convert from-to to seconds.
@@ -138,7 +140,7 @@ to  <- as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_s
 # Calculate Lomb-scargle periodogram
 lomb_scargle <- {
 
-  map_if(good_windows,
+  furrr::future_map_if(good_windows,
               .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
               .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
                              from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = plot),
@@ -148,7 +150,7 @@ lomb_scargle <- {
 if ( !(is.null(from) & is.null(to)) ) {
 lomb_scargle_full <- {
 
-  map_if(good_windows,
+  furrr::future_map_if(good_windows,
          .p = ~ sum(!is.na(pull(filter(df, window == .), values))) >= 2,
          .f =  ~ lsp_mod(x = c(pull(filter(df, window == .), values)),
                           ofac = ofac, type = type, plot = FALSE, alpha = alpha),
@@ -165,7 +167,7 @@ lomb_scargle_no_null <- purrr::discard(lomb_scargle, is_empty)
 
 
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
-results <- map_df(1:length(lomb_scargle_full_no_null),
+results <- furrr::future_map_df(1:length(lomb_scargle_full_no_null),
            .f = ~ tibble(window = good_windows[.],
                        period = as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
                        power = lomb_scargle_no_null[[.]]$peak,

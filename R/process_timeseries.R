@@ -64,6 +64,8 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
     original_names <- names(df)
     names(df) <- c("datetime", "values")
   }
+  #Plan for paralellization
+  future::plan(future::multisession)
 
 
 # if(butterworth){
@@ -107,7 +109,7 @@ windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
 
 #butterworth by window
 if (butterworth) {
-  buttered <-  purrr::map_df(unique(windowed_data$window),
+  buttered <-  furrr::future_map_df(unique(windowed_data$window),
                                   ~ dplyr::filter(windowed_data, window == .) %>%
                                     dplyr::select(datetime, dplyr::last_col()) %>%
                                     butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),

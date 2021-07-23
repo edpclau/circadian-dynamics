@@ -30,6 +30,7 @@ window_step <- days(window_step_in_days) #Days to move the window
 days_in_data <- seq(from = min(data[[1]]) - days(1), to = max(data[[1]] + days(1)), by = "1 day")
 usable_dates <- days_in_data[!(days_in_data + window_step + window_size >= max(data[[1]]))]
 
+
 # Creating a new data.frame where data is partitioned by window
 windowed_data <- map_df(usable_dates,
                                ~ filter(data, datetime >= . + window_step & datetime <= . + window_step + window_size),
@@ -39,3 +40,5 @@ windowed_data <- map_df(usable_dates,
 
 return(windowed_data)
 }
+
+

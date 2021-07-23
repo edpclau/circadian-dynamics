@@ -39,11 +39,14 @@ if (length(processed_data) == 1 & is.null(names(processed_data))) {
   names(rythm_analysis_data) <- names(processed_data[[1]])[3]
 }
 
+#Plan for paralellization
+future::plan(future::multisession)
+
 ################################################################################################################
 #######*******#### Temporary!!!! Drop problematic columns from rythm_analysis_data. In the future, we should
   #incorporate this columns into the pipeline
 
- rythm_analysis_data <- purrr::map(rythm_analysis_data,
+ rythm_analysis_data <- furrr::future_map(rythm_analysis_data,
              .f = ~ dplyr::select(., -c(from_acf, to_acf, acf_input_values,)))
 
 ###############################################################################################################

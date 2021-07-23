@@ -25,10 +25,12 @@ read_vitalpatch <- function(folder = NULL) {
   if (is.null(folder)) {
     folder <- rstudioapi::selectDirectory()
   }
+  #Plan for paralellization
+  future::plan(future::multisession)
 
 files = list.files(folder, full.names = TRUE)
 
-df = purrr::map_df(files, readr::read_csv, col_types = cols(.default = 'd'))
+df = furrr::future_map_df(files, readr::read_csv, col_types = cols(.default = 'd'))
 
 df$Time = lubridate::as_datetime(df$Time/1000)
 

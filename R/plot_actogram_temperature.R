@@ -45,6 +45,10 @@ plot_actogram_temp <- function(path = getwd(), df = NULL, tf = NULL, ld_data = N
     ld_data <-  dplyr::rename(ld_data, ld = 2)
     ld_data <- dplyr::filter(ld_data, ld_data$datetime >= lubridate::ceiling_date(min(ld_data$datetime), unit = "1 day"))
   }
+
+  #Plan for paralellization
+future::plan(future::multisession)
+
   # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 
@@ -54,8 +58,7 @@ plot_actogram_temp <- function(path = getwd(), df = NULL, tf = NULL, ld_data = N
 
   #Wrangle Data
 
-  data <- df %>%
-    make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
+  data <- df %>%  make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
     tidyr::gather("ind", "value", -c(window,datetime)) %>%
     dplyr::mutate(ind = if_else(ind == 'mean', stringr::str_replace(ind,'mean', '99999'), ind)) %>%
     dplyr::mutate(ind = as.numeric(stringr::str_extract(ind,'\\d+'))) %>%
@@ -112,7 +115,7 @@ plot_actogram_temp <- function(path = getwd(), df = NULL, tf = NULL, ld_data = N
 
 
 
-  pl <- map(.x = unique(data$ind),
+  pl <- furrr::future_map(.x = unique(data$ind),
             .f = ~ data %>%
               filter(date != 3, ind == .x) %>%
               ggplot( aes(x = time, y = value/2, height = value)) +

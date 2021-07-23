@@ -17,6 +17,8 @@
 #' bind_analysis(df = monitor_analysis)
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
+   #Plan for paralellization
+   future::plan(future::multisession)
 
   df_bound <-  purrr::map_df(df, ~ dplyr::rename(., raw = 3), .id = "ID")
   filename = paste0(path,"/",substitute(df),".csv")

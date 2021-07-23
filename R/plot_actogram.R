@@ -44,6 +44,10 @@ if (!is.null(ld_data)) {
  ld_data <-  dplyr::rename(ld_data, ld = 2)
  ld_data <- dplyr::filter(ld_data, ld_data$datetime >= lubridate::ceiling_date(min(ld_data$datetime), unit = "1 day"))
 }
+
+#Plan for paralellization
+future::plan(future::multisession)
+
 # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 
@@ -97,7 +101,7 @@ data <- dplyr::left_join(data, ld_data, by = "datetime") %>%
 
 
 
-pl <- map(.x = unique(data$ind),
+pl <- furrr::future_map(.x = unique(data$ind),
            .f = ~ data %>%
     filter(date != 3, ind == .x) %>%
     ggplot( aes(x = time, y = value/2, height = value)) +
