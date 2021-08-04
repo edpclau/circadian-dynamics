@@ -46,7 +46,7 @@ message("Make sure, all monitors were run on the same dates with the same LD/DD 
   paths <- paste0(directory, "/", files)
   df <- suppressMessages(purrr::map(paths, read_trikinetics))
   names(df) <- stringr::str_remove(files, "\\.txt")
-  df <- furrr::future_map_df(df, ~ tidyr::pivot_longer(., -c(1,2)), .id = "monitor")
+  df <- furrr::future_map_dfr(df, ~ tidyr::pivot_longer(., -c(1,2)), .id = "monitor")
   df <-  tidyr::unite(df, "name", c(monitor, name), sep = " ")
   df <- tidyr::pivot_wider(df, c(datetime, tidyr::matches("dd|ld")))
   return(df)
