@@ -109,10 +109,10 @@ windowed_data <- dplyr::bind_cols(datetime = windowed_data$datetime,
 
 #butterworth by window
 if (butterworth) {
-  buttered <-  furrr::future_map_df(unique(windowed_data$window),
-                                  ~ dplyr::filter(windowed_data, window == .) %>%
-                                    dplyr::select(datetime, dplyr::last_col()) %>%
-                                    butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
+  buttered <-  furrr::future_map_dfr(.x = unique(windowed_data$window),
+                                ~  dplyr::filter(windowed_data, window == .x) %>%
+                                  dplyr::select(datetime, dplyr::last_col()) %>%
+                                  butterworth_filter(order = order, f_low = f_low, f_high = f_high, plot = FALSE),
                                   .id = "window"
   )
   buttered <- dplyr::rename(buttered, butterworth = dplyr::last_col())
@@ -122,7 +122,7 @@ if (butterworth) {
 # }
 
 if (butterworth) {
-  windowed_data <- left_join(windowed_data, buttered, by = c( "window", "datetime"))
+  windowed_data <- dplyr::left_join(windowed_data, buttered, by = c( "window", "datetime"))
   windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())
 } else {
 windowed_data <- windowed_data %>% dplyr::select(window, datetime, values, everything())

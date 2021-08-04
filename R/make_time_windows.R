@@ -17,8 +17,10 @@
 #' windowed_data <- function(data = df)
 #'
 #' @importFrom lubridate days
-#' @importFrom purrr map_df
+#' @importFrom furrr future_map_dfr
 #' @importFrom dplyr filter
+#' @import lubridate
+#' @import tidyverse
 #'
 make_time_windows <- function(data = NULL, window_size_in_days = 3, window_step_in_days = 1){
 
@@ -27,18 +29,26 @@ window_size <- days(window_size_in_days) #Width of the window
 window_step <- days(window_step_in_days) #Days to move the window
 
 # Finding dates where the window does not exceed the last time point in the data
-days_in_data <- seq(from = min(data[[1]]) - days(1), to = max(data[[1]] + days(1)), by = "1 day")
-usable_dates <- days_in_data[!(days_in_data + window_step + window_size >= max(data[[1]]))]
+times <- data[['datetime']]
 
+days_in_data <- seq(from = min(times) - days(1), to = max(times + days(1)), by = "1 day")
+
+usable_dates <- days_in_data[!(days_in_data + window_step + window_size >= max(times))]
+
+
+#plan for paralelization
+future::plan(future::multisession, workers = 2)
 
 # Creating a new data.frame where data is partitioned by window
-windowed_data <- map_df(usable_dates,
-                               ~ filter(data, datetime >= . + window_step & datetime <= . + window_step + window_size),
-                               .id = "window")
+return( furrr::future_map_dfr(.x = usable_dates,
+                               ~ filter(data, (datetime >= .x + window_step) & (datetime <= .x + window_step + window_size)),
+                               .id = "window",
+                               .options = furrr::furrr_options(seed = TRUE), packages = 'lubridate')
+)
 
 
 
-return(windowed_data)
+
 }
 
 

@@ -41,32 +41,32 @@ smooth_detrend_by_windows <- function(df = NULL, smooth_data = TRUE, binning_n =
     names(windowed_data) <- c("window", "values")
   }
 
-####### Data Smoothing or Detrending ######
-if (smooth_data == TRUE & detrend_data == TRUE) {
-  windowed_data <- windowed_data %>%
-    dplyr::group_by(window) %>%
-    dplyr::mutate(
-      smoothed =  pracma::movavg(values, n = binning_n, type = "s"),
-      smoothed_and_detrended = pracma::detrend(smoothed)) %>%
-    dplyr::ungroup()
+  ####### Data Smoothing or Detrending ######
+  if (smooth_data == TRUE & detrend_data == TRUE) {
+    windowed_data <- windowed_data %>%
+      dplyr::group_by(window) %>%
+      dplyr::mutate(
+        smoothed =  pracma::movavg(values, n = binning_n, type = "s"),
+        smoothed_and_detrended = pracma::detrend(smoothed)) %>%
+      dplyr::ungroup()
 
-} else if (smooth_data == TRUE & detrend_data == FALSE) {
-  windowed_data <- windowed_data %>%
-    dplyr::group_by(window) %>%
-    dplyr::mutate(
-      smoothed =  pracma::movavg(values, n = binning_n, type = "s")) %>%
-    dplyr::ungroup()
+  } else if (smooth_data == TRUE & detrend_data == FALSE) {
+    windowed_data <- windowed_data %>%
+      dplyr::group_by(window) %>%
+      dplyr::mutate(
+        smoothed =  pracma::movavg(values, n = binning_n, type = "s")) %>%
+      dplyr::ungroup()
 
-} else if (smooth_data == FALSE & detrend_data == TRUE) {
-  windowed_data <- windowed_data %>%
-    dplyr::group_by(window) %>%
-    dplyr::mutate(
-      detrended =  pracma::detrend(values)) %>%
-    dplyr::ungroup()
+  } else if (smooth_data == FALSE & detrend_data == TRUE) {
+    windowed_data <- windowed_data %>%
+      dplyr::group_by(window) %>%
+      dplyr::mutate(
+        detrended =  pracma::detrend(values)) %>%
+      dplyr::ungroup()
 
-} else {
-  # If smooth and detrend are false, return the unchanged data.frame
+  } else {
+    # If smooth and detrend are false, return the unchanged data.frame
+    return(windowed_data)
+  }
   return(windowed_data)
-}
-return(windowed_data)
 }

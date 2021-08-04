@@ -13,22 +13,21 @@
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
 #' @param f_high Frequency for the high pass filter. Default = 1/72.
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.
-#' @export
+#' @export butterworth_filter_2
 #' @examples
 #'
 #' butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
 #' print(butter)
 #'
 #' @importFrom signal butter filtfilt
-#' @importFrom dplyr select everything
-#' @importFrom purrr map_dfc
 
-butterworth_filter <- function(df = NULL, order = 2, f_low= 1/4, f_high = 1/72, plot = TRUE) {
+
+butterworth_filter_2 <- function(df = NULL, order = 2, f_low= 1/4, f_high = 1/72, plot = TRUE, ...) {
+
 
   ##### Flow Control #####
-  if (is.null(df)) { stop("must include a data.frame") }
-  # type <- match.arg(type, choices = c("low", "high"))
-
+  #Get last column
+  last_col = ncol(df)
 
 
   ##### Butterworth #####
@@ -37,28 +36,27 @@ butterworth_filter <- function(df = NULL, order = 2, f_low= 1/4, f_high = 1/72, 
   suppressMessages({
 
     bf <- butter(order, f_low, type = "low")
-    b1 <- map_dfc(2:ncol(df),
-                  .f = ~ filtfilt(bf, df[[.]]))
+    b1 <- filtfilt(bf, df[[last_col]])
+
     # High Pass
     bf <- butter(order, f_high, type = "high")
-    b2 <-  map_dfc(1:ncol(b1),
-                   .f = ~ filtfilt(bf, b1[[.]])
-    )
+    b2 <- filtfilt(bf, b1)
+
   })
+
   # Plots
   if (plot) {
-    for (i in 2:ncol(df)) {
-      plot(df[[1]], df[[i]], type = "l")
-      lines(df[[1]], b1[[i-1]], col = "red", lwd = 1.5)
-      lines(df[[1]], (b2[[i-1]]+mean(df[[i]])), col = "blue", lwd = 1.5)
+      plot(df[['datetime']], df[[last_col]], type = "l")
+      lines(df[['datetime']], b1, col = "red", lwd = 1.5)
+      lines(df[['datetime']], b2, col = "blue", lwd = 1.5)
 
     }
-  }
+
 
   # return the filtered data
-  names(b2) <- names(df[,c(2:ncol(df))])
-  b2$datetime <- df[[1]]
-  b2 <- select(b2, datetime, everything())
-  return(invisible(b2))
+  df$butterworth <- b2
+
+  return(df)
 
 }
+
