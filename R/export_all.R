@@ -79,17 +79,13 @@ tryCatch(
   error = function(e){stop(safeError(e))}
   )
 }
-print("Acotgram Exported")
+print("Actogram Exported")
 
 #Functions to save data
-tryCatch(
-  {
-   bind_processed(processed_data, TRUE, path = new_dir1)
-   bind_analysis(rythm_analysis_data, TRUE, path = new_dir1)
-   },
-  error = function(e){stop(safeError(e))}
-)
-print("saved data")
+bind_processed(processed_data, export = TRUE, path = new_dir1)
+print("bind_processed")
+bind_analysis(rythm_analysis_data, export = TRUE, path = new_dir1)
+print("bind_analysis")
 
 
 #Plotting the Phase for all individuals in one PDF

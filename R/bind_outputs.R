@@ -18,9 +18,10 @@
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
    #Plan for paralellization
+   print(df)
    future::plan(future::multisession)
 
-  df_bound <-  purrr::map_df(df, ~ dplyr::rename(., raw = 3), .id = "ID")
+  df_bound <-  furrr::future_map_dfr(df, ~ dplyr::rename(., raw = 3), .id = "ID")
   filename = paste0(path,"/",substitute(df),".csv")
 
   if (export) {readr::write_csv(df_bound, filename)
@@ -32,6 +33,8 @@
 
 
  bind_analysis <- function(df = NULL, export = FALSE, path = getwd()) {
+   print(df)
+
 
    df_lomb <-  dplyr::bind_rows(df, .id = "ID") %>%
      dplyr::filter(method == 'lomb_scargle') %>%
@@ -42,6 +45,8 @@
      dplyr::arrange(name) %>%
      dplyr::rename(Variables = name)
 
+  print("df_lomb")
+
   df_acf <-  dplyr::bind_rows(df, .id = "ID") %>%
      dplyr::filter(method == 'autocorrelation') %>%
      dplyr::select_if(~!(all(is.na(.)) | all(is.list(.)))) %>%
@@ -51,9 +56,11 @@
      dplyr::arrange(name) %>%
      dplyr::rename(Variables = name)
 
+  print("df_acf")
+
   names(df_acf) = stringr::str_replace(names(df_acf), '\\d', paste('Window', names(df_acf)))
   names(df_lomb) = stringr::str_replace(names(df_lomb), '\\d', paste('Window', names(df_lomb)))
-
+  print("names")
   lomb_filename = paste0(path,"/","lomb_scargle.csv")
   acf_filename = paste0(path,"/","autocorrelation.csv")
 
