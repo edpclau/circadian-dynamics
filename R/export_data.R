@@ -40,9 +40,9 @@ df_lsp <- df_select %>% dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(-c(period_hours, method))
 
 #Second time we write a csv
-readr::write_csv(df_lsp, paste0(path, "/", "rythm_analysis_lsp.csv"), col_names = TRUE)
+write.csv(df_lsp, paste0(path, "/", "rythm_analysis_lsp.csv"), col.names = TRUE, row.names = FALSE)
 #Third time we write a csv
-readr::write_csv(df_autocor, paste0(path, "/", "rythm_analysis_autocor.csv"), col_names = TRUE)
+write.csv(df_autocor, paste0(path, "/", "rythm_analysis_autocor.csv"), col.names = TRUE, row.names = FALSE)
 }
 
 }
