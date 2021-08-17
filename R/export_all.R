@@ -74,10 +74,7 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 if (!is.null(raw_data)) {
 
 #Function to export actogram
-tryCatch(
-  plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE, path = new_dir1),
-  error = function(e){stop(safeError(e))}
-  )
+plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE, path = new_dir1)
 }
 print("Actogram Exported")
 
@@ -89,12 +86,12 @@ print("bind_analysis")
 
 
 #Plotting the Phase for all individuals in one PDF
-tryCatch(
-plot_phase(path = new_dir1, analysis = rythm_analysis_data),
-error = function(e){stop(safeError(e))}
-)
+
+plot_phase(path = new_dir1, analysis = rythm_analysis_data)
+
 print("phase plotted for all inds in one pdf")
 
+print("Making individual plots!")
 # Saving Files!
 for (name in names(processed_data)) {
 
@@ -107,37 +104,29 @@ for (name in names(processed_data)) {
   # setwd(new_dir2)
 
   #First Function that we call for saving.
-  tryCatch(
+
   export_plots(path = new_dir2, filename = filename, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]],
                autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
                cosinor_fit = cosinor_fit,
-               dir_choose_gui = FALSE),
-  error = function(e){stop(safeError(e))}
-  )
-  print(paste(name, "plots exported"))
+               dir_choose_gui = FALSE)
 
 
 
-  tryCatch(
-  {analysis_data_short <- list(rythm_analysis_data[[name]])
-  names(analysis_data_short) <- name},
-  error = function(e){stop(safeError(e))}
-  )
-  print("analysis_data_short")
 
-  tryCatch(
+  analysis_data_short <- list(rythm_analysis_data[[name]])
+  names(analysis_data_short) <- name
+
+
+
   # Second function function that we call for saving
-  plot_summarized_data(raw_data, analysis_data_short, path = new_dir2),
-  error = function(e){stop(safeError(e))}
-  )
-  print("Plot_summarized_data")
+  plot_summarized_data(raw_data, analysis_data_short, path = new_dir2)
+
 
 
   #Third function that we call for saving
-  tryCatch(
-  export_data(path = new_dir2, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]]),
-  error = function(e){stop(safeError(e))}
-  )
+
+  export_data(path = new_dir2, processed_data = processed_data[[name]], rythm_analysis_data = rythm_analysis_data[[name]])
+
   print(paste(name, "export finished"))
 
 }

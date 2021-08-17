@@ -23,9 +23,9 @@ export_data <- function(path = getwd(), processed_data = NULL, rythm_analysis_da
 ##### Actually saving files ####
 if (!is.null(processed_data))  {
   #First time we write a csv
-  write.csv(processed_data, paste0(path, "/","processed_data.csv"), col.names = TRUE,  row.names = FALSE)
+  write.csv(processed_data, paste0(path, "/","processed_data.csv"),  row.names = FALSE)
 }
-print("processed data saved")
+
 
 if (!is.null(rythm_analysis_data)) {
 df_select <-  dplyr::select(rythm_analysis_data,
@@ -33,17 +33,17 @@ df_select <-  dplyr::select(rythm_analysis_data,
                 amplitude, amplitude_se, adj_r_squared, cosinor_p_value, phase_in_seconds)) %>%
   dplyr::rename(phase_in_hours = phase_in_seconds) %>%
   dplyr::rename(PR = adj_r_squared)
-print("df_select")
+
 df_autocor <- df_select %>% dplyr::filter(method == "autocorrelation") %>%
   dplyr::select(-c(power, lsp_p_value, sig_level, ofac, method))
-print("df_autocor")
+
 df_lsp <- df_select %>% dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(-c(period_hours, method))
-print("df_lsp")
+
 #Second time we write a csv
-write.csv(df_lsp, paste0(path, "/", "rythm_analysis_lsp.csv"), col.names = TRUE, row.names = FALSE)
+write.csv(df_lsp, paste0(path, "/", "rythm_analysis_lsp.csv"), row.names = FALSE)
 #Third time we write a csv
-write.csv(df_autocor, paste0(path, "/", "rythm_analysis_autocor.csv"), col.names = TRUE, row.names = FALSE)
+write.csv(df_autocor, paste0(path, "/", "rythm_analysis_autocor.csv"), row.names = FALSE)
 }
 
 }

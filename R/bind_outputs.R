@@ -18,14 +18,12 @@
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
    #Plan for paralellization
-  print("begin binding processed")
+
   df_bound <-  purrr::map_df(df, ~ dplyr::rename(., raw = 3), .id = "ID")
-  print("df_bound")
 
   filename = paste0(path,"/",substitute(df),".csv")
-  print("filename")
 
-  if (export) {write.csv(df_bound, filename)
+  if (export) {write.csv(df_bound, filename, row.names = FALSE)
     } else {return(df_bound) }
 
 
@@ -34,7 +32,6 @@
 
 
  bind_analysis <- function(df = NULL, export = FALSE, path = getwd()) {
-   print(df)
 
 
    df_lomb <-  dplyr::bind_rows(df, .id = "ID") %>%
@@ -46,7 +43,7 @@
      dplyr::arrange(name) %>%
      dplyr::rename(Variables = name)
 
-  print("df_lomb")
+
 
   df_acf <-  dplyr::bind_rows(df, .id = "ID") %>%
      dplyr::filter(method == 'autocorrelation') %>%
@@ -57,7 +54,6 @@
      dplyr::arrange(name) %>%
      dplyr::rename(Variables = name)
 
-  print("df_acf")
 
   names(df_acf) = stringr::str_replace(names(df_acf), '\\d', paste('Window', names(df_acf)))
   names(df_lomb) = stringr::str_replace(names(df_lomb), '\\d', paste('Window', names(df_lomb)))
@@ -67,8 +63,8 @@
 
 
    if (export) {
-     readr::write_csv(df_acf, acf_filename)
-     readr::write_csv(df_lomb, lomb_filename)
+     write.csv(df_acf, acf_filename, row.names = FALSE)
+     write.csv(df_lomb, lomb_filename, row.names = FALSE)
      } else {return(list(df_lomb, df_acf))}
 
 
