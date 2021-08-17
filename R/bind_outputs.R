@@ -18,11 +18,12 @@
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
    #Plan for paralellization
-   print(df)
-   future::plan(future::multisession)
+  print("begin binding processed")
+  df_bound <-  purrr::map_df(df, ~ dplyr::rename(., raw = 3), .id = "ID")
+  print("df_bound")
 
-  df_bound <-  furrr::future_map_dfr(df, ~ dplyr::rename(., raw = 3), .id = "ID")
   filename = paste0(path,"/",substitute(df),".csv")
+  print("filename")
 
   if (export) {readr::write_csv(df_bound, filename)
     } else {return(df_bound) }
