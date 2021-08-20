@@ -7,6 +7,8 @@
 #' @return
 #' @export
 #'
+#'@importFrom dplyr select everything
+#'@importFrom purrr map_df
 #'
 arbitrary_noise_subtraction <- function(df, noise = 0) {
 
@@ -14,7 +16,7 @@ noise_reduced <- map_df(df[-1], ~ ifelse(. - noise < 0 | is.na(.), 0, . - noise)
 
 noise_reduced$datetime <- df[[1]]
 
-noise_reduced <- dplyr::select(noise_reduced, datetime, dplyr::everything())
+noise_reduced <- select(noise_reduced, datetime, everything())
 
 return(noise_reduced)
 
