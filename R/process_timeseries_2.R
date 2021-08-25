@@ -106,8 +106,6 @@ process_timeseries_2 <- function(df = NULL, sampling_rate = NULL, window_size_in
     )
   }
 
-  df <- bind_rows(df, .id = 'window')
-
 
   return(df)
 }

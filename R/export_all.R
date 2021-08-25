@@ -74,7 +74,7 @@ raw_data <- dplyr::select(raw_data,1, mean, dplyr::everything())
 if (!is.null(raw_data)) {
 
 #Function to export actogram
-plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = TRUE, path = new_dir1)
+plot_actogram(raw_data, ld_data = ld_data, export = TRUE, autosize = FALSE, width =8, height=11, nrow = 2, ncol = 2, path = new_dir1)
 }
 print("Actogram Exported")
 

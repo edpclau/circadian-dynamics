@@ -26,7 +26,8 @@
 #' A data.frame with 2 columns:
 #' downsampled_data: summarise measurement values
 #' floored_dates: downsampled POSIXct object
-#' @export
+#'
+#' @export downsample_time_series_2
 #'
 #' @examples
 #' df_downsampled <- downsample_time_series(data = raw_data,
@@ -35,7 +36,7 @@
 #' @importFrom dplyr pull summarise group_by
 #' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
-#' @importFrom magrittr '%>%'
+#' @import magrittr
 #'
 downsample_time_series_2 <- function(data = NULL,
                                    amount = 1,
