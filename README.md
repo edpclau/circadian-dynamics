@@ -8,9 +8,10 @@ devtools::install_github("edpclau/circadian-dynamics")
 ```
 
 
-## 2. Example script for TriKinetics monitors
+## 2. Example script for Generic CSV File 
 
-###        a) Import Trikinetics data into R (opens a GUI)   
+###        a) Import csv data into (opens a GUI)  open csv in excel. Make sure date time column is named "datetime"  and formated as follows:
+###      Right click on cell > Cell format > Category > Custom > Type > write this : yyyy-mm-ddThh:MM:ss
 ```{r}
 monitor <- read_trikinetics()
 ```
@@ -61,6 +62,6 @@ export_all(raw_data = monitor_downsampled,
            processed_data = monitor_processed,
            rythm_analysis_data = monitor_analysis,
          autocorrelation = TRUE,
-           new_dir_name = "Monitor_40")
+           new_dir_name = "analysis")
 ```           
            
