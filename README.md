@@ -10,10 +10,10 @@ devtools::install_github("edpclau/circadian-dynamics")
 
 ## 2. Example script for Generic CSV File 
 
-###        a) Import csv data into (opens a GUI)  open csv in excel. Make sure date time column is named "datetime"  and formated as follows:
+###        a) Import csv data into R by putting the path to the csv file.  Make sure date time column is named "datetime"  and formated as follows:
 ###      Right click on cell > Cell format > Category > Custom > Type > write this : yyyy-mm-ddThh:MM:ss
 ```{r}
-monitor <- read_trikinetics()
+monitor <- read_csv("filepath")
 ```
 
 ###        b) Change bin size (in this case its a 1hr bin)   
