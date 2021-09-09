@@ -72,7 +72,7 @@ df_analysis <- multivariate_rythm_analysis(
 #### This is a helper function that creates basic visualizations of your analysis and exports all the data generated into a folder on your device.
 
 ```{r}
-export_all(raw_data = monitor_downsampled,
+export_all(raw_data = df_downsampled,
            processed_data = df_processed,
            rythm_analysis_data = df_analysis,
          autocorrelation = TRUE,
