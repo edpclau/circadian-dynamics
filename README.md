@@ -68,7 +68,7 @@ df_analysis <- multivariate_rythm_analysis(
 
 ```
 
-### 4. *Optional* Export your analysis and build figures
+## 4. *Optional* Export your analysis and build figures
 #### This is a helper function that creates basic visualizations of your analysis and exports all the data generated into a folder on your device.
 
 ```{r}
