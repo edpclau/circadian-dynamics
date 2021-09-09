@@ -1,7 +1,7 @@
 # circadian-dynamics
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fedpclau%2Fcircadian-dynamics.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fedpclau%2Fcircadian-dynamics?ref=badge_shield)
 
-A repository for analyzing circadian data
+A library for analyzing circadian data
 ## 1. To install in R use:
 ```{r}
 devtools::install_github("edpclau/circadian-dynamics")
