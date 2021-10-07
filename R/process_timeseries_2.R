@@ -47,65 +47,114 @@
 #' @importFrom future plan multisession availableWorkers
 #' @importFrom furrr future_map
 #'
-process_timeseries_2 <- function(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
-                               detrend_data = TRUE, butterworth = TRUE,
-                               f_low = 1/4, f_high = 1/73, order = 2, plot = TRUE,
-                               binning_n = 4, big_data = FALSE) {
+#'
+#'
+#'
 
 
 
-  ###### Flow control parameters######
-  if (big_data){
-    workers = length(availableWorkers()) - 2
-  } else {workers = 1}
+# Here we create a moving window
+# The window size will be dynamic as well as steps to slide the window
+# df <- make_time_windows_2(df,
+#                           window_size_in_days = window_size_in_days,
+#                           window_step_in_days = window_step_in_days
+# )
 
-  #Plan for paralellization
-  plan(multisession, workers = workers)
-
-  #Filter out dates before the first midnight.
-  if (hour(min(df$datetime)) != 0) {
-
-    df <- filter(df, datetime >= ceiling_date(min(df$datetime), unit = "1 day"))
-  }
+process_timeseries.rmv_gaps <- function(df = NULL, sampling_rate = NULL) {
 
   df <- right_join(df,
-                                find_gaps(times = df$datetime, sampling_rate = sampling_rate),
+                   find_gaps(times = df$datetime, sampling_rate = sampling_rate),
                                 by = "datetime")
-
-  df$value <- ifelse(is.na(df$value), 0, df$value)
-
-  # Insert NA for missing data points, this is necessary for the autocorrelation
-  # Consider making this into an if statetment type thing that is only turned ON when "autocorrelation" == TRUE
-
-  # Here we create a moving window
-  # The window size will be dynamic as well as steps to slide the window
-  df <- make_time_windows_2(df,
-                            window_size_in_days = window_size_in_days,
-                            window_step_in_days = window_step_in_days,
-                            workers = workers
-                            )
-
-
-
-  ##### Smooth or Detrend Data #####
-
-  df <- future_map(df,
-                   .f = smooth_and_detrend,
-                   smooth_data = FALSE,
-                   detrend_data = detrend_data,
-                   binning_n = binning_n,
-                   .options = furrr_options(seed = TRUE)
-                   )
-
-
-  #butterworth by window
-  if (butterworth) {
-  df <- future_map(df,
-              .f = ~ butterworth_filter_2(.x, order = order, f_low = f_low, f_high = f_high, plot = FALSE),
-              .options = furrr_options(seed = TRUE)
-    )
-  }
-
-
   return(df)
+
 }
+
+
+process_timeseries.na_to_zero <- function(df = NULL) {
+
+#Remove NA for missing data points, this is necessary for the autocorrelation
+#Turn NA's into 0
+df$value <- ifelse(is.na(df$value), 0, df$value)
+return(df)
+
+}
+
+
+
+process_timeseries.waveform <- function(df = NULL,
+                                        detrend_data = TRUE,
+                                        smooth_data = FALSE,
+                                        butterworth = TRUE,
+                                        f_low = 1/4,
+                                        f_high = 1/73,
+                                        order = 2) {
+
+if (smooth_data) { butterworth = FALSE }
+
+df = smooth_and_detrend(df, smooth_data = smooth_data, detrend_data = detrend_data, binning_n = binning_n)
+
+if (butterworth)
+df = butterworth_filter_2(df, order = order, f_low = f_low, f_high = f_high, plot = FALSE)
+
+
+return(df)
+
+}
+
+
+process_timeseries.main <- function(df = NULL,
+
+                                    make_windows = FALSE,
+                                    window_size_in_days = 3,
+                                    window_step_in_days = 1,
+
+                                    sampling_rate = '1 hour',
+                                    detrend_data = TRUE,
+                                    smooth_data = FALSE,
+                                    butterworth = TRUE,
+                                    f_low = 1/4,
+                                    f_high = 1/73,
+                                    order = 2,
+                                    big_data = FALSE) {
+
+if (big_data) {
+plan(multisession)
+} else {plan(sequential)}
+
+if (make_windows){
+#Set step and window_size
+window_size <- days(window_size_in_days) #Width of the window
+times <- df$datetime
+step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day")) #days to move the window
+
+df = future_map(
+  .options = furrr_options(seed = TRUE, lazy = TRUE),
+  .x = step,
+  .f = ~ {
+    x = filter(df, (datetime >= .x) & (datetime <= .x + window_size))
+    x = process_timeseries.rmv_gaps(x, sampling_rate = sampling_rate)
+    x = process_timeseries.na_to_zero(x)
+    x = process_timeseries.waveform(x,
+                                    detrend_data = detrend_data, smooth_data = smooth_data,
+                                    butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
+    x
+    }
+)
+
+return(df)
+
+} else {
+df = process_timeseries.rmv_gaps(df, sampling_rate = sampling_rate)
+df = process_timeseries.na_to_zero(df)
+df = process_timeseries.waveform(df,
+                                detrend_data = detrend_data, smooth_data = smooth_data,
+                                butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
+return(df)
+
+}
+
+
+}
+
+
+
