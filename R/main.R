@@ -102,6 +102,11 @@ return(df)
 }
 
 
+
+
+
+
+
 process_timeseries.main <- function(df = NULL,
 
                                     make_windows = FALSE,
@@ -132,24 +137,52 @@ df = future_map(
   .x = step,
   .f = ~ {
     x = filter(df, (datetime >= .x) & (datetime <= .x + window_size))
+    #General Pipeline
     x = process_timeseries.rmv_gaps(x, sampling_rate = sampling_rate)
     x = process_timeseries.na_to_zero(x)
+    #ACF Pipeline
     x = process_timeseries.waveform(x,
                                     detrend_data = detrend_data, smooth_data = smooth_data,
                                     butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
-    x
+    acf_results = analyze_timeseries.acf(x, from = from, to = to, sampling_rate = sampling_rate)
+    acf_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
+    #Lomb-Scargle Pipeline
+    lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to)
+    lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
+
+    return(list(data = x,
+                acf = list(results = acf_results,
+                           cosinor = acf_cosinor),
+                lomb = list(results = lsp_results,
+                            cosinor = lsp_cosinor)
+                )
+           )
     }
 )
 
 return(df)
 
 } else {
+#General Pipeline
 df = process_timeseries.rmv_gaps(df, sampling_rate = sampling_rate)
 df = process_timeseries.na_to_zero(df)
+#ACF Pipeline
 df = process_timeseries.waveform(df,
                                 detrend_data = detrend_data, smooth_data = smooth_data,
                                 butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
-return(df)
+acf_results = analyze_timeseries.acf(df, from = from, to = to, sampling_rate = sampling_rate)
+acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
+#Lomb-Scargle Pipeline
+lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to)
+lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
+
+return(list(data = df,
+            acf = list(results = acf_results,
+                       cosinor = acf_cosinor),
+            lomb = list(results = lsp_results,
+                        cosinor = lsp_cosinor)
+            )
+       )
 
 }
 

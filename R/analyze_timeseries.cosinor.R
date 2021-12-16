@@ -1,7 +1,7 @@
 #' Cosinor Analysis
 #'
 #' @usage
-#' cosinor_lm(df = data, timeseries_datetime = NULL, values = NULL, sampling_rate = "30 min", period = 48, na.action = na.omit)
+#' analyze_timeseries.cosinor(df = data, timeseries_datetime = NULL, values = NULL, sampling_rate = "30 min", period = 48, na.action = na.omit)
 #'
 #' @description COSINOR analysis of a timeseries.
 #'
@@ -56,10 +56,20 @@
 #' @importFrom tibble tibble_row tibble
 #' @importFrom dplyr mutate n
 #' @importFrom broom tidy glance
+#' @importFrom rlang is_empty
 #' @import magrittr
 #' @importFrom lubridate duration
 #' @importFrom stringr str_extract str_remove
-cosinor_lm_2 <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
+analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
+
+
+##### Base Cases #####
+  if (is_empty(period)) {
+    period = 24
+  } else if (is.na(period)){
+    period = 24
+  }
+
 
   ###### Flow control parameters######
   #1. Must have sampling rate
@@ -132,8 +142,7 @@ cosinor_lm_2 <- function(df = NULL, sampling_rate = NULL, period = NULL, na.acti
   model_p.value <- glance(model)$p.value
 
 
-  df <- mutate(
-    df,
+  results <- list(
     mesor = MESOR,
     amplitude = amplitude,
     amplitude_se = amplitude_se,
@@ -142,11 +151,11 @@ cosinor_lm_2 <- function(df = NULL, sampling_rate = NULL, period = NULL, na.acti
     phase = phase,
     phase_se = phase_se,
     adj_r_squared = adj_r_squared,
-    cosinor_p_value = model_p.value,
-    cosinor_wave = MESOR + (sin_coeff * sinw) + (cos_coeff * cosw),
+    p_value = model_p.value,
+    wave = MESOR + (sin_coeff * sinw) + (cos_coeff * cosw),
     cos_coeff = cos_coeff,
     sin_coeff = sin_coeff
   )
 
-  return(df)
+  return(results)
 }

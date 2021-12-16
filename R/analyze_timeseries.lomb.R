@@ -53,7 +53,7 @@
 #'
 #' sig_level        Powers > sig.level can considered significant peaks.
 #'
-#' @export lsp_by_window_2
+#' @export analyze_timeseries.lomb
 #'
 #' @examples
 #' lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
@@ -66,8 +66,8 @@
 #' @importFrom stringr str_remove str_extract
 #' @importFrom future plan multisession
 #'
-lsp_by_window_2 <- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
-                            ofac = 60, alpha = 0.01, big_data = FALSE) {
+analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
+                            ofac = 60, alpha = 0.01) {
 
   ###### Flow control parameters######
   #1.must have sampling_rate
@@ -83,6 +83,9 @@ lsp_by_window_2 <- function (df = NULL, sampling_rate = NULL, from = 18, to = 30
   sampling_bin_size = as.numeric(str_extract(sampling_rate, "\\d*"))
   sampling_rate = str_remove(sampling_rate, "\\d* *")
 
+  #4. Extract values
+  values = df$value
+
   #4. Convert from-to to sampling rate.
   if (!is.null(from)) {
     from <- as.numeric(duration(from, units = "hours"), sampling_rate)/ sampling_bin_size
@@ -92,42 +95,35 @@ lsp_by_window_2 <- function (df = NULL, sampling_rate = NULL, from = 18, to = 30
     to  <- as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_size
   }
 
-  #5. Plan for paralellization
-  if (big_data) {
-  plan(multisession)
-  } else {plan(sequential)}
+  #If there is 0 variance in the data or less than 2 values that are not NA, skip window.
+  if (var(values) == 0 | sum(!is.na(values)) <= 2) {
+    results = list(
+      period = NA ,
+      power = NA,
+      p_value = NA,
+      sig_level = NA,
+      scanned = NA,
+      power = NA
+    )
+    return(results)
+  }
 
-  #### Lomb Scargle periodogram by time windows #####
+#### Lomb Scargle periodogram#####
 
- df  = future_map_if(
-   .options = furrr_options(lazy = TRUE),
-    .x = df,
-    #If there is 0 variance in the data or less than 2 values that are not NA, skip window.
-    .p = ~ var(.x$value) != 0 | sum(!is.na(.x$value)) >= 2,
-    #If it fails, return NA
-    .else = ~ {
-      mutate(.x,
-                        lsp_period = NA ,
-                        lsp_power = NA,
-                        lsp_p_value = NA,
-                        lsp_sig_level = NA
-                      )
-    },
-    .f = ~ {
-      value = .x$value
-      #lsp of interest
-      lsp_of_int = lsp_mod(x = value, from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = FALSE)
-      #the full lsp for plotting (may have to delete this later if I end up not using it)
-      lsp = lsp_mod(x = value, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+#lsp of interest
+lsp_of_int = lsp_mod(x = values, from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+#the full lsp for plotting (may have to delete this later if I end up not using it)
+lsp = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+
+results = list(
+       period = as.numeric(duration(lsp_of_int$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
+       peak = lsp_of_int$peak,
+       p_value = lsp_of_int$p.value,
+       sig_level = lsp_of_int$sig.level,
+       scanned = lsp$scanned,
+       power = lsp$power)
 
 
-      mutate(.x,
-             lsp_period = as.numeric(duration(lsp_of_int$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
-             lsp_power = lsp_of_int$peak,
-             lsp_p_value = lsp_of_int$p.value,
-             lsp_sig_level = lsp_of_int$sig.level)
-    }
-  )
 
-  return(df)
+  return(results)
 }
