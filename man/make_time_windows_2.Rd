@@ -7,11 +7,11 @@
 make_time_windows(data = NULL, window_size_in_days = 3, window_step_in_days = 1)
 }
 \arguments{
-\item{data}{a data.frame with 2 columns. Column 1 must be a POSIXct object and column 2 must be the measurement values.}
-
 \item{window_size_in_days}{a numeric indicating the width of the window size in day units.}
 
 \item{window_step_in_days}{a numeric indicating the amount of day by which to move the window in day units.}
+
+\item{data}{a data.frame with 2 columns. Column 1 must be a POSIXct object and column 2 must be the measurement values.}
 }
 \value{
 A data.frame cotaining:
@@ -23,6 +23,6 @@ values     raw measurement data
 Creates iterable time windows for a data.frame
 }
 \examples{
-windowed_data <- function(data = df)
+windowed_data <- make_time_windows_2(data, window_size_in_days = 3, window_step_in_days = 1)
 
 }

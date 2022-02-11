@@ -18,4 +18,5 @@ Create a timeseries mean based on all the samples in the data
 }
 \examples{
 group_average(monitor_downsampled)
+
 }

@@ -33,7 +33,9 @@
 #' analysis <- multivariate_rythm_analysis(df = processed_data, sampling_rate = "30 min", autocorrelation = TRUE,
 #' lomb_scargle = TRUE, from = 18, to = 30, multipeak_period = TRUE)
 #'
-#' @importFrom purrr map
+#' @importFrom purrr map map2
+#' @importFrom furrr future_map
+#' @importFrom future plan multisession
 #' @importFrom tibble tibble
 #' @importFrom dplyr select last_col
 #'
@@ -52,27 +54,39 @@ if (is.null(df) & (is.null(datetime) | is.null(values) | is.null(window))) {
 if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes', '1 hour', '4 seconds', '100 days'.")}
 
 #3. Plan for paralellization
-future::plan(future::multisession)
+plan(multisession)
 
 
 
 
 
-df_short <- furrr::future_map(1:length(df),
+df_short_auto <- future_map(1:length(df),
            .f = ~ dplyr::select(df[[.]], 1:2, dplyr::last_col())
 )
 
+df_short_lomb <- future_map(1:length(df),
+                                   .f = ~ dplyr::select(df[[.]], 1:3)
+)
 
 
-
-results <- furrr::future_map(1:length(df_short),
+auto <- future_map(1:length(df_short_auto),
            .f = ~
-             rythm_analysis_by_window(df = df_short[[.]] , sampling_rate = sampling_rate,
-                                      autocorrelation = autocorrelation, lomb_scargle = lomb_scargle,
+             rythm_analysis_by_window(df = df_short_auto[[.]] , sampling_rate = sampling_rate,
+                                      autocorrelation = TRUE, lomb_scargle = FALSE,
                          from = from, to = to, ofac = ofac,
                          alpha = alpha)
 )
 
+lomb <- future_map(1:length(df_short_lomb),
+                             .f = ~
+                               rythm_analysis_by_window(df = df_short_lomb[[.]] , sampling_rate = sampling_rate,
+                                                        autocorrelation = FALSE, lomb_scargle = TRUE,
+                                                        from = from, to = to, ofac = ofac,
+                                                        alpha = alpha)
+)
+
+results <- map2(auto, lomb,
+           .f = bind_rows)
 
 if (!is.null(names(df))) {
   names(results) <- names(df)
