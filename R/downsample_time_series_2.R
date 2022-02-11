@@ -26,8 +26,7 @@
 #' A data.frame with 2 columns:
 #' downsampled_data: summarise measurement values
 #' floored_dates: downsampled POSIXct object
-#'
-#' @export downsample_time_series_2
+#' @export
 #'
 #' @examples
 #' df_downsampled <- downsample_time_series(data = raw_data,
@@ -36,22 +35,33 @@
 #' @importFrom dplyr pull summarise group_by
 #' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
-#' @import magrittr
+#' @importFrom magrittr '%>%'
 #'
 downsample_time_series_2 <- function(data = NULL,
                                    amount = 1,
                                    units = "hour",
                                    method = c("mean", "sum", "median"))
 {
- data = map(
-    .x = data,
-    .f = ~ downsample_time_series(
-      .x,
-      amount = amount,
-      units = units,
-      method = method
-    )
-  )
+
+
+
+
+  #choose a time point to roll back the time by a certain amount
+  units <- stringr::str_remove(units, "\\d")
+
+  #handle the anonymous function naming
+  method <- match.arg(method, choices = c("mean", "sum", "median")) %>%
+    as_function() %>%
+    match.fun(c(mean, sum, median))
+
+  #Flooring Dates
+  data[['datetime']] = floor_date(data[['datetime']] ,unit = period(amount, units = units))
+
+  #Downsampling
+  data = group_by(data, datetime) %>%
+    summarise(value = method(value, na.rm = TRUE),
+              .groups = 'drop')
+
   #return the result of downsampling
   return(data)
 }

@@ -32,24 +32,24 @@ smooth_and_detrend <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
   ####### Data Smoothing or Detrending ######
   if (smooth_data & detrend_data) {
       df =  df %>%
-          mutate(
-            smoothed =  movavg(value, n = binning_n, type = "s"),
-            smoothed_and_detrended = c(detrend(smoothed)))
+          dplyr::mutate(
+            smoothed =  pracma::movavg(value, n = binning_n, type = "s"),
+            smoothed_and_detrended = c(pracma::detrend(smoothed)))
 
 
 
   } else if (smooth_data) {
 
     df =  df %>%
-      mutate(
-        smoothed =  movavg(value, n = binning_n, type = "s"))
+      dplyr::mutate(
+        smoothed =  pracma::movavg(value, n = binning_n, type = "s"))
 
 
   } else if (detrend_data) {
 
     df =  df %>%
-      mutate(
-        detrended =  c(detrend(value)))
+      dplyr::mutate(
+        detrended =  c(pracma::detrend(value)))
 
   }
 
