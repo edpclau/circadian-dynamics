@@ -120,6 +120,7 @@ process_timeseries.main <- function(df = NULL,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
+                                    causal_order = 1,
                                     big_data = FALSE) {
 
 if (big_data) {
@@ -146,9 +147,11 @@ df = future_map(
                                     butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
     acf_results = analyze_timeseries.acf(x, from = from, to = to, sampling_rate = sampling_rate)
     acf_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
+    acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave, order = causal_order, period = acf_results$period)
     #Lomb-Scargle Pipeline
     lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to)
     lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
+    lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order, period = acf_results$period)
 
     return(list(data = x,
                 acf = list(results = acf_results,
@@ -172,9 +175,12 @@ df = process_timeseries.waveform(df,
                                 butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
 acf_results = analyze_timeseries.acf(df, from = from, to = to, sampling_rate = sampling_rate)
 acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
+acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave,  order = causal_order, period = acf_results$period)
 #Lomb-Scargle Pipeline
 lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to)
 lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
+lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order, period = acf_results$period)
+
 
 return(list(data = df,
             acf = list(results = acf_results,

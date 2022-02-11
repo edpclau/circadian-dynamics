@@ -67,7 +67,7 @@
 #' @importFrom future plan multisession
 #'
 analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
-                            ofac = 60, alpha = 0.01) {
+                            ofac = 60, alpha = 0.05) {
 
   ###### Flow control parameters######
   #1.must have sampling_rate
@@ -103,7 +103,8 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
       p_value = NA,
       sig_level = NA,
       scanned = NA,
-      power = NA
+      power = NA,
+      rythm_strength = NA
     )
     return(results)
   }
@@ -115,13 +116,27 @@ lsp_of_int = lsp_mod(x = values, from = from, to = to,  ofac = ofac, type = type
 #the full lsp for plotting (may have to delete this later if I end up not using it)
 lsp = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
 
+# print(lsp_of_int$peak.at/(1.965/sqrt(lsp_of_int$n.out)))
+# print(lsp_of_int$peak.at/(1.965/sqrt(lsp_of_int$n)))
+# print(lsp_of_int$peak/(1.965/sqrt(lsp_of_int$n.out)))
+# print(lsp_of_int$peak/(1.965/sqrt(lsp_of_int$n)))
+# print('all peaks')
+# print(lsp$peak.at/(1.965/sqrt(lsp$n.out)))
+# print()
+# print(lsp$peak/(1.965/sqrt(lsp$n.out)))
+# print(lsp$peak/(1.965/sqrt(lsp$n)))
+
+
 results = list(
        period = as.numeric(duration(lsp_of_int$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
        peak = lsp_of_int$peak,
        p_value = lsp_of_int$p.value,
        sig_level = lsp_of_int$sig.level,
        scanned = lsp$scanned,
-       power = lsp$power)
+       power = lsp$power,
+       #this is a beta measurement and needs validation
+       rythm_strength = lsp_of_int$peak/lsp_of_int$sig.level
+       )
 
 
 
