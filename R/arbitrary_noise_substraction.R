@@ -8,11 +8,14 @@
 #' @export
 #'
 #'@importFrom dplyr select everything
-#'@importFrom purrr map_df
+#'@importFrom furrr future_map_dfr
+#'@importFrom future plan sequential
 #'
 arbitrary_noise_subtraction <- function(df, noise = 0) {
 
-noise_reduced <- map_df(df[-1], ~ ifelse(. - noise < 0 | is.na(.), 0, . - noise))
+plan(sequential)
+
+noise_reduced <- future_map_dfr(df[-1], ~ ifelse(. - noise < 0 | is.na(.), 0, . - noise))
 
 noise_reduced$datetime <- df[[1]]
 

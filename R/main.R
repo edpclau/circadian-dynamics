@@ -48,8 +48,8 @@
 #' @importFrom tibble tibble
 #' @importFrom magrittr "%>%"
 #' @importFrom lubridate hour ceiling_date
-#' @importFrom future plan multisession availableWorkers
-#' @importFrom furrr future_map
+#' @importFrom future plan multisession sequential
+#' @importFrom furrr future_map furrr_options
 #'
 #'
 #'
@@ -120,6 +120,8 @@ process_timeseries.core <- function(df = NULL,
                                     detrend_data = TRUE,
                                     smooth_data = FALSE,
                                     butterworth = TRUE,
+                                    from = 18,
+                                    to = 30,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
@@ -137,7 +139,7 @@ plan(multisession)
   step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day")) #days to move the window
 
   df = future_map(
-    .options = furrr_options(seed = TRUE, lazy = TRUE),
+    .options = furrr_options(seed = 42),
     .x = step,
     .f = ~ {
 
@@ -213,6 +215,8 @@ process_timeseries.main <- function(df = NULL,
                                     make_windows = FALSE,
                                     window_size_in_days = 3,
                                     window_step_in_days = 1,
+                                    from = 18,
+                                    to = 30,
                                     sampling_rate = '1 hour',
                                     detrend_data = TRUE,
                                     smooth_data = FALSE,
@@ -230,7 +234,7 @@ process_timeseries.main <- function(df = NULL,
 
     future_map(
       .x = df,
-      .options = furrr_options(seed = TRUE, lazy = TRUE),
+      .options = furrr_options(seed = 42),
       .f = ~ {
         process_timeseries.core(df = .x,
 
@@ -243,6 +247,8 @@ process_timeseries.main <- function(df = NULL,
                                 butterworth = butterworth,
                                 f_low = f_low,
                                 f_high = f_high,
+                                from = from,
+                                to = to,
                                 order = order,
                                 causal_order = causal_order,
                                 big_data = big_data)

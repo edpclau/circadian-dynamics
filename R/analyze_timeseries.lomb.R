@@ -59,12 +59,8 @@
 #' lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
 #'
 #'
-#' @importFrom furrr future_map_if furrr_options
-#' @importFrom tibble tibble
 #' @importFrom lubridate  duration
-#' @importFrom dplyr mutate
 #' @importFrom stringr str_remove str_extract
-#' @importFrom future plan multisession
 #'
 analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
                             ofac = 60, alpha = 0.05) {

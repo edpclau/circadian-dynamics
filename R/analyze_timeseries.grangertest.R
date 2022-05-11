@@ -7,7 +7,7 @@
 #' @return
 #' @export
 #'
-#' @import lmtest
+#' @importFrom lmtest grangertest
 #' @examples
 analyze_timeseries.grangertest <- function(value, cos, order = 1, period) {
 
@@ -24,8 +24,8 @@ analyze_timeseries.grangertest <- function(value, cos, order = 1, period) {
 
   return(
     list(
-      rawdata_to_cos = lmtest::grangertest(x = value, y = cos, order = order)[[4]][2],
-      cos_to_rawdata = lmtest::grangertest(y = value, x = cos, order = order)[[4]][2]
+      rawdata_to_cos = grangertest(x = value, y = cos, order = order)[[4]][2],
+      cos_to_rawdata = grangertest(y = value, x = cos, order = order)[[4]][2]
     )
   )
 

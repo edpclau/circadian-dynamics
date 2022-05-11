@@ -20,7 +20,6 @@
 #' @importFrom furrr future_map_dfr
 #' @importFrom dplyr filter
 #' @import lubridate
-#' @import tidyverse
 #'
 make_time_windows <- function(data = NULL, window_size_in_days = 3, window_step_in_days = 1){
 

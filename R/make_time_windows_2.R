@@ -17,10 +17,6 @@
 #' windowed_data <- make_time_windows_2(data, window_size_in_days = 3, window_step_in_days = 1)
 #'
 #' @importFrom lubridate days
-#' @importFrom furrr future_map furrr_options
-#' @importFrom future plan multisession sequential
-#' @importFrom dplyr filter
-#' @importFrom lubridate days
 #'
 make_time_windows_2 <- function(df = NULL, window_size_in_days = 3, window_step_in_days = 1){
 

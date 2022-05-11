@@ -12,7 +12,7 @@
 #'
 #' @importFrom future plan multisession
 #' @importFrom dplyr select mutate pull arrange case_when
-#' @importFrom furrr future_map_if
+#' @importFrom purrr map_if
 #' @importFrom purrr map_chr
 #' @importFrom tidyr nest unnest
 #' @import magrittr
@@ -49,7 +49,7 @@ define_event <- function(df, core = TRUE) {
 
   # Building the events
   df = df %>%
-    mutate(data = future_map_if( #paralelized version of map_if. It will run only when there is one than one timepoint in the data.
+    mutate(data = map_if( #paralelized version of map_if. It will run only when there is one than one timepoint in the data.
       .x = data,
       .p = ~ nrow(.x) > 1, #if statement
       .f = ~ {

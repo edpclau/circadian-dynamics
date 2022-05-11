@@ -59,7 +59,9 @@
 #' lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
 #'
 #'
-#' @importFrom purrr map_if map_df discard
+#' @importFrom purrr map_if map_df
+#' @importFrom furrr future_map_if future_map_dfr
+#' @importFrom purrr discard
 #' @importFrom rlang is_empty
 #' @importFrom tibble tibble
 #' @importFrom lubridate is.POSIXt is.POSIXct duration

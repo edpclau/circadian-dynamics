@@ -37,13 +37,16 @@
 #' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
 #' @import magrittr
+#' @importFrom furrr future_map
+#' @importFrom future plan sequential
 #'
 downsample_time_series_2 <- function(data = NULL,
                                    amount = 1,
                                    units = "hour",
                                    method = c("mean", "sum", "median"))
 {
- data = map(
+ plan(sequential)
+ data = future_map(
     .x = data,
     .f = ~ downsample_time_series(
       .x,
