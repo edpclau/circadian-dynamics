@@ -63,7 +63,7 @@ processed_df <- furrr::future_map(2:ncol(df),
                                      window_step_in_days = window_step_in_days,  detrend_data = detrend_data,
                                      butterworth = butterworth, f_low = f_low, f_high = f_high, order = order,
                                      smoothing_n = smoothing_n, plot = plot),
-           .options = furrr::furrr_options(seed = TRUE, lazy = FALSE)
+           .options = furrr::furrr_options(seed = TRUE, lazy = TRUE)
            )
 
 names(processed_df) <- names(df)[-1]
