@@ -29,6 +29,14 @@ smooth_and_detrend <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
                                       detrend_data = TRUE) {
 
 
+  ####### Catch ERRORS (too little data) #######
+  if (nrow(df) <= 1) {
+    return(
+      mutate(df, detrended =  NA)
+      )
+  }
+
+
   ####### Data Smoothing or Detrending ######
   if (smooth_data & detrend_data) {
       df =  df %>%
