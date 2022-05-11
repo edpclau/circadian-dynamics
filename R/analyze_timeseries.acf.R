@@ -47,7 +47,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   #the data for the acf will be the last col outputter by the processing functions
   values = pull(df, ncol(df))
   #Check the variance
-  if (var(values) == 0) {
+  if (var(values) == 0 | length(values) <= 3) {
   results$datetime = NA
   results$autocorrelation = NA
   results$power = NA
