@@ -176,6 +176,7 @@ lsp_mod <- function (x, times = NULL, from = NULL, to = NULL,
     f.max <- to
   }
 
+
 if (fr.d > f.max & step > 0) {
   return(NULL)}
 
