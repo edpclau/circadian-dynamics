@@ -77,7 +77,7 @@ auto <- future_map(1:length(df_short_auto),
                          alpha = alpha)
 )
 
-lomb <- future_map(1:length(df_short_lomb),
+lomb <- purrr::map(1:length(df_short_lomb),
                              .f = ~
                                rythm_analysis_by_window(df = df_short_lomb[[.]] , sampling_rate = sampling_rate,
                                                         autocorrelation = FALSE, lomb_scargle = TRUE,
