@@ -7,6 +7,7 @@
 #' @return
 #' @export
 #'
+#' @import lmtest
 #' @examples
 analyze_timeseries.grangertest <- function(value, cos, order = 1, period) {
 

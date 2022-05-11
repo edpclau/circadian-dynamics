@@ -31,12 +31,9 @@
 #'
 #' @importFrom dplyr pull filter mutate left_join select
 #' @importFrom stringr str_extract str_remove
-#' @importFrom future plan multisession sequential
-#' @importFrom furrr future_map_if furrr_options
 #' @importFrom lubridate duration as.duration as.interval
 #' @importFrom tibble tibble
 #' @importFrom pracma findpeaks movavg
-#' @import magrittr
 #'
 analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
                        sampling_rate = "1 hour") {
