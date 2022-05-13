@@ -169,8 +169,9 @@ lomb_scargle_no_null <- purrr::discard(lomb_scargle, is_empty)
 
 
 # Prepare a tibble with the relevant results. These will allow for running a COSINOR analysis.
-results <- furrr::future_map_dfr(1:length(lomb_scargle_full_no_null),
-           .f = ~ tibble(window = good_windows[.],
+results <- furrr::future_map_dfr(1:length(lomb_scargle_no_null),
+           .f = ~ {
+             tibble(window = good_windows[.],
                        period = as.numeric(duration(lomb_scargle_no_null[[.]]$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
                        power = lomb_scargle_no_null[[.]]$peak,
                        lsp_p_value = lomb_scargle_no_null[[.]]$p.value,
@@ -178,6 +179,7 @@ results <- furrr::future_map_dfr(1:length(lomb_scargle_full_no_null),
                        normalized_power = list(lomb_scargle_full_no_null[[.]]$power),
                        sig_level = lomb_scargle_no_null[[.]]$sig.level,
                        ofac = lomb_scargle_no_null[[.]]$ofac)
+           }
            )
 results <- dplyr::bind_rows(results,
                             tibble::tibble(window = unique(df$window)[!(unique(df$window) %in% good_windows)]))
