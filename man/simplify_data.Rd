@@ -11,9 +11,6 @@ simplify_data(df, big_data = FALSE)
 
 \item{big_data}{Are you using a large dataset? TRUE or FALSE (default)}
 }
-\value{
-
-}
 \description{
 Simplify Data
 }

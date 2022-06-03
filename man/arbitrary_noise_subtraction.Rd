@@ -12,9 +12,6 @@ arbitrary_noise_reduction(df, noise = 0)
 \item{noise}{an integer representing an arbitrarily chosen noise level to subtract from the data.
 Default = 0.}
 }
-\value{
-
-}
 \description{
 Subtract Arbitrarily Chosen Noise Level from the Data
 }

@@ -14,9 +14,6 @@ necessary to be removed. Default = "1 day".}
 
 \item{sampling_rate}{a string indicating the sampling rate of the data. Default = "1 hour".}
 }
-\value{
-
-}
 \description{
 Remove Inactive Individuals
 }

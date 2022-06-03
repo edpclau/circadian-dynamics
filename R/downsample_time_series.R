@@ -62,7 +62,7 @@ method <- match.fun(method, c(mean, sum, median))
 
 
 #flooring dates
-floored_dates <- floor_date(data %>% pull(!!datetime_column),
+floored_dates <- floor_date(pull(data, !!datetime_column),
                                        unit = period(amount, units = units))
 data[as.character(datetime_column)] <- floored_dates
 

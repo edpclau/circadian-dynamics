@@ -15,9 +15,6 @@ dir_choose_gui = TRUE)
 \item{dir_choose_gui}{If TRUE (default) a GUI will help select the folder in which to save the data and plots. If FALSE,
 everything will be saved in the current directory.}
 }
-\value{
-
-}
 \description{
 Plot a sumarrized version of the Rythm data found by Rythm_analysis
 }

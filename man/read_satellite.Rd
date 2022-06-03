@@ -9,12 +9,6 @@ read_satellite(path = NULL)
 \arguments{
 \item{path}{}
 }
-\value{
-
-}
 \description{
 Import Weather data From satellite
-}
-\examples{
-
 }

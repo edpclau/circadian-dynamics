@@ -13,9 +13,6 @@ truncate(df = NULL, from = NULL, to = NULL)
 
 \item{to}{a string which indicates a date in the ISO 8601 format.}
 }
-\value{
-
-}
 \description{
 Truncate data
 }

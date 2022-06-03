@@ -21,9 +21,6 @@ is needed. Default = TRUE.}
 
 \item{window_of_interest}{optional. a number or list of numbers which indicate the windows to be plotted.}
 }
-\value{
-
-}
 \description{
 Plot the Autocorrelation by windows
 }

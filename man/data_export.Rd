@@ -9,9 +9,6 @@ data_export(results)
 \arguments{
 \item{results}{}
 }
-\value{
-
-}
 \description{
 Format Data for Export
 }

@@ -9,9 +9,6 @@ analyze_timeseries.grangertest(value, cos, order = 1, period)
 \arguments{
 \item{order}{}
 }
-\value{
-
-}
 \description{
 Apply the Granger Causality test on both directions
 }

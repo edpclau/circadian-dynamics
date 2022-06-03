@@ -29,7 +29,7 @@ simplify_data <- function(df, big_data = FALSE) {
                                                        data = df[[.x]]$data
                                                        data$lomb_cosinor = df[[.x]]$lomb$cosinor$wave
                                                        data$autocorr_cosinor = df[[.x]]$acf$cosinor$wave
-                                                       names(data)[2] = 'raw_values'
+                                                       names(data)[which(names(data) == 'value')] = 'raw_values'
                                                        data
                                                      },
                                                      .id = 'window')
@@ -103,7 +103,7 @@ simplify_data <- function(df, big_data = FALSE) {
                        data = .x$data
                        data$lomb_cosinor = .x$lomb$cosinor$wave
                        data$autocorr_cosinor = .x$acf$cosinor$wave
-                       names(data)[2] = 'raw_values'
+                       names(data)[which(names(data) == 'value')] = 'raw_values'
                        data
                      },
                      .id = 'data')
