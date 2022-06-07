@@ -82,7 +82,7 @@ overplot_actogram <- function(path = getwd(), df = NULL, overplot = NULL, ld_dat
     ) %>%
     dplyr::mutate(value = ifelse(is.na(value), 0, value)) %>%
     dplyr::ungroup()
-  print(unique(data$ind))
+  # print(unique(data$ind))
 
   if (!is.null(ld_data)) {
     data <- dplyr::left_join(data, ld_data, by = "datetime") %>%
@@ -116,7 +116,7 @@ overplot_actogram <- function(path = getwd(), df = NULL, overplot = NULL, ld_dat
 
   #### Parameters for how the plots will look on the page
 
-  print(data)
+  # print(data)
 
   pl <- furrr::future_map(.x = unique(data$ind),
             .f = ~ data %>%
