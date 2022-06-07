@@ -43,7 +43,7 @@ overplot_actogram <- function(path = getwd(), df = NULL, overplot = NULL, ld_dat
     stop("Must provide a data.frame or tibble.")
   )
 
-  df$overplot = tf
+  df$overplot = overplot
 
   if (!is.null(ld_data)) {
     ld_data <-  dplyr::rename(ld_data, ld = 2)
