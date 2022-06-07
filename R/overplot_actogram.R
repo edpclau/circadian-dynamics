@@ -1,10 +1,11 @@
 #' Export/Plot Actogram with Temperature
 #' @export
 #' @details Exports actogram plots for each column of a data.frame of tibble with a datetime object.
-#' @usage plot_actogram(df = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
+#' @usage overplot_actogram(df = NULL, overplot = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 #'
 #' @param df A data.frame or tibble which contains a datetime column and measurement values.
+#' @overplot A list or vector containing the values to be overplotted on the actograms. It must be of the same dimensions/binning as the df.
 #' @param datetime_column An integer which indicates the column that contains the datetime. Default = 1.
 #' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)
 #' @param filename A charater string  ending with ".pdf" which customizes the name of the file to be exported. "actogram.pdf" (default)
@@ -17,49 +18,51 @@
 #' (default) will plot 25 figures per page.
 #'
 #' @examples
-#' plot_actogram(df = monitor,
+#' overplot_actogram(df = monitor, overplot = monitor[[3]],
 #' datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE)
 #'
 #' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline labs facet_grid scale_x_datetime scale_y_discrete theme element_blank element_text element_line ggsave unit
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom purrr map
-#' @importFrom dplyr group_by mutate case_when arrange ungroup filter
+#' @importFrom dplyr group_by mutate case_when arrange ungroup filter if_else
 #' @importFrom stringr str_remove
-#' @importFrom magrittr '%>%'
+#' @import magrittr
 #' @importFrom tidyr gather
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
 #'
-plot_actogram_temp <- function(path = getwd(), df = NULL, tf = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
+overplot_actogram <- function(path = getwd(), df = NULL, overplot = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
                           width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
 
   ##### Flow Control #####
   if (!is.null(df)) {
     names(df)[datetime_column] <- "datetime"
-    df <- df %>% select(datetime, everything())
+    df <- df %>% dplyr::select(datetime, everything())
   } else (
     stop("Must provide a data.frame or tibble.")
   )
+
+  df$overplot = tf
+
   if (!is.null(ld_data)) {
     ld_data <-  dplyr::rename(ld_data, ld = 2)
     ld_data <- dplyr::filter(ld_data, ld_data$datetime >= lubridate::ceiling_date(min(ld_data$datetime), unit = "1 day"))
   }
 
   #Plan for paralellization
-future::plan(future::multisession)
+  future::plan(future::multisession)
 
   # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 
     df <- dplyr::filter(df, datetime >= lubridate::ceiling_date(min(df$datetime), unit = "1 day"))
-    tf <- dplyr::filter(t, datetime >= lubridate::ceiling_date(min(t$datetime), unit = "1 day"))
   }
 
-  #Wrangle Data
 
+  #Wrangle Data
   data <- df %>%  make_time_windows(window_size_in_days = 2, window_step_in_days = 1) %>%
-    tidyr::gather("ind", "value", -c(window,datetime)) %>%
+    tidyr::gather("ind", "value", -c(window,datetime,overplot)) %>%
     dplyr::mutate(ind = if_else(ind == 'mean', stringr::str_replace(ind,'mean', '99999'), ind)) %>%
     dplyr::mutate(ind = as.numeric(stringr::str_extract(ind,'\\d+'))) %>%
     dplyr::group_by(ind, window) %>%
@@ -96,28 +99,28 @@ future::plan(future::multisession)
   }
 
   #Add temperature data
-  # normalize the temperatue
-  tf_norm <- tf %>%
-    dplyr::group_by(window) %>%
-    dplyr::mutate(temp = ((temp - min(temp, na.rm = TRUE)) / (max(temp, na.rm = TRUE) - min(temp, na.rm = TRUE)))
-    ) %>%
-    dplyr::mutate(temp = ifelse(is.na(temp), 0, temp)) %>%
-    dplyr::ungroup()
+  # # normalize the temperatue
+  # tf_norm <- tf %>%
+  #   dplyr::group_by(window) %>%
+  #   dplyr::mutate(temp = ((temp - min(temp, na.rm = TRUE)) / (max(temp, na.rm = TRUE) - min(temp, na.rm = TRUE)))
+  #   ) %>%
+  #   dplyr::mutate(temp = ifelse(is.na(temp), 0, temp)) %>%
+  #   dplyr::ungroup()
 
-  data <- left_join(data, tf_norm, by = c('window', 'datetime'))
-  data
-  data <- data %>% ungroup()
+  # data <- left_join(data, tf_norm, by = c('window', 'datetime'))
+  # data
+  # data <- data %>% ungroup()
 
 
 
 
   #### Parameters for how the plots will look on the page
 
-
+  print(data)
 
   pl <- furrr::future_map(.x = unique(data$ind),
             .f = ~ data %>%
-              filter(date != 3, ind == .x) %>%
+              dplyr::filter(date != 3, ind == .x) %>%
               ggplot( aes(x = time, y = value/2, height = value)) +
               #LD bars
               {if (!is.null(ld_data)) geom_tile(aes(x = time, y = ld_y, height = ld), fill = "grey")} +
@@ -126,7 +129,7 @@ future::plan(future::multisession)
               #Data
 
               geom_tile(fill = "black", na.rm = FALSE) +
-              geom_line(aes(x = time, y = temp/max(temp)),size = 1, col = 'blue', alpha = 0.7) +
+              geom_line(aes(x = time, y = overplot/max(overplot)),size = 1, col = 'blue', alpha = 0.7) +
 
 
 
