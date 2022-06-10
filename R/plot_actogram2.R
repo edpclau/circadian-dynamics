@@ -6,6 +6,7 @@
 #'
 #'
 #' @importFrom dplyr distinct filter select
+#' @importFrom tidyr nest
 #' @importFrom lubridate days
 #'
 #' @export
