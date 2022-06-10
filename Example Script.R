@@ -66,13 +66,13 @@ trikinetics_analyzed = process_timeseries.main(
   #present a causal relationship between the cosinor and raw data.
   #causal_order is the lag up to which we will consider that a timeseries is
   #being caused.
-  causal_order = 5,
+  causal_order = 1,
 
 
   #If you're going to be working with big data, make this argument TRUE.
   #Beware, if your dataset is small, setting this argument to TRUE will make
   #it run slower as there is an overhead to paralleling the analysis.
-  big_data = FALSE
+  big_data = TRUE
 )
 
 
@@ -82,4 +82,12 @@ trikinetics_analyzed = process_timeseries.main(
 ## into 3 data.frames that are easy to export and read.
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 
-
+# 7. Prepare figures
+## 7.1 Prepare actograms
+### We want to use the first data.frame in the output of 'simplify_data'.
+actograms = plot_actogram2(trikinetics_tidy$data)
+## 7.2 Raw data plots
+raw_plots = plot_raw_values(trikinetics_tidy$data)
+## 7.3 Plot Autocorrelation Periods
+acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
+##
