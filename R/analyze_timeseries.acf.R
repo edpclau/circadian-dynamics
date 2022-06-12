@@ -50,6 +50,11 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   results$power = NA
   results$period = NA
   results$rythm_strength = NA
+  results$max_peak_of_int = NA
+  results$start = NA
+  results$end = NA
+  results$from = from
+  results$to = to
   return(results)
 
   }
@@ -97,6 +102,11 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$power = NA
     results$period = NA
     results$rythm_strength = NA
+    results$max_peak_of_int = NA
+    results$start = NA
+    results$end = NA
+    results$from = from/2
+    results$to = to/2
     return(results)
   }
 
@@ -126,6 +136,13 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$power = NA
     results$period = NA
     results$rythm_strength = NA
+    results$max_peak_of_int = NA
+    results$start = NA
+    results$end = NA
+    results$from = from/2
+    results$to = to/2
+    results$start = start
+    results$end = end
     return(results)
   }
 
@@ -147,6 +164,11 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   results$power = peaks$auto_power
   results$period = peaks_drop$auto_period
   results$rythm_strength = peaks_drop$auto_rythm_strength
+  results$max_peak_of_int = max_peak_of_int
+  results$start = start
+  results$end = end
+  results$from = from/2
+  results$to = to/2
 
   #Return results
   return(results)

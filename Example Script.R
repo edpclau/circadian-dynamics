@@ -23,6 +23,7 @@ trikinetics = read_trikinetics_2(file)
 # Since this is activity data, we will sum it over each 1 hour period.
 trikinetics_downsampled = downsample_time_series_2(trikinetics, amount = 1,
                                                    units = 'hour', method = 'sum')
+rm(trikinetics) ## Memory Management (remove variables we won't use again)
 
 # 5. Rhythm Analysis
 trikinetics_analyzed = process_timeseries.main(
@@ -75,6 +76,7 @@ trikinetics_analyzed = process_timeseries.main(
   big_data = TRUE
 )
 
+rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use again)
 
 # 6. Tidy up data for export
 ## The data outputted by 'process_timeseries.main) is not easily read
@@ -82,12 +84,75 @@ trikinetics_analyzed = process_timeseries.main(
 ## into 3 data.frames that are easy to export and read.
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 
+rm(trikinetics_analyzed) ## Memory Management (remove variables we won't use again)
+
 # 7. Prepare figures
 ## 7.1 Prepare actograms
 ### We want to use the first data.frame in the output of 'simplify_data'.
 actograms = plot_actogram2(trikinetics_tidy$data)
 ## 7.2 Raw data plots
 raw_plots = plot_raw_values(trikinetics_tidy$data)
-## 7.3 Plot Autocorrelation Periods
+## 7.3 Plot Autocorrelation Results
 acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
-##
+## 7.4 Plot Lomb-Scargle Results
+lsp_plots = plot_lsp_results(trikinetics_tidy$lombscargle)
+## 7.5 Window level plots.
+window_plots = plot_window_data(trikinetics_tidy)
+
+# 8.Arrange the Figures for export
+## 8.1 Arrange the Actograms
+p = arrangeGrob(grobs = actograms)
+ggsave('actograms.pdf', p,
+       height = dplyr::n_distinct(actograms[[1]]$data$window),
+       width = length(actograms), limitsize = FALSE)
+## 8.2 Arrange the window figures
+plan(sequential)
+future_map2(
+  .x = window_plots,
+  .y = names(window_plots),
+  .f = ~ {
+    ## Prepare the plots
+    plots = future_map(
+      .x = .x,
+      .f = ~ {
+        arrangeGrob(grobs = .x , ncol = 1, nrow = length(.x))
+      })
+    #Print the plots to pdf
+    pdf(paste0(.y,"_window_plots.pdf"), onefile = TRUE, height = 18, width = 10)
+    for (i in plots) {
+      do.call("grid.arrange", i)
+    }
+    dev.off()
+  })
+## 8.3 Arrange the summary plots
+plan(sequential)
+future_map(
+  .x = names(raw_plots),
+  .f = ~ {
+    layout = rbind(c(1,1,1,1),
+                   c(2,2,3,6),
+                   c(2,2,4,7),
+                   c(2,2,5,8),
+                   c(2,2,9,10))
+    plots =  arrangeGrob(raw_plots[[.x]],
+                         actograms[[.x]],
+                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
+                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
+                         lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
+                         nrow = 5, ncol = 4,
+                         layout_matrix = layout)
+
+
+    ggsave(paste0(.x,"_summary_plots.pdf"), plot = plots, width = 15, height = 10, limitsize = FALSE)
+
+  })
+
+## 9. Export Data
+plan(sequential)
+future_map2(
+  .x = trikinetics_tidy[-4],
+  .y = c('analysis_data', 'autocorrelation_results', 'lomb_scargle_results'),
+  .f = ~ {
+    df = rename(.x, unique_identifier = data)
+    write_csv(df, paste0(.y,'.csv'))
+    })

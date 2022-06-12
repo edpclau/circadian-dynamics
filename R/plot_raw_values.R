@@ -26,7 +26,7 @@ plot_raw_values <- function(df) {
     mutate(ld = factor(ld, levels = c('Dark', 'Light'))) %>%
     nest(cols = -data) %>%
     as.list()
-  names(df_raw$cols) = df_acto$data
+  names(df_raw$cols) = df_raw$data
   id = df_raw$data
   df_raw = df_raw$cols
 

@@ -93,6 +93,37 @@ simplify_data <- function(df, big_data = FALSE) {
                                                   .id = 'window')
                                  })
 
+    #### Tibble utils data ####
+    utils_data = future_map_dfr(.x = df,
+                                    .id = 'data',
+                                    .f = ~ {
+                                      df = .x
+                                      windows = seq(length(.x))
+                                      future_map_dfr(.x = windows,
+                                                     .f = ~ {
+                                                       tibble(
+                                                       datetime = df[[.x]]$data$datetime,
+                                                       acf = df[[.x]]$acf$results$autocorrelation,
+                                                       acf_period = df[[.x]]$acf$results$period,
+                                                      acf_rs = df[[.x]]$acf$results$rythm_strength,
+                                                      acf_peak = df[[.x]]$acf$results$max_peak_of_int,
+                                                      acf_peak_time = df[[.x]]$acf$results$datetime,
+                                                      lsp_period = df[[.x]]$lomb$results$period,
+                                                      lsp_peak = df[[.x]]$lomb$results$peak,
+                                                      lsp_sig_level = df[[.x]]$lomb$results$sig_level,
+                                                      lsp_p_value = df[[.x]]$lomb$results$p_value,
+                                                      lsp_scanned = list(df[[.x]]$lomb$results$scanned),
+                                                      lsp_power = list(df[[.x]]$lomb$results$power),
+                                                      lsp_rs = df[[.x]]$lomb$results$rythm_strength,
+                                                      acf_start = df[[.x]]$acf$results$start,
+                                                      acf_end = df[[.x]]$acf$results$end,
+                                                      acf_from = df[[.x]]$acf$results$from,
+                                                      acf_to = df[[.x]]$acf$results$to
+                                                       )
+                                                     },
+                                                     .id = 'window')
+                                      })
+
 
 
 
@@ -154,12 +185,39 @@ simplify_data <- function(df, big_data = FALSE) {
                                  },
                                  .id = 'data')
 
+    #### Tibble utils data ####
+    utils_data = future_map_dfr(.x = df,
+                                .id = 'data',
+                                .f = ~ {
+                                                   tibble(
+                                                     datetime = .x$data$datetime,
+                                                     acf = .x$acf$results$autocorrelation,
+                                                     acf_period = .x$acf$results$period,
+                                                     acf_rs = .x$acf$results$rythm_strength,
+                                                     acf_peak = .x$acf$results$max_peak_of_int,
+                                                     acf_peak_time = .x$acf$results$datetime,
+                                                     lsp_period = .x$lomb$results$period,
+                                                     lsp_peak = .x$lomb$results$peak,
+                                                     lsp_sig_level = .x$lomb$results$sig_level,
+                                                     lsp_p_value = .x$lomb$results$p_value,
+                                                     lsp_scanned = list(.x$lomb$results$scanned),
+                                                     lsp_power = list(.x$lomb$results$power),
+                                                     lsp_rs = .x$lomb$results$rythm_strength,
+                                                     acf_start = .x$acf$results$start,
+                                                     acf_end = .x$acf$results$end,
+                                                     acf_from = .x$acf$results$from,
+                                                     acf_to = .x$acf$results$to
+                                                   )
+
+                                })
+
   }
   return(
     list(
       data = processed_data,
       autocorrelation = autocorrelation,
-      lombscargle = lombscargle
+      lombscargle = lombscargle,
+      utils = utils_data
     )
   )
 }

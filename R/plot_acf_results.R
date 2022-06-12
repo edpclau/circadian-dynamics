@@ -15,7 +15,7 @@
 #' @importFrom ggplot2 ggplot geom_line labs theme element_text element_blank element_line scale_x_continuous element_rect geom_hline
 plot_acf_results <- function(df) {
 
-
+  if (!'window' %in% names(df)) {df$window = 1}
   #Preprocess the data to plot
 auto_df = df %>%
     select(data, window, rythm_strength, gc_raw_to_cos, gc_cos_to_raw, period) %>%
@@ -24,7 +24,7 @@ auto_df = df %>%
            granger = ifelse(gc_raw_to_cos < gc_cos_to_raw, gc_raw_to_cos, gc_cos_to_raw)) %>%
     nest(cols = -data) %>%
     as.list()
-  names(auto_df$cols) = df_acto$data
+  names(auto_df$cols) = auto_df$data
   id = auto_df$data
   auto_df = auto_df$cols
 
