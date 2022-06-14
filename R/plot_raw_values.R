@@ -17,13 +17,22 @@ plot_raw_values <- function(df) {
   #find out if there is Light/Dark data in the df
   light = 'ld' %in% names(df)
 
+
+
   #Preprocess the data to plot
   df_raw = df %>%
     select(data, datetime, any_of('ld'), raw_values) %>%
     distinct() %>%
-    filter(datetime >= ceiling_date(min(datetime), unit = "1 day")) %>%
-    mutate(ld = ifelse(ld == 0, 'Dark', 'Light')) %>%
-    mutate(ld = factor(ld, levels = c('Dark', 'Light'))) %>%
+    filter(datetime >= ceiling_date(min(datetime), unit = "1 day"))
+
+  #If there is no Light/Dark data, skip
+  if (light) {
+    df_raw =  mutate(df_raw, ld = ifelse(ld == 0, 'Dark', 'Light')) %>%
+      mutate(ld = factor(ld, levels = c('Dark', 'Light')))
+  }
+
+  #Finalize the data wrangling
+  df_raw = df_raw %>%
     nest(cols = -data) %>%
     as.list()
   names(df_raw$cols) = df_raw$data
