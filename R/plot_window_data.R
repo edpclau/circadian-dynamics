@@ -12,7 +12,7 @@
 #' @importFrom tidyr nest unnest
 #' @importFrom ggpp geom_label_npc
 plot_window_data <- function(df) {
-df= trikinetics_tidy
+
 if (!'window' %in% names(df$data)) {df$data$window = 1}
 if (!'window' %in% names(df$utils)) {df$utils$window = 1}
 raw = df$data
@@ -133,7 +133,7 @@ p = future_map(
     }
 )
 names(p) = plot_df$data
-p$`IND 2`$`1`$lsp_plots
+
 return(p)
 
 }
