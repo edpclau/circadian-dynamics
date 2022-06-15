@@ -5,7 +5,6 @@
 #' necessary to be removed. Default = "1 day".
 #' @param sampling_rate a string indicating the sampling rate of the data. Default = "1 hour".
 #'
-#' @return
 #' @export
 #'
 #'
