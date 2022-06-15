@@ -25,6 +25,12 @@ trikinetics_downsampled = downsample_time_series_2(trikinetics, amount = 1,
                                                    units = 'hour', method = 'sum')
 rm(trikinetics) ## Memory Management (remove variables we won't use again)
 
+
+
+
+## (Optional) Truncate data
+
+
 # 5. Rhythm Analysis
 trikinetics_analyzed = process_timeseries.main(
   df = trikinetics_downsampled,
