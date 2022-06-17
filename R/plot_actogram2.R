@@ -5,9 +5,11 @@
 #' @return a list of actograms
 #'
 #'
-#' @importFrom dplyr distinct filter select
+#' @importFrom dplyr distinct filter select distinct
 #' @importFrom tidyr nest
 #' @importFrom lubridate days
+#' @importFrom future sequential plan
+#' @importFrom furrr future_map_dfr
 #'
 #' @export
 #'
@@ -19,21 +21,25 @@ plot_actogram2 <- function(df) {
 windows = 'window' %in% names(df)
 lights = 'ld' %in% names(df)
 
-#### If there are no windows, make 2 day windows ####
+#### If there are windows, drop them and then make 2 day windows ####
 #Actograms have a 2 day window
 # Set parameters
 
-if (!windows) {
+if (windows) {
+  df = select(df, -window)
+  df = distinct(df)
+}
+
 window_size <- days(2) #Width of the window
 times <- unique(df$datetime)
 step = seq(from = min(times), to = max(times), by = '1 day')
 
-df = purrr::map_dfr(
+plan(sequential)
+df = future_map_dfr(
   .x = step,
   .f = ~ filter(df, (datetime >= .x) & (datetime <= .x + window_size)),
   .id = 'window'
   )
-}
 
 ### Prepare Data
 ## Build Actogram
@@ -58,9 +64,76 @@ df_acto = df_acto$cols
 
 
 if (lights) {
-  return(plot_ld_actogram(df_acto, id))
+  plan(sequential)
+  #Data for Actogram
+  return(
+    future_map2(
+      .x = df_acto,
+      .y = id,
+      .f = ~ {
+        ggplot(.x, aes(x = dur, y = raw_values/2, height = raw_values)) +
+          geom_tile(aes(height = max(raw_values), y= max(raw_values)/2, fill = ld), alpha = 0.3) +
+          geom_tile() +
+          geom_vline(aes(xintercept = 24 - 0.025), col = 'blue') +
+          facet_grid(window ~ ., switch = 'y') +
+          labs(x = 'Hours', y = '', title = .y) +
+          scale_fill_grey(start = 0, end = 1) +
+          theme(
+            panel.spacing = unit(0, "cm", data = NULL),
+            axis.title = element_text(face = "bold", size = 12),
+            axis.ticks = element_blank(),
+            axis.line = element_line(),
+            axis.line.x = element_line(),
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(size = 12),
+            strip.background = element_blank(),
+            strip.placement = "outside",
+            strip.text.y.left = element_text(angle = 0, size = 12, vjust = 0),
+            strip.text.x = element_blank(),
+            plot.margin = unit(c(0,0.5,0,0), "cm"),
+            panel.border= element_blank(),
+            panel.background = element_blank(),
+            plot.title = element_text(hjust = 0.5, vjust =  - 0.5)
+          )
+
+
+      }
+    )
+
+  )
 } else {
-  return(plot_non_ld_actogram(df_acto, id))
+  plan(sequential)
+  #Data for Actogram
+  return(
+    future_map2(
+      .x = df_acto,
+      .y = id,
+      .f = ~ {ggplot(.x, aes(x = dur, y = raw_values/2, height = raw_values)) +
+          geom_tile() +
+          geom_vline(aes(xintercept = 24 - 0.025), col = 'blue') +
+          facet_grid(window ~ ., switch = 'y') +
+          labs(x = 'Hours', y = '', title = .y, fill = 'Dark/Light') +
+          theme(
+            panel.spacing = unit(0, "cm", data = NULL),
+            axis.title = element_text(face = "bold", size = 12),
+            axis.ticks = element_blank(),
+            axis.line = element_line(),
+            axis.line.x = element_line(),
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(size = 12),
+            strip.background = element_blank(),
+            strip.placement = "outside",
+            strip.text.y.left = element_text(angle = 0, size = 12, vjust = 0),
+            strip.text.x = element_blank(),
+            plot.margin = unit(c(0,0.5,0,0), "cm"),
+            panel.border= element_blank(),
+            panel.background = element_blank(),
+            plot.title = element_text(hjust = 0.5, vjust =  - 0.5)
+          )
+      }
+    )
+
+  )
 }
 
 }

@@ -96,6 +96,7 @@ rm(trikinetics_analyzed) ## Memory Management (remove variables we won't use aga
 ## 7.1 Prepare actograms
 ### We want to use the first data.frame in the output of 'simplify_data'.
 actograms = plot_actogram2(trikinetics_tidy$data)
+actograms_by_window = plot_actogram_windows(trikinetics_tidy$data)
 ## 7.2 Raw data plots
 raw_plots = plot_raw_values(trikinetics_tidy$data)
 ## 7.3 Plot Autocorrelation Results
@@ -141,7 +142,7 @@ future_map(
                    c(2,2,5,8),
                    c(2,2,9,10))
     plots =  arrangeGrob(raw_plots[[.x]],
-                         actograms[[.x]],
+                         actograms_by_window[[.x]],
                          acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
                          lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
                          lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],

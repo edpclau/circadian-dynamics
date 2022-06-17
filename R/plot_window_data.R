@@ -85,8 +85,8 @@ p = future_map(
         ### COSINOR PLOTS ####
         cosinor_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
           geom_line() +
-          geom_line(aes(y = lomb_cosinor,  colour = paste('Lomb-Scargle',lomb_cosinor))) +
-          geom_line(aes(y = autocorr_cosinor,  colour = paste('Autocorrelation', autocorr_cosinor ))) +
+          geom_line(aes(y = lomb_cosinor, x = datetime,  colour = paste('Lomb-Scargle',lomb_cosinor))) +
+          geom_line(aes(y = autocorr_cosinor, x = datetime, colour = paste('Autocorrelation', autocorr_cosinor ))) +
           scale_colour_manual(values = c('red', 'blue'), name = 'Fitted with:') +
           labs(y = 'Raw Values', x = 'Datetime', title = 'Cosinor Fit') +
           theme(

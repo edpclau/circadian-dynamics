@@ -36,6 +36,7 @@
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
+#' @importFrom stringr str_remove
 #' @importFrom magrittr '%>%'
 #'
 downsample_time_series <- function(data = NULL,
@@ -53,7 +54,7 @@ datetime_column <- sym(datetime_column)
 
 
   #choose a time point to roll back the time by a certain amount
-units <- stringr::str_remove(units, "\\d")
+units <- str_remove(units, "\\d")
 
   #handle the anonymous function naming
 method <- match.arg(method, choices = c("mean", "sum", "median"))
