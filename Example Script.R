@@ -1,5 +1,6 @@
 # 1. Load Library
 library(circadiandynamics)
+library(gridExtra)
 
 # 2. Choose file
 file = file.choose()

@@ -67,6 +67,7 @@ auto_df = df %>%
                                ggplot(.x, aes(x = window, y = rythm_strength)) +
                                  geom_point(na.rm = TRUE) +
                                  geom_line(na.rm = TRUE) +
+                                 geom_hline(aes(yintercept = 1), lty = 'dashed') +
                                  labs(y = '', title = 'Autocorrelation Rhythm Strength', x = 'Window') +
                                  scale_x_continuous(labels = window, limits = c(NA,NA)) +
                                  theme(
