@@ -22,14 +22,16 @@ crop_data <- function(df = NULL, from = NULL, to = NULL) {
 
   if (is.null(to)) {to = as.character(max(df$datetime, na.rm = TRUE))}
 
+  names(df)[1] = 'datetime'
+
   plan(sequential)
 
   df = future_map(
     .x = df,
     .f = ~ {
       filter(.x,
-                    1 >= parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5),
-                    1 <= parse_date_time(to, orders = "%y%m%d %H%M%S", truncated = 5))
+                    datetime >= parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5),
+                    datetime <= parse_date_time(to, orders = "%y%m%d %H%M%S", truncated = 5))
     }
   )
 
