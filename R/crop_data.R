@@ -22,7 +22,7 @@ crop_data <- function(df = NULL, from = NULL, to = NULL) {
 
   if (is.null(to)) {to = as.character(max(df$datetime, na.rm = TRUE))}
 
-  names(df)[1] = 'datetime'
+
 
   plan(sequential)
 
@@ -30,8 +30,8 @@ crop_data <- function(df = NULL, from = NULL, to = NULL) {
     .x = df,
     .f = ~ {
       filter(.x,
-                    datetime >= parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5),
-                    datetime <= parse_date_time(to, orders = "%y%m%d %H%M%S", truncated = 5))
+             !!as.symbol(names(.x)[1]) >= parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5),
+             !!as.symbol(names(.x)[1]) <= parse_date_time(to, orders = "%y%m%d %H%M%S", truncated = 5))
     }
   )
 

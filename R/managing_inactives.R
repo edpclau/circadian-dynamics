@@ -40,7 +40,7 @@ rm_inactive_dates <- function(df,inactivity_period = "1 day", sampling_rate = "1
     .x = df,
     .f = ~ {
       #Identify Sequences of activity
-      rles = rle(.x[[3]])
+      rles = rle(.x[['value']])
       rles = tibble(lengths = rles$lengths, values = rles$values)
 
       #Identify perdiods where activity or measurements are 0
@@ -74,7 +74,7 @@ report_inactive_variables <- function(df,inactivity_period = "1 day", sampling_r
     .y = names(df),
     .f = ~ {
       #Identify Sequences of activity
-      rles = rle(.x[[3]])
+      rles = rle(.x[['value']])
       rles = tibble(lengths = rles$lengths, values = rles$values)
 
       #Identify perdiods where activity or measurements are 0
@@ -99,6 +99,6 @@ rm_inactive_variables <- function(df,inactivity_period = "1 day", sampling_rate 
 
   inactive = report_inactive_variables(df, inactivity_period, sampling_rate)
 
-  return(df[!(names(df) %in% test)])
+  return(df[!(names(df) %in% inactive)])
 
   }

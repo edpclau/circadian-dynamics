@@ -75,8 +75,8 @@ simplify_data <- function(df, big_data = FALSE) {
                                                   .f = ~ {
                                                     tibble(
                                                       peak_datetime = df[[.x]]$lomb$results$datetime,
-                                                      period = df[[.x]]$lomb$results$period,
-                                                      rythm_strength = df[[.x]]$lomb$results$rythm_strength,
+                                                      period = ifelse(is_empty(df[[.x]]$lomb$results$period), NA, df[[.x]]$lomb$results$period),
+                                                      rythm_strength = ifelse(is_empty(df[[.x]]$lomb$results$rythm_strength), NA, df[[.x]]$lomb$results$rythm_strength),
                                                       gc_raw_to_cos = df[[.x]]$lomb$results$grangercausal$rawdata_to_cos,
                                                       gc_cos_to_raw = df[[.x]]$lomb$results$grangercausal$cos_to_rawdata,
                                                       mesor = df[[.x]]$lomb$cosinor$mesor,
@@ -101,6 +101,7 @@ simplify_data <- function(df, big_data = FALSE) {
                                       windows = seq(length(.x))
                                       future_map_dfr(.x = windows,
                                                      .f = ~ {
+
                                                        tibble(
                                                        datetime = df[[.x]]$data$datetime,
                                                        acf = df[[.x]]$acf$results$autocorrelation,
@@ -108,13 +109,13 @@ simplify_data <- function(df, big_data = FALSE) {
                                                       acf_rs = df[[.x]]$acf$results$rythm_strength,
                                                       acf_peak = df[[.x]]$acf$results$max_peak_of_int,
                                                       acf_peak_time = df[[.x]]$acf$results$datetime,
-                                                      lsp_period = df[[.x]]$lomb$results$period,
+                                                      lsp_period = ifelse(is_empty(df[[.x]]$lomb$results$period), NA, df[[.x]]$lomb$results$period),
                                                       lsp_peak = df[[.x]]$lomb$results$peak,
                                                       lsp_sig_level = df[[.x]]$lomb$results$sig_level,
                                                       lsp_p_value = df[[.x]]$lomb$results$p_value,
                                                       lsp_scanned = list(df[[.x]]$lomb$results$scanned),
                                                       lsp_power = list(df[[.x]]$lomb$results$power),
-                                                      lsp_rs = df[[.x]]$lomb$results$rythm_strength,
+                                                      lsp_rs = ifelse(is_empty(df[[.x]]$lomb$results$rythm_strength), NA, df[[.x]]$lomb$results$rythm_strength),
                                                       acf_start = df[[.x]]$acf$results$start,
                                                       acf_end = df[[.x]]$acf$results$end,
                                                       acf_from = df[[.x]]$acf$results$from,
