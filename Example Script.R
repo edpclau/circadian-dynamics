@@ -110,9 +110,15 @@ window_plots = plot_window_data(trikinetics_tidy)
 # 8.Arrange the Figures for export
 ## 8.1 Arrange the Actograms
 p = arrangeGrob(grobs = actograms)
+nwindows = dplyr::n_distinct(actograms[[1]]$data$window)
+nplots = length(actograms)
+height_ = nwindows/log(nwindows)
+width_ = nplots/log10(nplots+1)
+
 ggsave('actograms.pdf', p,
-       height = dplyr::n_distinct(actograms[[1]]$data$window),
-       width = length(actograms), limitsize = FALSE)
+       height = ifelse(height_ > 10, height_, 10),
+       width = ifelse(width_ > 10, width_ , 10),
+       limitsize = FALSE)
 ## 8.2 Arrange the window figures
 plan(sequential)
 future_map2(
@@ -158,8 +164,8 @@ future_map(
 ## 9. Export Data
 plan(sequential)
 future_map2(
-  .x = trikinetics_tidy[-4],
-  .y = c('analysis_data', 'autocorrelation_results', 'lomb_scargle_results'),
+  .x = trikinetics_tidy,
+  .y = c('analysis_data', 'autocorrelation_results', 'lomb_scargle_results', 'utils'),
   .f = ~ {
     df = rename(.x, unique_identifier = data)
     write_csv(df, paste0(.y,'.csv'))
