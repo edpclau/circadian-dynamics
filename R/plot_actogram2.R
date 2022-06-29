@@ -30,6 +30,9 @@ if (windows) {
   df = distinct(df)
 }
 
+## Start at the first midnight ##
+df = filter(df, datetime >= ceiling_date(min(datetime), unit = "1 day"))
+
 window_size <- days(2) #Width of the window
 times <- unique(df$datetime)
 step = seq(from = min(times), to = max(times), by = '1 day')
@@ -46,7 +49,6 @@ df = future_map_dfr(
 df_acto = df %>%
   select(-any_of(c('detrended', 'butterworth', 'lomb_cosinor', 'autocorr_cosinor'))) %>%
   distinct() %>%
-  filter(datetime >= ceiling_date(min(datetime), unit = "1 day")) %>%
   group_by(data, window) %>%
   mutate(
     window = as.numeric(window),

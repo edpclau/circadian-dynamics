@@ -112,7 +112,7 @@ window_plots = plot_window_data(trikinetics_tidy)
 p = arrangeGrob(grobs = actograms)
 nwindows = dplyr::n_distinct(actograms[[1]]$data$window)
 nplots = length(actograms)
-height_ = nwindows/log(nwindows)
+height_ = nwindows/log10(nwindows)
 width_ = nplots/log10(nplots+1)
 
 ggsave('actograms.pdf', p,
