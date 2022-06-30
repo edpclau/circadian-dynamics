@@ -11,8 +11,12 @@
 #' @importFrom lubridate duration
 #' @importFrom tidyr nest unnest
 #' @importFrom ggpp geom_label_npc
+#' @importFrom furrr future_map
+#' @importFrom future plan sequential
 plot_window_data <- function(df) {
 
+
+#Handle the case when there are no windows in the data.
 if (!'window' %in% names(df$data)) {df$data$window = 1}
 if (!'window' %in% names(df$utils)) {df$utils$window = 1}
 raw = df$data
@@ -37,13 +41,14 @@ p = future_map(
   .f = ~ {
     #At this step we are iterating over all the windows for each individual/measurement
     #plots are arranged in the order in which they should appear on the page.
-    window_plots = future_map(
+    window_plots = future_map2(
       .x = .x$window_data,
+      .y = .x$window,
       .f = ~{
 
         raw_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
           geom_line() +
-          labs(y = '', x = 'Datetime', title = 'Raw Data')
+          labs(y = 'Raw Data', x = 'Datetime', title = paste('Window ', .y))
 
     #### Autocorrelation Plot #######
        #Did the autocorrelation run?
@@ -87,8 +92,13 @@ p = future_map(
           geom_line() +
           geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle')) +
           geom_line(aes(y = autocorr_cosinor, x = datetime, colour = 'Autocorrelation')) +
-          geom_label_npc(aes(npcx = 1, npcy = 1, label = paste('Lomb. Period =', round(lsp_period, digits = 3),
-                                                                          '\nAuto. Period =', round(acf_period, digits = 3)))) +
+          geom_label_npc(aes(npcx = 1, npcy = 1, label = paste(
+                                                               'AutoCorr Period =', round(acf_period, digits = 3),
+                                                               '\nAutoCorr Phase = ', round(acf_phase, digits = 3),
+                                                               '\nLSP Period =', round(lsp_period, digits = 3),
+                                                               '\nLSP Phase = ', round(lsp_phase, digits = 3))
+                             )
+                         ) +
           scale_colour_manual(values = c('red', 'blue'), name = 'Fitted with:') +
           labs(y = 'Raw Values', x = 'Datetime', title = 'Cosinor Fit') +
           theme(

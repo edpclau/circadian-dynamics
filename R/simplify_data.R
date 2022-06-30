@@ -119,7 +119,9 @@ simplify_data <- function(df, big_data = FALSE) {
                                                       acf_start = df[[.x]]$acf$results$start,
                                                       acf_end = df[[.x]]$acf$results$end,
                                                       acf_from = df[[.x]]$acf$results$from,
-                                                      acf_to = df[[.x]]$acf$results$to
+                                                      acf_to = df[[.x]]$acf$results$to,
+                                                      lsp_phase = df[[.x]]$lomb$cosinor$phase,
+                                                      acf_phase = df[[.x]]$acf$cosinor$phase
                                                        )
                                                      },
                                                      .id = 'window')
@@ -207,7 +209,9 @@ simplify_data <- function(df, big_data = FALSE) {
                                                      acf_start = .x$acf$results$start,
                                                      acf_end = .x$acf$results$end,
                                                      acf_from = .x$acf$results$from,
-                                                     acf_to = .x$acf$results$to
+                                                     acf_to = .x$acf$results$to,
+                                                     lsp_phase = .x$lomb$cosinor$phase,
+                                                     acf_phase = .x$acf$cosinor$phase
                                                    )
 
                                 })
