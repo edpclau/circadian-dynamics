@@ -39,6 +39,58 @@ plot_raw_values <- function(df) {
   id = df_raw$data
   df_raw = df_raw$cols
 
+
+
+if (light) {
+  # Plot the figures
+  plan(sequential)
+  raw_plots = future_map2(.x = df_raw,
+                          .y = id,
+                          .f = ~ {
+                            ggplot(.x, aes(x = datetime, y = raw_values)) +
+                              geom_tile(aes(
+                                x = datetime,
+                                y = max(raw_values) / 2,
+                                height = max(raw_values),
+                                fill = ld
+
+
+                              ),
+                              colour =NA,
+
+                              alpha = 0.4)  +
+                              scale_fill_grey() +
+                              geom_line() +
+                              labs(y = 'Raw Values', title = .y, x = 'Datetime') +
+                              theme(
+                                panel.spacing = unit(0, "cm", data = NULL),
+                                axis.title = element_text(face = "bold", size = 12),
+                                axis.ticks = element_blank(),
+                                axis.line = element_line(),
+                                axis.line.x = element_line(),
+                                axis.text.y = element_blank(),
+                                axis.text.x = element_text(size = 12),
+                                strip.background = element_blank(),
+                                strip.placement = "outside",
+                                strip.text.y.left = element_text(
+                                  angle = 0,
+                                  size = 12,
+                                  vjust = 0
+                                ),
+                                strip.text.x = element_blank(),
+                                plot.margin = unit(c(0, 0.5, 0, 0), "cm"),
+                                panel.border = element_blank(),
+                                panel.background = element_blank(),
+                                plot.title = element_text(hjust = 0.5, vjust =  -0.5),
+                                legend.position = 'none'
+                              )
+                          })
+} else {
+
+
+
+
+
   # Plot the figures
   plan(sequential)
   raw_plots = future_map2(.x = df_raw,
@@ -69,17 +121,9 @@ plot_raw_values <- function(df) {
                                 panel.background = element_blank(),
                                 plot.title = element_text(hjust = 0.5, vjust =  -0.5),
                                 legend.position = 'none'
-                              ) +
-                              if (light) {
-                                geom_tile(aes(
-                                  x = datetime,
-                                  y = max(raw_values) / 2,
-                                  height = max(raw_values),
-                                  fill = ld
-                                ),
-                                alpha = 0.4)
-                              }
+                              )
                           })
+  }
 
   return(raw_plots)
 }

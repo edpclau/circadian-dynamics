@@ -9,10 +9,10 @@
 #'
 #' @importFrom lmtest grangertest
 #' @examples
-analyze_timeseries.grangertest <- function(value, cos, order = 1, period) {
+analyze_timeseries.grangertest <- function(value, cos, order = 1) {
 
   #if no cosinor, return nothing
-  if (is_empty(cos) | is.na(period)) {
+  if (is_empty(cos)) {
     return(
       list(
         rawdata_to_cos = NA,
@@ -20,6 +20,8 @@ analyze_timeseries.grangertest <- function(value, cos, order = 1, period) {
         )
       )
   } else {
+    value = ts(value)
+    cos = ts(cos)
     rawdata_to_cos = tryCatch(
         expr = grangertest(x = value, y = cos, order = order)[[4]][2],
         error = function(e) {tryCatch(

@@ -121,7 +121,13 @@ simplify_data <- function(df, big_data = FALSE) {
                                                       acf_from = df[[.x]]$acf$results$from,
                                                       acf_to = df[[.x]]$acf$results$to,
                                                       lsp_phase = df[[.x]]$lomb$cosinor$phase,
-                                                      acf_phase = df[[.x]]$acf$cosinor$phase
+                                                      acf_phase = df[[.x]]$acf$cosinor$phase,
+                                                      acf_amp = df[[.x]]$acf$cosinor$amplitude,
+                                                      acf_pr = df[[.x]]$acf$cosinor$adj_r_squared,
+                                                      lsp_amp = df[[.x]]$lomb$cosinor$amplitude,
+                                                      lsp_pr = df[[.x]]$lomb$cosinor$adj_r_squared,
+                                                      lsp_gc = ifelse(df[[.x]]$lomb$results$grangercausal$rawdata_to_cos < df[[.x]]$lomb$results$grangercausal$cos_to_rawdata, df[[.x]]$lomb$results$grangercausal$rawdata_to_cos, df[[.x]]$lomb$results$grangercausal$cos_to_rawdata),
+                                                      acf_gc = ifelse(df[[.x]]$acf$results$grangercausal$rawdata_to_cos < df[[.x]]$acf$results$grangercausal$cos_to_rawdata, df[[.x]]$acf$results$grangercausal$rawdata_to_cos, df[[.x]]$acf$results$grangercausal$cos_to_rawdata)
                                                        )
                                                      },
                                                      .id = 'window')
@@ -211,7 +217,14 @@ simplify_data <- function(df, big_data = FALSE) {
                                                      acf_from = .x$acf$results$from,
                                                      acf_to = .x$acf$results$to,
                                                      lsp_phase = .x$lomb$cosinor$phase,
-                                                     acf_phase = .x$acf$cosinor$phase
+                                                     acf_phase = .x$acf$cosinor$phase,
+                                                     acf_amp = .x$acf$cosinor$amplitude,
+                                                     acf_pr = .x$acf$cosinor$adj_r_squared,
+                                                     lsp_amp = .x$lomb$cosinor$amplitude,
+                                                     lsp_pr = .x$lomb$cosinor$adj_r_squared,
+                                                     lsp_gc = ifelse(.x$lomb$results$grangercausal$rawdata_to_cos < .x$lomb$results$grangercausal$cos_to_rawdata, .x$lomb$results$grangercausal$rawdata_to_cos, .x$lomb$results$grangercausal$cos_to_rawdata),
+                                                     acf_gc = ifelse(.x$acf$results$grangercausal$rawdata_to_cos < .x$acf$results$grangercausal$cos_to_rawdata, .x$acf$results$grangercausal$rawdata_to_cos, .x$acf$results$grangercausal$cos_to_rawdata)
+
                                                    )
 
                                 })

@@ -74,8 +74,8 @@ if (lights) {
       .y = id,
       .f = ~ {
         ggplot(.x, aes(x = dur, y = raw_values/2, height = raw_values)) +
-          geom_tile(aes(height = max(raw_values), y= max(raw_values)/2, fill = ld), alpha = 0.3) +
-          geom_tile() +
+          geom_tile(aes(height = max(raw_values), y= max(raw_values)/2, fill = ld), colour = NA, alpha = 0.3) +
+          geom_tile(colour = NA) +
           geom_vline(aes(xintercept = 24 - 0.025), col = 'blue') +
           facet_grid(window ~ ., switch = 'y') +
           labs(x = 'Hours', y = '', title = .y) +

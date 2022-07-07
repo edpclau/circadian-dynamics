@@ -13,7 +13,7 @@
 #' @importFrom ggpp geom_label_npc
 #' @importFrom furrr future_map
 #' @importFrom future plan sequential
-plot_window_data <- function(df) {
+plot_window_data <- function(df, alt_cos = FALSE) {
 
 
 #Handle the case when there are no windows in the data.
@@ -78,7 +78,7 @@ p = future_map(
           geom_hline(data = .x, aes(yintercept = lsp_sig_level), lty = 'dashed') +
           geom_label_npc(data = .x, aes(npcx = 1, npcy = 0, label = paste('Period =', round(lsp_period, digits = 3),
                                                                                                             '\nRhythm Strength =', round(lsp_rs, digits = 3),
-                                                                                                            '\nP-value =', round(lsp_p_value, digits = 3),
+                                                                                                            '\nP-value =', round(lsp_p_value, digits = 4),
                                                                                                             '\nPower =', round(lsp_peak, digits = 3)))) +
           geom_vline(data = .x, aes(xintercept = acf_from), lty = 'dashed', color = 'blue') +
           geom_vline(data = .x, aes(xintercept = acf_to), lty = 'dashed', color = 'blue') +
@@ -90,20 +90,42 @@ p = future_map(
         ### COSINOR PLOTS ####
         cosinor_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
           geom_line() +
-          geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle')) +
-          geom_line(aes(y = autocorr_cosinor, x = datetime, colour = 'Autocorrelation')) +
+          geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle Periodogram')) +
+          # geom_line(aes(y = autocorr_cosinor, x = datetime, colour = 'Autocorrelation')) +
           geom_label_npc(aes(npcx = 1, npcy = 1, label = paste(
-                                                               'AutoCorr Period =', round(acf_period, digits = 3),
-                                                               '\nAutoCorr Phase = ', round(acf_phase, digits = 3),
-                                                               '\nLSP Period =', round(lsp_period, digits = 3),
-                                                               '\nLSP Phase = ', round(lsp_phase, digits = 3))
+                                                               # 'AutoCorr Period =', round(acf_period, digits = 3),
+                                                               # '\nAutoCorr Phase = ', round(acf_phase, digits = 3),
+                                                               'Period =', round(lsp_period, digits = 3),
+                                                               '\nPhase = ', round(lsp_phase, digits = 3),
+                                                               '\nAmplitude = ', round(lsp_amp, digits = 3))
                              )
                          ) +
-          scale_colour_manual(values = c('red', 'blue'), name = 'Fitted with:') +
-          labs(y = 'Raw Values', x = 'Datetime', title = 'Cosinor Fit') +
+          scale_colour_manual(values = c('red', 'blue')) +
+          labs(y = 'Raw Values', x = 'Datetime', title = paste('Window ', .y)) +
           theme(
-            legend.position = 'top'
+            legend.position = 'none'
           )
+
+
+
+        ### ALTERNATIVE COSINOR PLOTS ####
+        if (alt_cos) {
+        alternative_cosinor_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
+          geom_line() +
+          geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle Periodogram')) +
+          geom_label_npc(aes(npcx = 1, npcy = 1, label = paste(
+            'Rhythm Strength =', round(lsp_rs, digits = 4),
+            '\nPercent Rhytm = ', round(lsp_pr, digits = 4)*100,
+            '\nGranger Test = ', round(lsp_gc, digits = 5))
+          )
+          ) +
+          scale_colour_manual(values = c('red', 'blue'), name = 'Fitted with:') +
+          labs(y = 'Raw Values', x = 'Datetime') +
+          theme(
+            legend.position = 'none'
+          )
+        }
+
 
       ### BUTTERWORTH ####
        if (butterworth) {
@@ -131,6 +153,7 @@ p = future_map(
          movavg_plots = if (smoothed) {movavg_plots},
          acf_plots = if (acf_run) {acf_plots},
          lsp_plots = if (lsp_run) {lsp_plots},
+         alt_cos_plots = if (alt_cos) {alternative_cosinor_plots},
          cosinor_plots = cosinor_plots
        )
 

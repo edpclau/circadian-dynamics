@@ -34,7 +34,7 @@ rm(trikinetics) ## Memory Management (remove variables we won't use again)
 
 # 5. Rhythm Analysis
 trikinetics_analyzed = process_timeseries.main(
-  df = trikinetics_downsampled,
+  df = trikinetics_downsampled[15],
 
   # Window of Analysis Arguments
   make_windows = TRUE,
@@ -50,7 +50,7 @@ trikinetics_analyzed = process_timeseries.main(
   sampling_rate = '1 hour',
 
   # Should the data be detrended before analysis?
-  detrend_data = TRUE,
+  detrend_data = FALSE,
 
   #Which, if any, smoothing method you want to use on your data?
   #Moving average or Two-pass Butterworth filter?
@@ -80,7 +80,7 @@ trikinetics_analyzed = process_timeseries.main(
   #If you're going to be working with big data, make this argument TRUE.
   #Beware, if your dataset is small, setting this argument to TRUE will make
   #it run slower as there is an overhead to paralleling the analysis.
-  big_data = TRUE
+  big_data = FALSE
 )
 
 rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use again)
@@ -105,7 +105,7 @@ acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
 ## 7.4 Plot Lomb-Scargle Results
 lsp_plots = plot_lsp_results(trikinetics_tidy$lombscargle)
 ## 7.5 Window level plots.
-window_plots = plot_window_data(trikinetics_tidy)
+window_plots = plot_window_data(trikinetics_tidy, alt_cos = TRUE)
 
 # 8.Arrange the Figures for export
 ## 8.1 Arrange the Actograms
@@ -141,7 +141,8 @@ future_map2(
 ## 8.3 Arrange the summary plots
 plan(sequential)
 future_map(
-  .x = names(raw_plots),
+  # .x = names(raw_plots),
+  .x = 'IND 15',
   .f = ~ {
     layout = rbind(c(1,1,1,1),
                    c(2,2,3,6),
