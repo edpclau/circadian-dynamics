@@ -109,6 +109,21 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
 
 #lsp of interest
 lsp_of_int = lsp_mod(x = values, from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+
+#If lsp_of_int fails (is NULL), then skip.
+if (is_empty(lsp_of_int)) {
+  results = list(
+    period = NA ,
+    power = NA,
+    p_value = NA,
+    sig_level = NA,
+    scanned = NA,
+    power = NA,
+    rythm_strength = NA
+  )
+  return(results)
+}
+
 #the full lsp for plotting (may have to delete this later if I end up not using it)
 lsp = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
 
