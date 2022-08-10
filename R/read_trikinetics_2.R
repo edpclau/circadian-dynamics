@@ -56,8 +56,6 @@ read_trikinetics_2 <- function(file = NULL){
 
 read_trikinetics_folder_2 <- function(directory = NULL) {
 
-  message("Make sure, all monitors were run on the same dates with the same LD/DD settings.")
-
   #### Flow Control ####
   #Allow for using a GUI to choose the folder, if one is not supplied
   if (is.null(directory)) {
@@ -70,7 +68,7 @@ read_trikinetics_folder_2 <- function(directory = NULL) {
   files <- files[stringr::str_detect(files, '\\.txt')]
   paths <- paste0(directory, "/", files)
   names(paths) <- stringr::str_remove(files, "\\.txt")
-  df <- suppressMessages(furrr::future_map_dfr(paths, .read_trikinetics, .id = 'source', .options = furrr::furrr_options(seed = TRUE)))
-  df <-  tidyr::unite(df, "name", c(source, name), sep = " ")
+  df <- suppressMessages(furrr::future_map(paths, read_trikinetics_2, .options = furrr::furrr_options(seed = TRUE)))
+  df <- do.call(c, df)
   return(df)
 }
