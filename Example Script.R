@@ -120,23 +120,21 @@ ggsave('actograms.pdf', p,
        width = ifelse(width_ > 10, width_ , 10),
        limitsize = FALSE)
 ## 8.2 Arrange the window figures
-plan(sequential)
-future_map2(
+
+purrr::map2(
   .x = window_plots,
   .y = names(window_plots),
   .f = ~ {
     ## Prepare the plots
-    plots = future_map(
+    plots = purrr::map(
       .x = .x,
       .f = ~ {
         arrangeGrob(grobs = .x , ncol = 1, nrow = length(.x))
       })
-    #Print the plots to pdf
-    pdf(paste0(.y,"_window_plots.pdf"), onefile = TRUE, height = 18, width = 10)
-    for (i in plots) {
-      do.call("grid.arrange", i)
-    }
-    dev.off()
+    class(plots) <- c("arrangelist", 'list')
+    # print(class(plots))
+    ggsave(paste0(.y,"_window_plots.pdf"), plot = plots, height = 18, width = 10)
+
   })
 ## 8.3 Arrange the summary plots
 plan(sequential)
@@ -156,6 +154,7 @@ future_map(
                          lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
                          nrow = 5, ncol = 4,
                          layout_matrix = layout)
+
 
 
     ggsave(paste0(.x,"_summary_plots.pdf"), plot = plots, width = 15, height = 10, limitsize = FALSE)

@@ -13,6 +13,6 @@ Description:
 License: GPL-3
 Encoding: UTF-8
 Imports: gridExtra, pracma, readr, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, magrittr, tibble, forcats, furrr, lmtest, future, ggpp
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)

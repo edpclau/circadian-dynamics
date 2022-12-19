@@ -4,7 +4,7 @@
 \alias{plot_window_data}
 \title{Utility Function for Plotting Detaiiled data in Windows}
 \usage{
-plot_window_data(df)
+plot_window_data(df, alt_cos = FALSE)
 }
 \arguments{
 \item{df}{the output from 'simplify_data'.}
