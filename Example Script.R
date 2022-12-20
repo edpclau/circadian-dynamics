@@ -126,14 +126,12 @@ purrr::map2(
   .y = names(window_plots),
   .f = ~ {
     ## Prepare the plots
-    plots = purrr::map(
-      .x = .x,
-      .f = ~ {
-        arrangeGrob(grobs = .x , ncol = 1, nrow = length(.x))
-      })
-    class(plots) <- c("arrangelist", 'list')
+
+    plots = marrangeGrob(.x, ncol = 1, nrow = length(.x$`1`))
+
+    # class(plots) <- c("arrangelist", 'list')
     # print(class(plots))
-    ggsave(paste0(.y,"_window_plots.pdf"), plot = plots, height = 18, width = 10)
+    # ggsave(paste0(.y,"_window_plots.pdf"), plot = plots, height = 18, width = 10)
 
   })
 ## 8.3 Arrange the summary plots

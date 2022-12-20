@@ -13,7 +13,7 @@
 #' @importFrom ggpp geom_label_npc
 #' @importFrom furrr future_map
 #' @importFrom future plan sequential
-plot_window_data_app <- function(df, alt_cos = FALSE) {
+plot_window_data_app <- function(df) {
 
 
   #Handle the case when there are no windows in the data.
@@ -94,38 +94,22 @@ plot_window_data_app <- function(df, alt_cos = FALSE) {
             geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle Periodogram')) +
             # geom_line(aes(y = autocorr_cosinor, x = datetime, colour = 'Autocorrelation')) +
             geom_label_npc(aes(npcx = 1, npcy = 1, label = paste(
-              # 'AutoCorr Period =', round(acf_period, digits = 3),
-              # '\nAutoCorr Phase = ', round(acf_phase, digits = 3),
               'Period =', round(lsp_period, digits = 3),
               '\nPhase = ', round(lsp_phase, digits = 3),
-              '\nAmplitude = ', round(lsp_amp, digits = 3))
+              '\nAmplitude = ', round(lsp_amp, digits = 3),
+              '\nRhythm Strength =', round(lsp_rs, digits = 4),
+              '\nPercent Rhytm = ', round(lsp_pr, digits = 4)*100,
+              '\nGranger Test = ', round(lsp_gc, digits = 5))
             )
             ) +
             scale_colour_manual(values = c('red', 'blue')) +
-            labs(y = 'Raw Values', x = 'Datetime', title = paste('Window ', .y)) +
+            labs(y = 'Raw Values', x = 'Datetime', title = paste('Cosinor Fit for Window ', .y)) +
             theme(
               legend.position = 'none'
             )
 
 
 
-          ### ALTERNATIVE COSINOR PLOTS ####
-          if (alt_cos) {
-            alternative_cosinor_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
-              geom_line() +
-              geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle Periodogram')) +
-              geom_label_npc(aes(npcx = 1, npcy = 1, label = paste(
-                'Rhythm Strength =', round(lsp_rs, digits = 4),
-                '\nPercent Rhytm = ', round(lsp_pr, digits = 4)*100,
-                '\nGranger Test = ', round(lsp_gc, digits = 5))
-              )
-              ) +
-              scale_colour_manual(values = c('red', 'blue'), name = 'Fitted with:') +
-              labs(y = 'Raw Values', x = 'Datetime') +
-              theme(
-                legend.position = 'none'
-              )
-          }
 
 
           ### BUTTERWORTH ####
@@ -154,21 +138,23 @@ plot_window_data_app <- function(df, alt_cos = FALSE) {
             movavg_plots = if (smoothed) {movavg_plots},
             acf_plots = if (acf_run) {acf_plots},
             lsp_plots = if (lsp_run) {lsp_plots},
-            alt_cos_plots = if (alt_cos) {alternative_cosinor_plots},
             cosinor_plots = cosinor_plots
           )
           plots = plots[!sapply(plots, is.null)]
 
-          return(arrangeGrob(grobs = plots , ncol = 1, nrow = length(plots)))
+          return(plots)
 
         }
       )
 
-      class(window_plots) = c('arrangelist', 'list')
+      rows = length(window_plots[[1]])
 
-      ggsave(paste0(.y,"_window_plots.pdf"), plot = window_plots, height = 18, width = 10)
+      window_plots = unlist(window_plots, recursive = FALSE)
 
-      print(paste0(.y,"_window_plots.pdf"))
+      ml = marrangeGrob(window_plots, ncol = 1, nrow = rows)
+
+      ggsave(paste0(.y,"_window_plots.pdf"), plot = ml, height = 18, width = 10)
+
     }
   )
 
