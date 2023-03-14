@@ -34,7 +34,7 @@ rm(trikinetics) ## Memory Management (remove variables we won't use again)
 
 # 5. Rhythm Analysis
 trikinetics_analyzed = process_timeseries.main(
-  df = trikinetics_downsampled[15],
+  df = trikinetics_downsampled,
 
   # Window of Analysis Arguments
   make_windows = TRUE,
@@ -137,8 +137,7 @@ purrr::map2(
 ## 8.3 Arrange the summary plots
 plan(sequential)
 future_map(
-  # .x = names(raw_plots),
-  .x = 'IND 15',
+  .x = names(raw_plots),
   .f = ~ {
     layout = rbind(c(1,1,1,1),
                    c(2,2,3,6),
