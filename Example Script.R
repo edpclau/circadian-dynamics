@@ -1,6 +1,9 @@
 # 1. Load Library
 library(circadiandynamics)
+library(furrr)
+library(tidyverse)
 library(gridExtra)
+
 
 # 2. Choose file
 file = file.choose()
@@ -115,25 +118,30 @@ nplots = length(actograms)
 height_ = nwindows/log10(nwindows)
 width_ = nplots/log10(nplots+1)
 
-ggsave('actograms.pdf', p,
+ggplot2::ggsave('actograms.pdf', p,
        height = ifelse(height_ > 10, height_, 10),
        width = ifelse(width_ > 10, width_ , 10),
        limitsize = FALSE)
-## 8.2 Arrange the window figures
 
-purrr::map2(
+
+## 8.2 Arrange the window figures
+plan(sequential)
+future_map2(
   .x = window_plots,
   .y = names(window_plots),
   .f = ~ {
     ## Prepare the plots
 
-    plots = marrangeGrob(.x, ncol = 1, nrow = length(.x$`1`))
+    plots = future_map(.x = .x, .f = ~ {arrangeGrob(grobs = .x, ncol = 1, nrow = length(.x))})
 
-    # class(plots) <- c("arrangelist", 'list')
+    class(plots) <- c("arrangelist", 'list')
     # print(class(plots))
-    # ggsave(paste0(.y,"_window_plots.pdf"), plot = plots, height = 18, width = 10)
+    ggsave(paste0(.y,"_window_plots.pdf"), plot = plots, height = 18, width = 10)
 
   })
+
+rm(window_plots)
+
 ## 8.3 Arrange the summary plots
 plan(sequential)
 future_map(
