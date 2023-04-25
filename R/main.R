@@ -126,7 +126,9 @@ process_timeseries.core <- function(df = NULL,
                                     f_high = 1/73,
                                     order = 2,
                                     causal_order = 1,
-                                    big_data = FALSE) {
+                                    big_data = FALSE,
+                                    ofac = 1,
+                                    lomb_pvalue = 0.01) {
 
 if (big_data) {
 plan(multisession)
@@ -163,7 +165,7 @@ plan(multisession)
       acf_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = acf_cosinor$wave, order = causal_order)
       #Lomb-Scargle Pipeline
 
-      lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to)
+      lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
 
       lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
 
@@ -192,7 +194,7 @@ plan(multisession)
   acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
   acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave,  order = causal_order)
   #Lomb-Scargle Pipeline
-  lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to)
+  lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
   lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
   lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order)
 
@@ -225,7 +227,9 @@ process_timeseries.main <- function(df = NULL,
                                     f_high = 1/73,
                                     order = 2,
                                     causal_order = 1,
-                                    big_data = FALSE) {
+                                    big_data = FALSE,
+                                    ofac = 10,
+                                    lomb_pvalue = 0.01) {
   if (big_data) {
     plan(multisession)
   } else {plan(sequential)}
@@ -251,7 +255,9 @@ process_timeseries.main <- function(df = NULL,
                                 to = to,
                                 order = order,
                                 causal_order = causal_order,
-                                big_data = big_data)
+                                big_data = big_data,
+                                ofac = ofac,
+                                lomb_pvalue = lomb_pvalue)
       }
     )
 

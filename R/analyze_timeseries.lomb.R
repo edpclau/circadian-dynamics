@@ -63,7 +63,7 @@
 #' @importFrom stringr str_remove str_extract
 #'
 analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
-                            ofac = 60, alpha = 0.05) {
+                            ofac = 1, alpha = 0.01) {
 
   ###### Flow control parameters######
   #1.must have sampling_rate
@@ -108,7 +108,7 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
 #### Lomb Scargle periodogram#####
 
 #lsp of interest
-lsp_of_int = lsp_mod(x = values, from = from, to = to,  ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+lsp_of_int = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
 
 #If lsp_of_int fails (is NULL), then skip.
 if (is_empty(lsp_of_int)) {
@@ -124,29 +124,38 @@ if (is_empty(lsp_of_int)) {
   return(results)
 }
 
-#the full lsp for plotting (may have to delete this later if I end up not using it)
-lsp = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
 
-# print(lsp_of_int$peak.at/(1.965/sqrt(lsp_of_int$n.out)))
-# print(lsp_of_int$peak.at/(1.965/sqrt(lsp_of_int$n)))
-# print(lsp_of_int$peak/(1.965/sqrt(lsp_of_int$n.out)))
-# print(lsp_of_int$peak/(1.965/sqrt(lsp_of_int$n)))
-# print('all peaks')
-# print(lsp$peak.at/(1.965/sqrt(lsp$n.out)))
-# print()
-# print(lsp$peak/(1.965/sqrt(lsp$n.out)))
-# print(lsp$peak/(1.965/sqrt(lsp$n)))
+## Find Peaks of Interest ##
+peaks = lsp_peaks(lsp_of_int)
+
+position = c(from <= peaks$time & to >= peaks$time)
+if (any(position)) {
+  rs  = peaks$peaks[position][1]/lsp_of_int$sig.level
+  period = peaks$time[position][1]
+  peak = peaks$peaks[position][1]
+
+
+} else if (any(from >= peaks$time)) {
+  position = c(from >= peaks$time)
+  rs = peaks$peaks[position][1]/lsp_of_int$sig.level
+  period = peaks$time[position][1]
+  peak = peaks$peaks[position][1]
+} else {
+  rs = NA
+  period = NA
+  peak = NA
+}
 
 
 results = list(
-       period = as.numeric(duration(lsp_of_int$peak.at[1] * sampling_bin_size, sampling_rate), "hours"),
-       peak = lsp_of_int$peak,
+       period = as.numeric(duration(period * sampling_bin_size, sampling_rate), "hours"),
+       peak = peak,
        p_value = lsp_of_int$p.value,
        sig_level = lsp_of_int$sig.level,
-       scanned = lsp$scanned,
-       power = lsp$power,
+       scanned = as.numeric(duration(lsp_of_int$scanned * sampling_bin_size, sampling_rate), "hours"),
+       power = lsp_of_int$power,
        #this is a beta measurement and needs validation
-       rythm_strength = lsp_of_int$peak/lsp_of_int$sig.level
+       rythm_strength = rs
        )
 
 

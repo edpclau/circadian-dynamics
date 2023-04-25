@@ -31,7 +31,7 @@
 #' @importFrom lubridate ddays dminutes
 #' @importFrom forcats fct_reorder
 plot_actogram <- function(path = getwd(), df = NULL,  ld_data = NULL, datetime_column = 1, filename = "actogram.pdf", export = FALSE,
-                          width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE) {
+                          width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5, autosize = FALSE, silent = FALSE) {
 
   ##### Flow Control #####
   if (!is.null(df)) {
@@ -100,8 +100,8 @@ data <- dplyr::left_join(data, ld_data, by = "datetime") %>%
 #### Parameters for how the plots will look on the page
 
 
-
-pl <- furrr::future_map(.x = unique(data$ind),
+pl <- purrr::map(.x = unique(data$ind),
+                 .progress = TRUE,
            .f = ~ data %>%
     filter(date != 3, ind == .x) %>%
     ggplot( aes(x = time, y = value/2, height = value)) +
@@ -144,11 +144,18 @@ pl <- furrr::future_map(.x = unique(data$ind),
 )
 
 
+
+
 if (autosize) {
   ncol = ceiling(25/max(data$window, na.rm = TRUE))
   nrow = ceiling(25/max(data$window, na.rm = TRUE))
 }
 
+if (silent) {
+  return(
+    marrangeGrob(pl,  ncol = 1, nrow = 1)
+  )
+}
 ml <- marrangeGrob(pl,  ncol = ncol, nrow = nrow)
 
 if (export) {

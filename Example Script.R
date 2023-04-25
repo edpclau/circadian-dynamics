@@ -83,7 +83,12 @@ trikinetics_analyzed = process_timeseries.main(
   #If you're going to be working with big data, make this argument TRUE.
   #Beware, if your dataset is small, setting this argument to TRUE will make
   #it run slower as there is an overhead to paralleling the analysis.
-  big_data = FALSE
+  big_data = FALSE,
+
+  ##Control the p.value threshold and the ovarsampling factor for the
+  #lomb-scargle periodogram
+  ofac = 1,
+  lomb_pvalue = 0.01
 )
 
 rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use again)
