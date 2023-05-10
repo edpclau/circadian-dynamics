@@ -18,6 +18,7 @@ simplify_data <- function(df, big_data = FALSE) {
   }
 
   if (any(class(df[[1]][[1]]) == 'list')) {
+    print('TRUE')
     #### Tibble Processed Data Values ####
     processed_data = future_map_dfr(.x = df,
                                     .id = 'data',

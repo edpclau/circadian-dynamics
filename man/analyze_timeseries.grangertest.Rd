@@ -4,7 +4,7 @@
 \alias{analyze_timeseries.grangertest}
 \title{Apply the Granger Causality test on both directions}
 \usage{
-analyze_timeseries.grangertest(value, cos, order = 1)
+analyze_timeseries.grangertest(value, cos, order = 2)
 }
 \arguments{
 \item{order}{}

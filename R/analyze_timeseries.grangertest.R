@@ -28,11 +28,10 @@ analyze_timeseries.grangertest <- function(value, cos, order = 2) {
               grangertest(x = value, y = cos, order = order)[[4]][2]
               },
             error = function(e) {
-              # message(paste('Failed Granger Test with causal order',order+2))
-              # message('Possible Aliased coefficients. Try a larger order.')
               # message('Results will not Contain Granger Test due to Aliased Coefficients.')
-              return(NA)},
-            finally = return(NA)
+              return(NA)
+              },
+            finally = NA
           )
 
 
@@ -42,8 +41,9 @@ analyze_timeseries.grangertest <- function(value, cos, order = 2) {
           },
           error = function(e) {
             # message('Final Results will not Contain this test.')
-            return(NA)},
-          finally = return(NA)
+            return(NA)
+            },
+          finally = NA
     )
     }
 

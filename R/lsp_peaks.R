@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' @importFrom pracma findpeaks
-lsp_peaks = function (object, npeaks = 5)
+lsp_peaks = function (object, npeaks = 5, plotit = FALSE)
 {
   pks = findpeaks(object$power, npeaks = npeaks, minpeakheight = 0,
                   sortstr = TRUE)
