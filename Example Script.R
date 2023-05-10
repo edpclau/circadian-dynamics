@@ -40,8 +40,8 @@ trikinetics_analyzed = process_timeseries.main(
   df = trikinetics_downsampled,
 
   # Window of Analysis Arguments
-  make_windows = TRUE,
-  window_size_in_days = 4,
+  make_windows = FALSE,
+  window_size_in_days = 5,
   window_step_in_days = 1,
 
   # Period in which to look for peaks within each window (in hours)
@@ -87,8 +87,8 @@ trikinetics_analyzed = process_timeseries.main(
 
   ##Control the p.value threshold and the ovarsampling factor for the
   #lomb-scargle periodogram
-  ofac = 1,
-  lomb_pvalue = 0.01
+  ofac = 10,
+  lomb_pvalue = 0.05
 )
 
 rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use again)
@@ -100,6 +100,24 @@ rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use 
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 
 rm(trikinetics_analyzed) ## Memory Management (remove variables we won't use again)
+
+
+
+utils_for_halictid = tibble(data = trikinetics_tidy$autocorrelation$data,
+       acf_period = trikinetics_tidy$autocorrelation$period,
+       acf_rs = trikinetics_tidy$autocorrelation$rythm_strength,
+       acf_granger = trikinetics_tidy$autocorrelation$gc_cos_to_raw,
+       lsp_period = trikinetics_tidy$lombscargle$period,
+       lsp_rs = trikinetics_tidy$lombscargle$period,
+       lsp_granger = trikinetics_tidy$lombscargle$gc_cos_to_raw) %>%
+  left_join(
+    group_by(trikinetics_tidy$utils, data) %>%
+      summarise(lsp_p_value = mean(lsp_p_value)
+                )
+    )
+
+
+
 
 # 7. Prepare figures
 ## 7.1 Prepare actograms
@@ -180,3 +198,49 @@ future_map2(
     df = rename(.x, unique_identifier = data)
     write_csv(df, paste0(.y,'.csv'))
     })
+
+write_csv(utils_for_halictid, 'halictid_utils.csv')
+
+
+
+
+
+### Actogram production
+monitors = list.files('/Users/eddie/Downloads/RawData', full.names = TRUE)[-2]
+monitor_names = list.files('/Users/eddie/Downloads/RawData')[-2]
+monitor_names = stringr::str_remove(monitor_names, '.txt')
+
+raw = purrr::map(monitors, read_trikinetics)
+names(raw) = monitor_names
+
+inds_to_drop = list(
+  c(12,22,32),
+  c(1,2,4,6:9,11:21, 23:25, 27:32),
+  c(1:3, 6, 8:12, 14:32),
+  c(1,13,19),
+  c(20, 30),
+  c(3,15:29,31,32),
+  c(1:6, 8:10, 20, 29:32),
+  c(5,7,17, 25:32)
+)
+
+df_sub = purrr::map2(.x = raw, .y = inds_to_drop, .f = ~ .x[-(.y+2)])
+
+date_crops = list(
+  c(ymd('2017-06-27'), ymd('2017-06-27')+5),
+  c(ymd('2017-06-27'), ymd('2017-06-27')+5),
+  c(ymd('2017-06-27'), ymd('2017-06-27')+5),
+  c(ymd('2017-06-27'), ymd('2017-06-27')+5),
+  c(ymd('2017-06-28'), ymd('2017-06-28')+5),
+  c(ymd('2020-08-26'), ymd('2020-08-26')+5),
+  c(ymd('2017-06-28'), ymd('2017-06-28')+5),
+  c(ymd('2020-08-26'), ymd('2020-08-26')+5)
+)
+
+df = purrr::map2(.x = df_sub, .y = date_crops, .f = ~ filter(.x, datetime >= .y[1], datetime < .y[2]))
+
+
+purrr::map2(.x = df, .y = monitor_names, .f = ~ actogram(.x[-2], 1, .y))
+
+purrr::map2(.x = df, .y = monitor_names, .f = ~ write_csv(.x, file = paste0(.y, '.csv')))
+
