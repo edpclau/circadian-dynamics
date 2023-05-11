@@ -73,8 +73,8 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   #2. the period must be calculated from the data on the second day.
   from <- from*2
   to <- to*2
-  start <- duration(from, "hours")
-  end <- duration(to, "hours")
+  start <- duration(from, 'hours')
+  end <- duration(to, 'hours')
 
 
 ##### ACF ######
@@ -151,7 +151,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
   #Find the period of the maximum peak
   #We divide by 2 to to get the period since we're looking for peaks after the second day.
-  peaks = mutate(peaks, auto_period = ifelse(max, as.numeric(as.duration(as.interval(min_datetime, datetime))/2, sampling_rate), NA))
+  peaks = mutate(peaks, auto_period = ifelse(max, as.numeric(as.duration(as.interval(min_datetime, datetime))/2, sampling_rate)/(as.numeric(duration(1, 'hour'), sampling_rate)), NA))
 
   #Calculate Rythm_strength
   peaks = mutate(peaks, auto_rythm_strength = ifelse(max, auto_power/(1.965/sqrt(len_autocor)), NA))
