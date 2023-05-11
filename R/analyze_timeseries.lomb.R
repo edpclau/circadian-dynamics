@@ -84,11 +84,11 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
 
   #4. Convert from-to to sampling rate.
   if (!is.null(from)) {
-    from <- as.numeric(duration(from, units = "hours"), sampling_rate)/ sampling_bin_size
+    from <- (as.numeric(duration(from, units = "hours"), sampling_rate)/ sampling_bin_size)
   }
 
   if (!is.null(to)) {
-    to  <- as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_size
+    to  <- (as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_size)
   }
 
   #If there is 0 variance in the data or less than 2 values that are not NA, skip window.

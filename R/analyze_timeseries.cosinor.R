@@ -99,6 +99,8 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
   sampling_bin_size = as.numeric(str_extract(sampling_rate, "\\d*"))
   sampling_rate = str_remove(sampling_rate, "\\d* *")
 
+  #3. Period must be in the correct sampling_rate
+  period = as.numeric(lubridate::duration(period, 'hours'), sampling_rate)
 
 
   ##### Format the data so we can run the cosinor ####
