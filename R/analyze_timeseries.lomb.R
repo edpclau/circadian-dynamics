@@ -127,17 +127,18 @@ if (is_empty(lsp_of_int)) {
 
 ## Find Peaks of Interest ##
 peaks = lsp_peaks(lsp_of_int)
-
-position = c(from <= peaks$time & to >= peaks$time)
+position = c(from >= peaks$time & to <= peaks$time)
 if (any(position)) {
   rs  = peaks$peaks[position][1]/lsp_of_int$sig.level
+  # rs = peaks$peaks[po sition][1]*(1.965/sqrt(length(lsp_of_int$scanned)))
   period = peaks$time[position][1]
   peak = peaks$peaks[position][1]
 
 
-} else if (any(from >= peaks$time)) {
-  position = c(from >= peaks$time)
+} else if (any(from <= peaks$time | to >= peaks$time)) {
+  position = c(from <= peaks$time | to >= peaks$time)
   rs = peaks$peaks[position][1]/lsp_of_int$sig.level
+  # rs = peaks$peaks[position][1]*(1.965/sqrt(length(lsp_of_int$scanned)))
   period = peaks$time[position][1]
   peak = peaks$peaks[position][1]
 } else {
