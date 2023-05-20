@@ -71,8 +71,6 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   }
 
   #2. the period must be calculated from the data on the second day.
-  from <- from*2
-  to <- to*2
   start <- duration(from, 'hours')
   end <- duration(to, 'hours')
 
@@ -88,14 +86,20 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
                      lag.max = length(values))$acf) #$acf is to keep only the acf values. We can infer lag position from those
 
    # Change change all NA autocorrelations to 0
-      # The function that looks for peaks doesn't allow NA, 0 would be ignored if we put a threshold, therefoere it won't affect
+      # The function that looks for peaks doesn't allow NA, 0 would be ignored if we put a threshold, therefore it won't affect
       # the results
   autocorrelation = ifelse( is.na(autocorrelation), 0, autocorrelation)
   len_autocor = length(autocorrelation)
 
   #Find the peaks
-  peaks = tibble(auto_power = findpeaks(autocorrelation)[,1], datetime = findpeaks(autocorrelation)[,2])
+  peaks = findpeaks(autocorrelation, sortstr = TRUE)
+  peaks = tibble(auto_power = peaks[,1], lags = diff(c(0, peaks[,2])/sampling_bin_size))
 
+  #Keep only the positive peaks
+  peaks = filter(peaks, auto_power > 0.2)
+
+
+  #If there are no Peaks, return NA
   if (nrow(peaks) == 0) {
     results$datetime = NA
     results$autocorrelation = NA
@@ -105,31 +109,51 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$max_peak_of_int = NA
     results$start = NA
     results$end = NA
-    results$from = from/2
-    results$to = to/2
+    results$from = from
+    results$to = to
     return(results)
   }
 
 
-  #Keep only the positive peaks
-  if (nrow(peaks) > 1)
-  peaks = filter(peaks, auto_power >= 0)
 
   #Locate the peaks in time
-  datetimes = df$datetime
-  min_datetime = min(datetimes)
-
-  peaks$datetime = duration(peaks$datetime, sampling_rate)
-  peaks$datetime = peaks$datetime + min_datetime
+  #Translate the lags into the sampling_rate
+  peaks$lags = duration(peaks$lags, sampling_rate)
 
   #Find the maximum peak within the scope
-  peaks$of_int =   ifelse( (peaks$datetime >= min_datetime + start) & (peaks$datetime <= min_datetime + end), TRUE, FALSE)
-  peaks_of_int = filter(peaks, of_int == TRUE)
-  peaks_of_int = peaks_of_int$auto_power
+  peaks_of_int = filter(peaks, lags >= start, lags <= end)
+
+  #Make sure the peaks_of_int is not empty, otherwise return NA
+  if (!all(is_empty(peaks_of_int$auto_power))) {
+
+    #Get the maximum peak
+    max_peak_of_int = max(peaks_of_int$auto_power)
+
+    #Get the lag of the maximum peak
+    max_lag = filter(peaks_of_int, auto_power == max_peak_of_int)$lags
+    #Translate the max_lag into the correct time
+    max_lag = as.numeric(max_lag, 'hours')
+
+    #Get the Rhythm Strength
+    rhythm_strength = max_peak_of_int/(1.965/sqrt(len_autocor))
 
 
-  if (length(peaks_of_int) != 0) {
-    max_peak_of_int = max(peaks_of_int)
+  } else if (nrow(peaks) != 0) {
+
+    #Get the maximum peak
+    max_peak_of_int = max(peaks$auto_power)
+
+    #Get the lag of the maximum peak
+    max_lag = filter(peaks, auto_power == max_peak_of_int)$lags
+    #Translate the max_lag into the correct time
+    max_lag = as.numeric(max_lag, 'hours')
+
+    #Get the Rhythm Strength
+    rhythm_strength = max_peak_of_int/(1.965/sqrt(len_autocor))
+
+
+
+
   } else {
     results$datetime = NA
     results$autocorrelation = NA
@@ -139,36 +163,28 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$max_peak_of_int = NA
     results$start = NA
     results$end = NA
-    results$from = from/2
-    results$to = to/2
+    results$from = from
+    results$to = to
     results$start = start
     results$end = end
     return(results)
   }
 
 
-  peaks = mutate(peaks, max = ifelse(auto_power == max_peak_of_int, TRUE, FALSE))
 
-  #Find the period of the maximum peak
-  #We divide by 2 to to get the period since we're looking for peaks after the second day.
-  peaks = mutate(peaks, auto_period = ifelse(max, as.numeric(as.duration(as.interval(min_datetime, datetime))/2, sampling_rate)/(as.numeric(duration(1, 'hour'), sampling_rate)), NA))
 
-  #Calculate Rythm_strength
-  peaks = mutate(peaks, auto_rythm_strength = ifelse(max, auto_power/(1.965/sqrt(len_autocor)), NA))
 
-  peaks = select(peaks, -c(of_int, max))
-  peaks_drop = drop_na(peaks)
 
-  results$datetime = peaks_drop$datetime
+  results$datetime = max_lag
   results$autocorrelation = autocorrelation
   results$power = peaks$auto_power
-  results$period = peaks_drop$auto_period
-  results$rythm_strength = peaks_drop$auto_rythm_strength
+  results$period = max_lag
+  results$rythm_strength = rhythm_strength
   results$max_peak_of_int = max_peak_of_int
   results$start = start
   results$end = end
-  results$from = from/2
-  results$to = to/2
+  results$from = from
+  results$to = to
 
   #Return results
   return(results)
