@@ -35,8 +35,29 @@ rm(trikinetics) ## Memory Management (remove variables we won't use again)
 ## (Optional) Truncate data
 
 
+
 # 5. Rhythm Analysis
+## This is the main function of the library.
+## It is critical that the sampling_rate is specified correctly.
+## We are working on some stability improvements, in the meantime
+##you will have to specify the sampling_rate twice.
+
+sampling_rate_in_seconds = 3600 #This is an example of 1 hour.
+
+## RUN THIS ##
+## Do not modify ##
+##
+sampling_rate_numeric = 3600/sampling_rate_in_seconds
+##
+## Thank you! ##
+
+
+
 trikinetics_analyzed = process_timeseries.main(
+  #In this example we are using the down sampled data, but it is not recommended.
+  #Always use the data at the sampling rate it was collected, unless you have
+  #issues with missing time points; this will afford the greatest statistical
+  #power and resolution.
   df = trikinetics_downsampled,
 
   # Window of Analysis Arguments
@@ -45,39 +66,49 @@ trikinetics_analyzed = process_timeseries.main(
   window_step_in_days = 1,
 
   # Period in which to look for peaks within each window (in hours)
-  from = 18,
-  to = 30,
+  from = 18, #18 hours
+  to = 30, #30 hours
 
   #The function needs to know the sampling rate of your data.
   #In this case, we downsampled the data to 1 hour.
   sampling_rate = '1 hour',
 
   # Should the data be detrended before analysis?
-  detrend_data = FALSE,
+  detrend_data = FALSE, #Use only for data that has seasonal trends.
 
   #Which, if any, smoothing method you want to use on your data?
   #Moving average or Two-pass Butterworth filter?
   #Only one should be TRUE at a time. If both are selected as TRUE,
   #the system will default to butterworth = TRUE.
   movavg = FALSE,
-  butterworth = TRUE,
+  butterworth = FALSE,
   #If butterworth is TRUE, specify the frequency or period (1/frequency) that
   #you're interested in filtering out.
   #f_high is the high pass filter.
   #f_low is the low pass filter.
-  f_low = 1/4,
-  f_high = 1/73,
+  #The frequency given to the butterworth must match the sampling rate of the
+  #data. That is why we are multiplying it by the sampling rate.
+  f_low = 1/(4*sampling_rate_numeric),
+  f_high = 1/(73*sampling_rate_numeric),
   #Order for the butterworth filter
   order = 2,
 
   #As a novel test of rhythmicity, we are using the Granger test of
-  #causality. It tests wether the Cosinor fit we create, causally predicts
+  #causality. It tests whether the Cosinor fit we create, causally predicts
   #changes in the raw data and vice versa. The idea is that if an
-  #individual or signal is rhythmic during a given window, it should
+  #individual or signal is rhythmic for a given period, it should
   #present a causal relationship between the cosinor and raw data.
   #causal_order is the lag up to which we will consider that a timeseries is
   #being caused.
-  causal_order = 1,
+  #Note that if the Cosinor and the data match perfectly, the granget test will
+  #output an NA.
+  ## Important Interpretation Information ##
+  #If the granger test returns a pvalue > 0.05, this does not mean
+  #your data is arhythmic! We can only say that the data is not-rythimic for
+  #the specific period/frequency given to the cosinor. Your data may still be
+  #rhythmic just with a different period.
+  ##
+  causal_order = 3, # We are allowing up to 3 lags.
 
 
   #If you're going to be working with big data, make this argument TRUE.
@@ -87,8 +118,8 @@ trikinetics_analyzed = process_timeseries.main(
 
   ##Control the p.value threshold and the ovarsampling factor for the
   #lomb-scargle periodogram
-  ofac = 10,
-  lomb_pvalue = 0.05
+  ofac = 1*sampling_rate_in_seconds,
+  lomb_pvalue = 0.001
 )
 
 rm(trikinetics_downsampled) ## Memory Management (remove variables we won't use again)
@@ -108,7 +139,7 @@ utils_for_halictid = tibble(data = trikinetics_tidy$autocorrelation$data,
        acf_rs = trikinetics_tidy$autocorrelation$rythm_strength,
        acf_granger = trikinetics_tidy$autocorrelation$gc_cos_to_raw,
        lsp_period = trikinetics_tidy$lombscargle$period,
-       lsp_rs = trikinetics_tidy$lombscargle$period,
+       lsp_rs = trikinetics_tidy$lombscargle$rythm_strength,
        lsp_granger = trikinetics_tidy$lombscargle$gc_cos_to_raw) %>%
   left_join(
     group_by(trikinetics_tidy$utils, data) %>%
@@ -116,8 +147,21 @@ utils_for_halictid = tibble(data = trikinetics_tidy$autocorrelation$data,
                 )
     )
 
+average_activity = mutate(trikinetics_tidy$data,
+       hours = lubridate::hour(datetime)) %>%
+  group_by(data, hours) %>%
+  summarise(
+    ls = mean(ld),
+    activity_sum = sum(raw_values),
+    activity_mean = mean(raw_values),
+    activity_sd = sd(raw_values)
+  )
 
+total_activity = mutate(trikinetics_tidy$data,
+                          hours = lubridate::hour(datetime))
 
+write_csv(average_activity, 'average_activity_in_24_hr.csv')
+write_csv(total_activity, 'total_activity_in_24_hr.csv')
 
 # 7. Prepare figures
 ## 7.1 Prepare actograms
