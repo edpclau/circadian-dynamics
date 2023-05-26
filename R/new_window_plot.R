@@ -1,6 +1,5 @@
 
 pdf('Window_plots.pdf')
-
 count = 1
 for (ind in trikinetics_analyzed) {
   #Decide dimensions of the layout
