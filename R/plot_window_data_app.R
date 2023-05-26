@@ -29,33 +29,49 @@ plot_window_data_app <- function(df) {
   detrended = 'detrended' %in% names(raw)
   smoothed = 'smoothed' %in% names(raw)
 
-  plot_df = plot_df %>% nest(window_data= -c(data, window)) %>%
-    nest(unique_measure = -data)
-
-  plan(sequential)
   #Make plots for all individuals by window
   #These are the most detailed plots and will take a lot of time to process
   #Here we are doing a double for loop
-  p = future_map2(
-    .x = plot_df$unique_measure,
-    .y = plot_df$data,
+  map(
+    .x = unique(plot_df$data), #Iterate over individuals
     .f = ~ {
       #At this step we are iterating over all the windows for each individual/measurement
       #plots are arranged in the order in which they should appear on the page.
-      window_plots = future_map2(
-        .x = .x$window_data,
-        .y = .x$window,
+      ind = filter(plot_df, data == .x)
+
+
+
+      pdf(file = paste0(.x,'.pdf'))
+      map(
+        .x = unique(ind$window), #iterate over windows
         .f = ~{
 
-          raw_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
+          window_data = filter(ind, window == .x)
+
+          #Decide which plots we are going to run
+          acf_run = !all(is.na(window_data$acf_period)) #Did the autocorrelation run?
+          lsp_run = !all(is.na(window_data$lsp_period))
+
+
+          #Set the plotting layout
+          num_rows = 2 + acf_run + lsp_run + detrended + butterworth + smoothed
+
+          print(num_rows)
+
+          par(mfcol = c(num_rows, 1))
+
+
+
+
+
+          #### Plot Raw Data ####
+          ggplot(data = window_data, aes(x = datetime, y = raw_values)) +
             geom_line() +
-            labs(y = 'Raw Data', x = 'Datetime', title = paste('Window ', .y))
+            labs(y = 'Raw Data', x = 'Datetime', title = paste('Window ', .x))
 
           #### Autocorrelation Plot #######
-          #Did the autocorrelation run?
-          acf_run = !all(is.na(.x$acf_period))
           if (acf_run) {
-            acf_plots =  ggplot(.x, aes(x= datetime, y = acf)) +
+            ggplot(window_data, aes(x= datetime, y = acf)) +
               geom_line() +
               geom_vline(aes(xintercept = min(datetime) + acf_start), lty = 'dashed', color = 'blue') +
               geom_vline(aes(xintercept = min(datetime) + acf_end), lty = 'dashed', color = 'blue') +
@@ -70,26 +86,26 @@ plot_window_data_app <- function(df) {
           }
 
           #### Lomb-Scargle Plot ####
-          lsp_run = !all(is.na(.x$lsp_period))
           if (lsp_run) {
-            lsp = unnest(distinct(select(.x, lsp_power, lsp_scanned)), cols = c(lsp_power, lsp_scanned))
-            lsp_plots = ggplot(lsp, aes(x = lsp_scanned, y = lsp_power)) +
+            lsp = unnest(select(window_data, lsp_power, lsp_scanned), cols = c(lsp_power, lsp_scanned))
+
+            ggplot(lsp, aes(x = lsp_scanned, y = lsp_power)) +
               geom_line() +
-              geom_point(data = .x, aes(x = lsp_period, y = lsp_peak, colour = 'Peak of Interest')) +
-              geom_hline(data = .x, aes(yintercept = lsp_sig_level), lty = 'dashed') +
-              geom_label_npc(data = .x, aes(npcx = 1, npcy = 0, label = paste('Period =', round(lsp_period, digits = 3),
+              geom_point(data = window_data, aes(x = lsp_period, y = lsp_peak, colour = 'Peak of Interest')) +
+              geom_hline(data = window_data, aes(yintercept = lsp_sig_level), lty = 'dashed') +
+              geom_label_npc(data = window_data, aes(npcx = 1, npcy = 0, label = paste('Period =', round(lsp_period, digits = 3),
                                                                               '\nRhythm Strength =', round(lsp_rs, digits = 3),
                                                                               '\nP-value =', round(lsp_p_value, digits = 4),
                                                                               '\nPower =', round(lsp_peak, digits = 3)))) +
-              geom_vline(data = .x, aes(xintercept = acf_from), lty = 'dashed', color = 'blue') +
-              geom_vline(data = .x, aes(xintercept = acf_to), lty = 'dashed', color = 'blue') +
+              geom_vline(data = window_data, aes(xintercept = acf_from), lty = 'dashed', color = 'blue') +
+              geom_vline(data= window_data, aes(xintercept = acf_to), lty = 'dashed', color = 'blue') +
               scale_colour_manual(values = 'red', name = '') +
               labs(y = 'Power', x = 'Period', title = 'Lomb-Scargle Periodogram') +
               theme(legend.position = c(0.125,1))
           }
 
           ### COSINOR PLOTS ####
-          cosinor_plots = ggplot(data = .x, aes(x = datetime, y = raw_values)) +
+          ggplot(data = window_data, aes(x = datetime, y = raw_values)) +
             geom_line() +
             geom_line(aes(y = lomb_cosinor, x = datetime,  colour = 'Lomb-Scargle Periodogram')) +
             # geom_line(aes(y = autocorr_cosinor, x = datetime, colour = 'Autocorrelation')) +
@@ -103,7 +119,7 @@ plot_window_data_app <- function(df) {
             )
             ) +
             scale_colour_manual(values = c('red', 'blue')) +
-            labs(y = 'Raw Values', x = 'Datetime', title = paste('Cosinor Fit for Window ', .y)) +
+            labs(y = 'Raw Values', x = 'Datetime', title = paste('Cosinor Fit for Window ', .x)) +
             theme(
               legend.position = 'none'
             )
@@ -114,46 +130,33 @@ plot_window_data_app <- function(df) {
 
           ### BUTTERWORTH ####
           if (butterworth) {
-            butterworth_plots = ggplot(data = .x, aes(x = datetime, y = butterworth)) +
+            ggplot(data = window_data, aes(x = datetime, y = butterworth)) +
               geom_line() +
               labs(y = '', x = 'Datetime', title = 'Butterworth Filtered Data')
           }
           ### Detrended ###
           if (detrended) {
-            detrended_plots = ggplot(data = .x, aes(x = datetime, y = detrended)) +
+            ggplot(data = window_data, aes(x = datetime, y = detrended)) +
               geom_line() +
               labs(y = '', x = 'Datetime', title = 'Detrended Data')
           }
           ### Moving Average ###
           if (smoothed) {
-            movavg_plots = ggplot(data = .x, aes(x = datetime, y = smoothed)) +
+            ggplot(data = window_data, aes(x = datetime, y = smoothed)) +
               geom_line() +
               labs(y = '', x = 'Datetime', title = 'Movavg Data')
           }
 
-          plots = list(
-            raw_plots = raw_plots,
-            detrended_plots = if (detrended) {detrended_plots},
-            butterworth_plots = if (butterworth) {butterworth_plots},
-            movavg_plots = if (smoothed) {movavg_plots},
-            acf_plots = if (acf_run) {acf_plots},
-            lsp_plots = if (lsp_run) {lsp_plots},
-            cosinor_plots = cosinor_plots
-          )
-          plots = plots[!sapply(plots, is.null)]
 
-          return(plots)
 
         }
       )
 
-      rows = length(window_plots[[1]])
+      dev.off()
 
-      window_plots = unlist(window_plots, recursive = FALSE)
 
-      ml = marrangeGrob(window_plots, ncol = 1, nrow = rows)
 
-      ggsave(paste0(.y,"_window_plots.pdf"), plot = ml, height = 18, width = 10)
+
 
     }
   )

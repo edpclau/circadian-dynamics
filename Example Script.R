@@ -42,7 +42,7 @@ rm(trikinetics) ## Memory Management (remove variables we won't use again)
 ## We are working on some stability improvements, in the meantime
 ##you will have to specify the sampling_rate twice.
 
-sampling_rate_in_seconds = 3600 #This is an example of 1 hour.
+sampling_rate_in_seconds = 60 #This is an example of 1 hour.
 
 ## RUN THIS ##
 ## Do not modify ##
@@ -58,7 +58,7 @@ trikinetics_analyzed = process_timeseries.main(
   #Always use the data at the sampling rate it was collected, unless you have
   #issues with missing time points; this will afford the greatest statistical
   #power and resolution.
-  df = trikinetics_downsampled,
+  df = trikinetics[c(5, 21, 12)],
 
   # Window of Analysis Arguments
   make_windows = FALSE,
@@ -71,7 +71,7 @@ trikinetics_analyzed = process_timeseries.main(
 
   #The function needs to know the sampling rate of your data.
   #In this case, we downsampled the data to 1 hour.
-  sampling_rate = '1 hour',
+  sampling_rate = '1 minute',
 
   # Should the data be detrended before analysis?
   detrend_data = FALSE, #Use only for data that has seasonal trends.
@@ -81,15 +81,16 @@ trikinetics_analyzed = process_timeseries.main(
   #Only one should be TRUE at a time. If both are selected as TRUE,
   #the system will default to butterworth = TRUE.
   movavg = FALSE,
-  butterworth = FALSE,
+  butterworth = TRUE,
   #If butterworth is TRUE, specify the frequency or period (1/frequency) that
   #you're interested in filtering out.
   #f_high is the high pass filter.
   #f_low is the low pass filter.
   #The frequency given to the butterworth must match the sampling rate of the
   #data. That is why we are multiplying it by the sampling rate.
-  f_low = 1/(4*sampling_rate_numeric),
-  f_high = 1/(73*sampling_rate_numeric),
+  f_low = 1/(12*sampling_rate_numeric),
+  f_high = 1/(35*sampling_rate_numeric),
+  # f_high = 0,
   #Order for the butterworth filter
   order = 2,
 
@@ -103,12 +104,12 @@ trikinetics_analyzed = process_timeseries.main(
   #Note that if the Cosinor and the data match perfectly, the granget test will
   #output an NA.
   ## Important Interpretation Information ##
-  #If the granger test returns a pvalue > 0.05, this does not mean
+  #If the granger test returns a pvalue > 0.05 or NA, this does not mean
   #your data is arhythmic! We can only say that the data is not-rythimic for
   #the specific period/frequency given to the cosinor. Your data may still be
   #rhythmic just with a different period.
   ##
-  causal_order = 3, # We are allowing up to 3 lags.
+  causal_order = 1, # We are allowing up to 3 lags.
 
 
   #If you're going to be working with big data, make this argument TRUE.
@@ -118,7 +119,7 @@ trikinetics_analyzed = process_timeseries.main(
 
   ##Control the p.value threshold and the ovarsampling factor for the
   #lomb-scargle periodogram
-  ofac = 1*sampling_rate_in_seconds,
+  ofac = sampling_rate_in_seconds,
   lomb_pvalue = 0.001
 )
 
@@ -134,34 +135,7 @@ rm(trikinetics_analyzed) ## Memory Management (remove variables we won't use aga
 
 
 
-utils_for_halictid = tibble(data = trikinetics_tidy$autocorrelation$data,
-       acf_period = trikinetics_tidy$autocorrelation$period,
-       acf_rs = trikinetics_tidy$autocorrelation$rythm_strength,
-       acf_granger = trikinetics_tidy$autocorrelation$gc_cos_to_raw,
-       lsp_period = trikinetics_tidy$lombscargle$period,
-       lsp_rs = trikinetics_tidy$lombscargle$rythm_strength,
-       lsp_granger = trikinetics_tidy$lombscargle$gc_cos_to_raw) %>%
-  left_join(
-    group_by(trikinetics_tidy$utils, data) %>%
-      summarise(lsp_p_value = mean(lsp_p_value)
-                )
-    )
 
-average_activity = mutate(trikinetics_tidy$data,
-       hours = lubridate::hour(datetime)) %>%
-  group_by(data, hours) %>%
-  summarise(
-    ls = mean(ld),
-    activity_sum = sum(raw_values),
-    activity_mean = mean(raw_values),
-    activity_sd = sd(raw_values)
-  )
-
-total_activity = mutate(trikinetics_tidy$data,
-                          hours = lubridate::hour(datetime))
-
-write_csv(average_activity, 'average_activity_in_24_hr.csv')
-write_csv(total_activity, 'total_activity_in_24_hr.csv')
 
 # 7. Prepare figures
 ## 7.1 Prepare actograms
@@ -175,9 +149,25 @@ acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
 ## 7.4 Plot Lomb-Scargle Results
 lsp_plots = plot_lsp_results(trikinetics_tidy$lombscargle)
 ## 7.5 Window level plots.
-window_plots = plot_window_data(trikinetics_tidy, alt_cos = TRUE)
+plot_window_data_app(trikinetics_tidy)
 
-# 8.Arrange the Figures for export
+
+## 8. Export Data
+plan(sequential)
+future_map2(
+  .x = trikinetics_tidy,
+  .y = c('analysis_data', 'autocorrelation_results', 'lomb_scargle_results', 'utils'),
+  .f = ~ {
+    df = rename(.x, unique_identifier = data)
+    write_csv(df, paste0(.y,'.csv'))
+  })
+
+write_csv(utils_for_halictid, 'halictid_utils.csv')
+
+
+
+
+# 9.Arrange the Figures for export
 ## 8.1 Arrange the Actograms
 p = arrangeGrob(grobs = actograms)
 nwindows = dplyr::n_distinct(actograms[[1]]$data$window)
@@ -194,12 +184,17 @@ ggplot2::ggsave('actograms.pdf', p,
 ## 8.2 Arrange the window figures
 plan(sequential)
 future_map2(
-  .x = window_plots,
+
+
+  .x = window_plots, #Iterate over Individuals
   .y = names(window_plots),
   .f = ~ {
-    ## Prepare the plots
 
-    plots = future_map(.x = .x, .f = ~ {arrangeGrob(grobs = .x, ncol = 1, nrow = length(.x))})
+    ## Prepare the plots
+    plots = future_map(.x = .x, #Iterate over Windows
+                       .f = ~ {
+
+                         arrangeGrob(grobs = .x, ncol = 1, nrow = length(.x))})
 
     class(plots) <- c("arrangelist", 'list')
     # print(class(plots))
@@ -232,19 +227,6 @@ future_map(
     ggsave(paste0(.x,"_summary_plots.pdf"), plot = plots, width = 15, height = 10, limitsize = FALSE)
 
   })
-
-## 9. Export Data
-plan(sequential)
-future_map2(
-  .x = trikinetics_tidy,
-  .y = c('analysis_data', 'autocorrelation_results', 'lomb_scargle_results', 'utils'),
-  .f = ~ {
-    df = rename(.x, unique_identifier = data)
-    write_csv(df, paste0(.y,'.csv'))
-    })
-
-write_csv(utils_for_halictid, 'halictid_utils.csv')
-
 
 
 

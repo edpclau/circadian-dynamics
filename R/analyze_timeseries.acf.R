@@ -71,8 +71,8 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   }
 
   #2. the period must be calculated from the data on the second day.
-  start <- duration(from, 'hours')
-  end <- duration(to, 'hours')
+  start <- duration(from+24, 'hours')
+  end <- duration(to+24, 'hours')
 
 
 ##### ACF ######
@@ -93,7 +93,9 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
   #Find the peaks
   peaks = findpeaks(autocorrelation, sortstr = TRUE)
-  peaks = tibble(auto_power = peaks[,1], lags = diff(c(0, peaks[,2])/sampling_bin_size))
+  peaks = tibble(auto_power = peaks[,1],
+                 lags = diff(c(0, peaks[,2])/sampling_bin_size),
+                 datetime = duration(peaks[,2], sampling_rate))
 
   #Keep only the positive peaks
   peaks = filter(peaks, auto_power > 0.2)
@@ -121,7 +123,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   peaks$lags = duration(peaks$lags, sampling_rate)
 
   #Find the maximum peak within the scope
-  peaks_of_int = filter(peaks, lags >= start, lags <= end)
+  peaks_of_int = filter(peaks, datetime >= start, datetime <= end)
 
   #Make sure the peaks_of_int is not empty, otherwise return NA
   if (!all(is_empty(peaks_of_int$auto_power))) {
@@ -132,24 +134,32 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     #Get the lag of the maximum peak
     max_lag = filter(peaks_of_int, auto_power == max_peak_of_int)$lags
     #Translate the max_lag into the correct time
-    max_lag = as.numeric(max_lag, 'hours')
+    max_lag = abs(as.numeric(max_lag, 'hours'))
+
+    #Get datetime of the maximum peak
+    max_date = filter(peaks_of_int, auto_power == max_peak_of_int)$datetime
+    max_date = as.numeric( duration(max_date, sampling_rate), 'hours')
 
     #Get the Rhythm Strength
-    rhythm_strength = max_peak_of_int/(1.965/sqrt(len_autocor))
+    rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
 
 
-  } else if (nrow(peaks) != 0) {
-
-    #Get the maximum peak
-    max_peak_of_int = max(peaks$auto_power)
-
-    #Get the lag of the maximum peak
-    max_lag = filter(peaks, auto_power == max_peak_of_int)$lags
-    #Translate the max_lag into the correct time
-    max_lag = as.numeric(max_lag, 'hours')
-
-    #Get the Rhythm Strength
-    rhythm_strength = max_peak_of_int/(1.965/sqrt(len_autocor))
+  # } else if (nrow(peaks) != 0) {
+  #
+  #   #Get the maximum peak
+  #   max_peak_of_int = max(peaks$auto_power)
+  #
+  #   #Get the lag of the maximum peak
+  #   max_lag = filter(peaks, auto_power == max_peak_of_int)$lags
+  #   #Translate the max_lag into the correct time
+  #   max_lag = abs(as.numeric(max_lag, 'hours'))
+  #
+  #   #Get datetime of the maximum peak
+  #   max_date = filter(peaks, auto_power == max_peak_of_int)$datetime
+  #   max_date = as.numeric( duration(max_date, sampling_rate), 'hours')
+  #
+  #   #Get the Rhythm Strength
+  #   rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
 
 
 
@@ -175,7 +185,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
 
 
-  results$datetime = max_lag
+  results$datetime = max_date
   results$autocorrelation = autocorrelation
   results$power = peaks$auto_power
   results$period = max_lag

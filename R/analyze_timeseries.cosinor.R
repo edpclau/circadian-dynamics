@@ -114,7 +114,7 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
   cosw <- cos(2*pi*samples/period)
 
   # Regression model for Cosinor
-  model <- lm(df$value ~  sinw + cosw)
+  model <- lm(df[[ncol(df)]] ~  sinw + cosw)
 
   # Coefficients of the model. The intercept = MESOR.
   MESOR <- as.numeric(model$coefficients[1])
