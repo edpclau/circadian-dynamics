@@ -1,5 +1,18 @@
+#' Function to Generate Plots of the Analyzed Data
+#' Must be used when 'Make Time Windows = FALSE'
+#'
+#' @param trikinetics_analyzed
+#'
+#' @return
+#' @export
+#'
+#' @examples
+generate_plots_no_windows <- function(trikinetics_analyzed){
 
+#Initiate the pdf device
 pdf('Window_plots.pdf')
+
+#Start a counter for each IND
 count = 1
 for (ind in trikinetics_analyzed) {
   #Decide dimensions of the layout
@@ -142,3 +155,4 @@ for (ind in trikinetics_analyzed) {
   count = count + 1
 }
 dev.off()
+}
