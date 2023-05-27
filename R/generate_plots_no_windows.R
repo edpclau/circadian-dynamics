@@ -2,6 +2,7 @@
 #' Must be used when 'Make Time Windows = FALSE'
 #'
 #' @param trikinetics_analyzed
+#' @param sampling_rate
 #'
 #' @return
 #' @export
