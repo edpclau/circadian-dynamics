@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-generate_plots_no_windows <- function(trikinetics_analyzed){
+generate_plots_no_windows <- function(trikinetics_analyzed, sampling_rate = 'hours'){
 
 #Initiate the pdf device
 pdf('Window_plots.pdf')
@@ -79,7 +79,7 @@ for (ind in trikinetics_analyzed) {
     abline(h = ci, col = 'red', lty = 2)
     abline(h = -ci, col = 'red', lty = 2)
 
-    text(x = as.numeric(duration(ind$acf$results$datetime, 'minutes'), 'hours'),
+    text(x = as.numeric(duration(ind$acf$results$datetime, sampling_rate), 'hours'),
          y = ind$acf$results$max_peak_of_int,
          label = '*',
          col = 'red',
