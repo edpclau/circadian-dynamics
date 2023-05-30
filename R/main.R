@@ -125,7 +125,7 @@ process_timeseries.core <- function(df = NULL,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
-                                    causal_order = 1,
+                                    # causal_order = 1,
                                     big_data = FALSE,
                                     ofac = 1,
                                     lomb_pvalue = 0.01) {
@@ -162,14 +162,14 @@ plan(multisession)
 
       acf_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
 
-      acf_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = acf_cosinor$wave, order = causal_order)
+      # acf_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = acf_cosinor$wave, order = causal_order)
       #Lomb-Scargle Pipeline
 
       lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
 
       lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
 
-      lsp_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = lsp_cosinor$wave,  order = causal_order)
+      # lsp_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = lsp_cosinor$wave,  order = causal_order)
       return(list(data = x,
                   acf = list(results = acf_results,
                              cosinor = acf_cosinor),
@@ -192,11 +192,11 @@ plan(multisession)
                                   butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
   acf_results = analyze_timeseries.acf(df, from = from, to = to, sampling_rate = sampling_rate)
   acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
-  acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave,  order = causal_order)
+  # acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave,  order = causal_order)
   #Lomb-Scargle Pipeline
   lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
   lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
-  lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order)
+  # lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order)
 
 
   return(list(data = df,
@@ -226,7 +226,7 @@ process_timeseries.main <- function(df = NULL,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
-                                    causal_order = 1,
+                                    # causal_order = 1,
                                     big_data = FALSE,
                                     ofac = 10,
                                     lomb_pvalue = 0.01) {
@@ -254,7 +254,7 @@ process_timeseries.main <- function(df = NULL,
                                 from = from,
                                 to = to,
                                 order = order,
-                                causal_order = causal_order,
+                                # causal_order = causal_order,
                                 big_data = big_data,
                                 ofac = ofac,
                                 lomb_pvalue = lomb_pvalue)
