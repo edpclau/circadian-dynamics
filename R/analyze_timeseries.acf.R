@@ -88,21 +88,14 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
    # Change change all NA autocorrelations to 0
       # The function that looks for peaks doesn't allow NA, 0 would be ignored if we put a threshold, therefore it won't affect
       # the results
-  autocorrelation = ifelse( is.na(autocorrelation), 0, autocorrelation)
+  autocorrelation = ifelse(is.na(autocorrelation), 0, autocorrelation)
   len_autocor = length(autocorrelation)
 
   #Find the peaks
   peaks = findpeaks(autocorrelation, sortstr = TRUE)
-  peaks = tibble(auto_power = peaks[,1],
-                 lags = diff(c(0, peaks[,2])/sampling_bin_size),
-                 datetime = duration(peaks[,2], sampling_rate))
-
-  #Keep only the positive peaks
-  peaks = dplyr::filter(peaks, auto_power > 0.2)
-
 
   #If there are no Peaks, return NA
-  if (nrow(peaks) == 0) {
+  if (nrow(peaks) == 0 | rlang::is_empty(peaks)) {
     results$datetime = NA
     results$autocorrelation = NA
     results$power = NA
@@ -115,6 +108,17 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$to = to
     return(results)
   }
+
+
+
+  peaks = tibble(auto_power = peaks[,1],
+                 lags = diff(c(0, peaks[,2])/sampling_bin_size),
+                 datetime = duration(peaks[,2], sampling_rate))
+
+  #Keep only the positive peaks
+  peaks = dplyr::filter(peaks, auto_power >= 0.2)
+
+
 
 
 
