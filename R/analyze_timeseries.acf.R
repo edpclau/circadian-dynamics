@@ -95,7 +95,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   peaks = findpeaks(autocorrelation, sortstr = TRUE)
 
   #If there are no Peaks, return NA
-  if (nrow(peaks) == 0 | rlang::is_empty(peaks)) {
+  if (rlang::is_empty(peaks)) {
     results$datetime = NA
     results$autocorrelation = NA
     results$power = NA
