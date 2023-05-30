@@ -98,7 +98,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
                  datetime = duration(peaks[,2], sampling_rate))
 
   #Keep only the positive peaks
-  peaks = filter(peaks, auto_power > 0.2)
+  peaks = dplyr::filter(peaks, auto_power > 0.2)
 
 
   #If there are no Peaks, return NA
