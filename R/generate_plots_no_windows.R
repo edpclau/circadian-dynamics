@@ -8,6 +8,8 @@
 #' @export
 #'
 #' @examples
+#'
+#'
 generate_plots_no_windows <- function(trikinetics_analyzed, sampling_rate = 'hours'){
 
 #Initiate the pdf device
