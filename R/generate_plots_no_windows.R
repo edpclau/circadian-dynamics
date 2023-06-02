@@ -82,7 +82,7 @@ for (ind in trikinetics_analyzed) {
     abline(h = ci, col = 'red', lty = 2)
     abline(h = -ci, col = 'red', lty = 2)
 
-    text(x = as.numeric(duration(ind$acf$results$datetime, sampling_rate), 'hours'),
+    text(x = as.numeric(duration(ind$acf$results$datetime,sampling_rate), 'hour'),
          y = ind$acf$results$max_peak_of_int,
          label = '*',
          col = 'red',
@@ -134,8 +134,8 @@ for (ind in trikinetics_analyzed) {
     lines(ind$data$datetime, ind$lomb$cosinor$wave, col = 'blue')
     text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.9,
          label = paste('Lomb-Scargle Cosinor:',
-                       'R^2 =', round(ind$lomb$cosinor$adj_r_squared, 4), '|',
-                       'Granger =', scales::scientific(ind$lomb$results$grangercausal$cos_to_rawdata, 2)
+                       'R^2 =', round(ind$lomb$cosinor$adj_r_squared, 4), '|'
+                       # 'Granger =', scales::scientific(ind$lomb$results$grangercausal$cos_to_rawdata, 2)
          ),
          col = 'blue'
     )
@@ -144,8 +144,8 @@ for (ind in trikinetics_analyzed) {
     lines(ind$data$datetime, ind$acf$cosinor$wave, col = 'red')
     text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.7,
          label = paste('Acf Cosinor:',
-                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4), '|',
-                       'Granger =', scales::scientific(ind$acf$results$grangercausal$cos_to_rawdata, 2)
+                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4), '|'
+                       # 'Granger =', scales::scientific(ind$acf$results$grangercausal$cos_to_rawdata, 2)
          ),
          col = 'red'
     )
