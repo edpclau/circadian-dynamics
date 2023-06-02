@@ -112,19 +112,12 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
 
   peaks = tibble(auto_power = peaks[,1],
-                 lags = diff(c(0, peaks[,2])/sampling_bin_size),
                  datetime = duration(peaks[,2], sampling_rate))
 
   #Keep only the positive peaks
   peaks = dplyr::filter(peaks, auto_power >= 0.2)
 
 
-
-
-
-  #Locate the peaks in time
-  #Translate the lags into the sampling_rate
-  peaks$lags = duration(peaks$lags, sampling_rate)
 
   #Find the maximum peak within the scope
   peaks_of_int = filter(peaks, datetime >= start, datetime <= end)
@@ -135,37 +128,17 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     #Get the maximum peak
     max_peak_of_int = max(peaks_of_int$auto_power)
 
-    #Get the lag of the maximum peak
-    max_lag = filter(peaks_of_int, auto_power == max_peak_of_int)$lags
-    #Translate the max_lag into the correct time
-    max_lag = abs(as.numeric(max_lag, 'hours'))
+    #Get the period of the maximum peak
+    period = filter(peaks_of_int, auto_power == max_peak_of_int)$datetime
+    #Translate the period into the correct time
+    period = as.numeric(period, 'hours') - 24
 
     #Get datetime of the maximum peak
     max_date = filter(peaks_of_int, auto_power == max_peak_of_int)$datetime
-    max_date = as.numeric( duration(max_date, sampling_rate), 'hours')
+    max_date = as.numeric(duration(max_date, sampling_rate), 'hours')
 
     #Get the Rhythm Strength
     rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
-
-
-  # } else if (nrow(peaks) != 0) {
-  #
-  #   #Get the maximum peak
-  #   max_peak_of_int = max(peaks$auto_power)
-  #
-  #   #Get the lag of the maximum peak
-  #   max_lag = filter(peaks, auto_power == max_peak_of_int)$lags
-  #   #Translate the max_lag into the correct time
-  #   max_lag = abs(as.numeric(max_lag, 'hours'))
-  #
-  #   #Get datetime of the maximum peak
-  #   max_date = filter(peaks, auto_power == max_peak_of_int)$datetime
-  #   max_date = as.numeric( duration(max_date, sampling_rate), 'hours')
-  #
-  #   #Get the Rhythm Strength
-  #   rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
-
-
 
 
   } else {
@@ -192,7 +165,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   results$datetime = max_date
   results$autocorrelation = autocorrelation
   results$power = peaks$auto_power
-  results$period = max_lag
+  results$period = period
   results$rythm_strength = rhythm_strength
   results$max_peak_of_int = max_peak_of_int
   results$start = start
