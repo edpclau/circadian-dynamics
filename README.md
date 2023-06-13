@@ -107,6 +107,8 @@ Make sure the sampling_rate says if the data is sampled in minutes, hours, or da
 ```{r}
 detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
 ```
+When the output says any of the following: Autocorrelation Not Run or Lomb-Scargle Not Run, it means that for whatever reason, the output of the period for that test was an NA. We can interpret that as being unable to find a period within the range we selected. It could be that the individual we are studying has a period outside the boundaries of the FROM and TO. You could repeat the analysis and widen that search window. <br>
+If the output we get for a period is NA, we don't run a Cosinor analysis for it.
 
 # 8. Export Data
 ## 8.1 Tidy Data
