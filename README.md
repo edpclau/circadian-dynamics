@@ -44,7 +44,7 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 ### Thank you!
 
 
-#5. Generate Actograms to choose which individuals to analyze
+# 5. Generate Actograms to choose which individuals to analyze
 Run without modifying. The actogram will be saved in your working directory.
 ```{r}
 actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
