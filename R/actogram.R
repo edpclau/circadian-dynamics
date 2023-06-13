@@ -1,7 +1,7 @@
 #sampling in minutes
 #' Actogram
 #'
-#' @param df
+#' @param df First column is datetime, the rest are inds.
 #' @param sampling
 #' @param file
 #'
