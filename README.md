@@ -30,7 +30,7 @@ The general import function is 'read_csv_data'. It requires that your file is in
 trikinetics = read_trikinetics_2(file)
 ```
 
-#4. **** REQUIRED ***** Define meta-data (Sampling Rate)
+# 4. **** REQUIRED ***** Define meta-data (Sampling Rate)
 It is critical that the sampling_rate is specified correctly. We are working on some stability improvements, in the meantime you will have to specify the sampling_rate twice.
 ```{r}
 sampling_rate_in_seconds = 60 #This is an example of 1 minute.
