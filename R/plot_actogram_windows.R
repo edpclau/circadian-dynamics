@@ -12,8 +12,7 @@
 #' @export
 #'
 #'
-
-
+#'
 plot_actogram_windows <- function(df) {
   ### Check for windows and ld data
   windows = 'window' %in% names(df)
