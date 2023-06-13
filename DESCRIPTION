@@ -1,15 +1,16 @@
 Package: circadiandynamics
 Type: Package
 Title: Period and Rythm Analysis of Timeseries Data
-Version: 1.0.0
-Author: José L. Agosto-Rivera 
-        Eddie Pérez Claudio
+Version: 2.1.5
+Author: Eddie Pérez Claudio
+        Manuel Guiannoni-Guzmán
         Jonathan Alemán
+        José L. Agosto-Rivera 
 Maintainer: Eddie Pérez Claudio <eddieperezclaudio@gmail.com>
 Description: 
     Finds the period of univariate and multivariate timeseries (datetime) data by window.
     It will iterate of each window and find any changes in the period. Also fits a COSINOR 
-    function to the data. After the analysis, plots which summarise the data can be exported.
+    function to the data.
 License: GPL-3
 Encoding: UTF-8
 Imports: gridExtra, pracma, readr, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, magrittr, tibble, forcats, furrr, lmtest, future, ggpp
