@@ -136,8 +136,8 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
                     lines(window$data$datetime, window$lomb$cosinor$wave, col = 'blue')
                     text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.9,
                          label = paste('Lomb-Scargle Cosinor:',
-                                       'R^2 =', round(window$lomb$cosinor$adj_r_squared, 4)
-                                       # 'Granger =', scales::scientific(window$lomb$results$grangercausal$cos_to_rawdata, 2)
+                                       'R^2 =', round(window$lomb$cosinor$adj_r_squared, 4), '|',
+                                       'Granger =', scales::scientific(window$lomb$results$grangercausal$cos_to_rawdata, 2)
                          ),
                          col = 'blue'
                     )
@@ -146,8 +146,8 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
                     lines(window$data$datetime, window$acf$cosinor$wave, col = 'red')
                     text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.7,
                          label = paste('Acf Cosinor:',
-                                       'R^2 =', round(window$acf$cosinor$adj_r_squared, 4)
-                                       # 'Granger =', scales::scientific(window$acf$results$grangercausal$cos_to_rawdata, 2)
+                                       'R^2 =', round(window$acf$cosinor$adj_r_squared, 4), '|',
+                                       'Granger =', scales::scientific(window$acf$results$grangercausal$cos_to_rawdata, 2)
                          ),
                          col = 'red'
                     )
