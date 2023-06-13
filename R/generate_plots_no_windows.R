@@ -17,6 +17,7 @@ pdf('Window_plots.pdf')
 
 #Start a counter for each IND
 count = 1
+ind_names = names(trikinetics_analyzed)
 for (ind in trikinetics_analyzed) {
   #Decide dimensions of the layout
   #Check for conditional columns
@@ -48,7 +49,7 @@ for (ind in trikinetics_analyzed) {
   plot(ind$data$datetime, ind$data$value,
        type ='l', xlab = '', ylab = 'Raw Activity')
   # Top-right text
-  mtext(paste('IND', count),
+  mtext(paste('IND', ind_names[count]),
         side = 3, adj = 0.9)
 
   par(mar = c(2,4,0,0))
@@ -134,7 +135,7 @@ for (ind in trikinetics_analyzed) {
     lines(ind$data$datetime, ind$lomb$cosinor$wave, col = 'blue')
     text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.9,
          label = paste('Lomb-Scargle Cosinor:',
-                       'R^2 =', round(ind$lomb$cosinor$adj_r_squared, 4), '|'
+                       'R^2 =', round(ind$lomb$cosinor$adj_r_squared, 4)
                        # 'Granger =', scales::scientific(ind$lomb$results$grangercausal$cos_to_rawdata, 2)
          ),
          col = 'blue'
@@ -144,7 +145,7 @@ for (ind in trikinetics_analyzed) {
     lines(ind$data$datetime, ind$acf$cosinor$wave, col = 'red')
     text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.7,
          label = paste('Acf Cosinor:',
-                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4), '|'
+                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4)
                        # 'Granger =', scales::scientific(ind$acf$results$grangercausal$cos_to_rawdata, 2)
          ),
          col = 'red'
