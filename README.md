@@ -54,7 +54,7 @@ actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
 ```{r}
 trikinetics_analyzed = process_timeseries.main(
 
-  df = trikinetics[c(4,5)],
+  df = trikinetics,
 
   # Window of Analysis Arguments
   make_windows = TRUE,
