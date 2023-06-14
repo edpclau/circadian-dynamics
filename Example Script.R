@@ -114,6 +114,8 @@ trikinetics_analyzed = process_timeseries.main(
 ### or days.
 ### If you selected make_time_windows = TRUE in the analysis,
 detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
+## 7.2 Summary Plots
+
 
 
 
@@ -134,7 +136,39 @@ future_map2(
     write_csv(df, paste0(.y,'.csv'))
   })
 
-rm(trikinetics_tidy)
+
+## 10. Summary Plots (End of Life Cycle)
+actograms_by_window = plot_actogram_windows(trikinetics_tidy$data)
+## Raw data plots
+raw_plots = plot_raw_values(trikinetics_tidy$data)
+## Plot Autocorrelation Results
+acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
+## Plot Lomb-Scargle Results
+lsp_plots = plot_lsp_results(trikinetics_tidy$lombscargle)
+
+
+plan(sequential)
+future_map(
+  .x = names(raw_plots),
+  .f = ~ {
+    layout = rbind(c(1,1,1,1),
+                   c(2,2,3,6),
+                   c(2,2,4,7),
+                   c(2,2,5,8),
+                   c(2,2,9,10))
+    plots =  arrangeGrob(raw_plots[[.x]],
+                         actograms_by_window[[.x]],
+                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
+                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
+                         lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
+                         nrow = 5, ncol = 4,
+                         layout_matrix = layout)
+
+
+
+    ggsave(paste0(.x,"_summary_plots.pdf"), plot = plots, width = 15, height = 10, limitsize = FALSE)
+
+  })
 
 
 
