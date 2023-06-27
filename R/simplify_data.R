@@ -95,7 +95,29 @@ simplify_data <- function(df, big_data = FALSE) {
                                                   },
                                                   .id = 'window')
                                  })
-
+    ##### Control Results (Arbitrary 24 hour period) #####
+    control = future_map_dfr(.x = df,
+                                 .id = 'data',
+                                 .f = ~ {
+                                   df = .x
+                                   windows = seq(length(.x))
+                                   future_map_dfr(.x = windows,
+                                                  .f = ~ {
+                                                    tibble(
+                                                      period = 24,
+                                                      mesor = df[[.x]]$control$cosinor$mesor,
+                                                      amplitude = df[[.x]]$control$cosinor$amplitude,
+                                                      amp_se = df[[.x]]$control$cosinor$amplitude_se,
+                                                      acrophase = df[[.x]]$control$cosinor$acrophase,
+                                                      acro_se = df[[.x]]$control$cosinor$acrophase_se,
+                                                      phase = df[[.x]]$control$cosinor$phase,
+                                                      phase_se = df[[.x]]$control$cosinor$phase_se,
+                                                      adj_r_squared = df[[.x]]$control$cosinor$adj_r_squared,
+                                                      cosinor_p_value = df[[.x]]$control$cosinor$p_value
+                                                    )
+                                                  },
+                                                  .id = 'window')
+                                 })
     #### Tibble utils data ####
     utils_data = future_map_dfr(.x = df,
                                     .id = 'data',
@@ -199,6 +221,24 @@ simplify_data <- function(df, big_data = FALSE) {
                                  },
                                  .id = 'data')
 
+    ##### Control Results (arbitrary 24 hour period) #####
+    control = future_map_dfr(.x = df,
+                                 .f = ~ {
+                                   tibble(
+                                     period = 24,
+                                     mesor = .x$control$cosinor$mesor,
+                                     amplitude = .x$control$cosinor$amplitude,
+                                     amp_se = .x$control$cosinor$amplitude_se,
+                                     acrophase = .x$control$cosinor$acrophase,
+                                     acro_se = .x$control$cosinor$acrophase_se,
+                                     phase = .x$control$cosinor$phase,
+                                     phase_se = .x$control$cosinor$phase_se,
+                                     adj_r_squared = .x$control$cosinor$adj_r_squared,
+                                     cosinor_p_value = .x$control$cosinor$p_value
+                                   )
+                                 },
+                                 .id = 'data')
+
     #### Tibble utils data ####
     utils_data = future_map_dfr(.x = df,
                                 .id = 'data',
@@ -240,6 +280,7 @@ simplify_data <- function(df, big_data = FALSE) {
       data = processed_data,
       autocorrelation = autocorrelation,
       lombscargle = lombscargle,
+      control = control,
       utils = utils_data
     )
   )
