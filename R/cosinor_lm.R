@@ -66,7 +66,8 @@ cosinor_lm <- function(df = NULL, timeseries_datetime = NULL, values = NULL,
 # two lists into a df.
 if (is.null(df) & (is.null(timeseries_datetime) | is.null(values))) {
   stop("If a data.frame is not supplied. Must include both timeseries and values.")
-  } else if (is.null(df)) { df = tibble(timeseries_datetime, values) }
+} else if (is.null(df)) { df = tibble(timeseries_datetime, values)
+  }
 #2.must have sampling rate and period
 if (is.null(period)) {stop("Must include period. Period must be given in hours")}
 if (is.null(sampling_rate)) {stop("Must include sampling_rate. ex. '30 minutes', '1 hour', '4 seconds', '100 days'.")}
