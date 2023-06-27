@@ -170,11 +170,16 @@ plan(multisession)
       lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
 
       lsp_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = lsp_cosinor$wave,  order = causal_order)
-      return(list(data = x,
+
+      # Control Pipeline (We set an arbitrary 24 hour cosinor)
+      arbitrary_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = 24)
+
+       return(list(data = x,
                   acf = list(results = acf_results,
                              cosinor = acf_cosinor),
                   lomb = list(results = lsp_results,
-                              cosinor = lsp_cosinor)
+                              cosinor = lsp_cosinor),
+                  control = list(cosinor = arbitrary_cosinor)
                   )
              )
       }
@@ -198,12 +203,15 @@ plan(multisession)
   lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
   lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order)
 
+  #Control: arbitrary 24 hour cosinor
+  arbitrary_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = 24)
 
   return(list(data = df,
               acf = list(results = acf_results,
                          cosinor = acf_cosinor),
               lomb = list(results = lsp_results,
-                          cosinor = lsp_cosinor)
+                          cosinor = lsp_cosinor),
+              control = list(cosinor = arbitrary_cosinor)
               )
          )
 
