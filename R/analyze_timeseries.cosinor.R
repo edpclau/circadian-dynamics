@@ -65,29 +65,31 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
 
 
 #### ERROR CHECK (too few timepoints) ######
+  empty_results = list(
+    mesor = NA,
+    amplitude = NA,
+    amplitude_se = NA,
+    acrophase = NA,
+    acrophase_se = NA,
+    phase = NA,
+    phase_se = NA,
+    adj_r_squared = NA,
+    p_value = NA,
+    wave = NA,
+    cos_coeff = NA,
+    sin_coeff = NA
+  )
+
   if (nrow(df) < 3) {
    return(
-     list(
-      mesor = NA,
-      amplitude = NA,
-      amplitude_se = NA,
-      acrophase = NA,
-      acrophase_se = NA,
-      phase = NA,
-      phase_se = NA,
-      adj_r_squared = NA,
-      p_value = NA,
-      wave = NA,
-      cos_coeff = NA,
-      sin_coeff = NA
-    )
+     empty_results
    )
   }
 ##### Base Cases #####
   if (is_empty(period)) {
-    period = 24
-  } else if (is.na(period)){
-    period = 24
+    return(empty_results)
+  } else if (is.na(period)) {
+    return(empty_results)
   }
 
 
