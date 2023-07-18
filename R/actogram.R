@@ -37,7 +37,11 @@ actogram <- function (df, sampling, file = 'actogram') {
 
   for (ind in seq(1, ncol(df[-1]), by = 1)) {
 
+    #Normalize Activity per IND
+    activity_ = df[-1][[ind]]
+
     #Actogram
+
     par(mar = c(0,0,0,0))
     for (i in day) {
 
@@ -47,8 +51,8 @@ actogram <- function (df, sampling, file = 'actogram') {
       hour = seq(1, 48, by = (48-1)/(length(hour) - 1))
 
 
-      activity = df[-1][[ind]][slice]
-      mact = max(activity)
+      activity = activity_[slice]
+      mact = max(activity_)
       mact = ifelse( mact == 0 | is.na(mact) , 1, mact )
 
 
