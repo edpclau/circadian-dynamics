@@ -124,13 +124,15 @@ for (ind in trikinetics_analyzed) {
 
 
   #7. Plot the cosinor of both
-  if ((acf_run | lomb_run)){
   plot(ind$data$datetime, ind$data[[ncol(ind$data)]],
        type ='l', xlab = '', ylab = '')
-  } else {
-    plot.new()
-    mtext('Cosinor Not Run', side = 1, line = l_adjust)
-  }
+  lines(ind$data$datetime, ind$control$cosinor$wave, col = 'black', lty = 2)
+  text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.5,
+       label = paste('Control 24H Cosinor (dashed):',
+                     'R^2 =', round(ind$control$cosinor$adj_r_squared, 4)
+       ),
+       col = 'black'
+  )
   if (lomb_run){
     lines(ind$data$datetime, ind$lomb$cosinor$wave, col = 'blue')
     text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.9,

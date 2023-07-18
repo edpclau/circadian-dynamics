@@ -125,13 +125,16 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
 
 
                   #7. Plot the cosinor of both
-                  if ((acf_run | lomb_run)){
                     plot(window$data$datetime, window$data[[ncol(window$data)]],
                          type ='l', xlab = '', ylab = '')
-                  } else {
-                    plot.new()
-                    mtext('Cosinor Not Run', side = 1, line = l_adjust)
-                  }
+                    lines(window$data$datetime, window$control$cosinor$wave, col = 'black', lty = 2)
+                    text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.5,
+                         label = paste('Control 24H Cosinor (dashed):',
+                                       'R^2 =', round(window$control$cosinor$adj_r_squared, 4)
+                         ),
+                         col = 'black'
+                    )
+
                   if (lomb_run){
                     lines(window$data$datetime, window$lomb$cosinor$wave, col = 'blue')
                     text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.9,
