@@ -54,14 +54,14 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 
 #5. Generate Actograms to choose which individuals to analyze
 #Run without modifying. The actogram will be saved in your working directory.
-actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics('/Users/eddie/Downloads/Monitor4.txt')[-2], sampling = sampling_rate_in_minutes)
 
 
 #6. Rhythm Analysis
 ## This is the main function of the library.
 trikinetics_analyzed = process_timeseries.main(
 
-  df = trikinetics,
+  df = trikinetics[c(4,5)],
 
   # Window of Analysis Arguments
   make_windows = TRUE,
@@ -135,42 +135,6 @@ future_map2(
     df = rename(.x, unique_identifier = data)
     write_csv(df, paste0(.y,'.csv'))
   })
-
-
-## 10. Summary Plots (End of Life Cycle)
-actograms_by_window = plot_actogram_windows(trikinetics_tidy$data)
-## Raw data plots
-raw_plots = plot_raw_values(trikinetics_tidy$data)
-## Plot Autocorrelation Results
-acf_plots = plot_acf_results(trikinetics_tidy$autocorrelation)
-## Plot Lomb-Scargle Results
-lsp_plots = plot_lsp_results(trikinetics_tidy$lombscargle)
-
-
-plan(sequential)
-future_map(
-  .x = names(raw_plots),
-  .f = ~ {
-    layout = rbind(c(1,1,1,1),
-                   c(2,2,3,6),
-                   c(2,2,4,7),
-                   c(2,2,5,8),
-                   c(2,2,9,10))
-    plots =  arrangeGrob(raw_plots[[.x]],
-                         actograms_by_window[[.x]],
-                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
-                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
-                         lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
-                         nrow = 5, ncol = 4,
-                         layout_matrix = layout)
-
-
-
-    ggsave(paste0(.x,"_summary_plots.pdf"), plot = plots, width = 15, height = 10, limitsize = FALSE)
-
-  })
-
-
 
 
 
