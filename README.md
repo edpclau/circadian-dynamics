@@ -1,5 +1,7 @@
 A repository for analyzing circadian data
 
+# [Live Notebook on GoogleColab](https://colab.research.google.com/drive/11ly3tdhCDpbl0P33QhPZA0v3-Yf6jbKe?usp=sharing)
+
 # To install in R use:
 ```{r}
 devtools::install_github("edpclau/circadian-dynamics")
