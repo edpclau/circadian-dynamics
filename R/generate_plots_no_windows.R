@@ -26,12 +26,37 @@ for (ind in trikinetics_analyzed) {
   smoothed = 'smoothed' %in% names(ind$data)
 
   #Check if the Autocorrelation and Lom-Scargle Ran
-  acf_run = !is.na(ind$acf$results$period) #Did the autocorrelation run?
-  lomb_run = !is.na(ind$lomb$results$period) # Did the lomb-scargle run?
+  acf_run = !all(is.na(ind$acf$results$autocorrelation)) #Did the autocorrelation run?
+  acf_cosinor_run = !is.na(ind$acf$results$period) #Did the autocorrelation produce a period?
+  lomb_run = !all(is.na(ind$lomb$results$power)) # Did the lomb-scargle run?
+  lomb_cosinor_run = !is.na(ind$lomb$results$period) # Did the lomb-scargle produce a period?
+
+
+  # Extract some needed information and normalize the activity.
+  # Extract some needed information and normalize the activity.
+  values = ind$data$value
+  norm_values =  (values - min(values)) / (max(values) - min(values))
+  norm_values = ifelse(is.nan(norm_values), 0, norm_values)
+  control_wave = ind$control$cosinor$wave
+  norm_control_wave = (control_wave - min(control_wave)) / (max(control_wave) - min(control_wave))
+  norm_control_wave = ifelse(is.nan(norm_control_wave), 0, norm_control_wave)
+  if (acf_cosinor_run){
+    acf_wave = ind$acf$cosinor$wave
+    norm_acf_wave = (acf_wave - min(acf_wave)) / (max(acf_wave) - min(acf_wave))
+    norm_acf_wave = ifelse(is.nan(norm_acf_wave), 0, norm_acf_wave)
+
+  }
+  if (lomb_cosinor_run){
+    lomb_wave = ind$lomb$cosinor$wave
+    norm_lomb_wave = (lomb_wave - min(lomb_wave)) / (max(lomb_wave) - min(lomb_wave))
+    norm_lomb_wave = ifelse(is.nan(norm_lomb_wave), 0, norm_lomb_wave)
+
+  }
+
 
 
   #Decide how many rows of plots the page will have
-  n_rows = butterworth + detrended + smoothed + 4
+  n_rows = butterworth + detrended + smoothed + acf_cosinor_run + lomb_cosinor_run + 4
 
   #Adjustment for margins when an analysis fails to run
   l_adjust = -2
@@ -46,7 +71,7 @@ for (ind in trikinetics_analyzed) {
 
 
   #1. Plot Raw data and place basic IND information
-  plot(ind$data$datetime, ind$data$value,
+  plot(ind$data$datetime, norm_values,
        type ='l', xlab = '', ylab = 'Raw Activity')
   # Top-right text
   mtext(paste('IND', ind_names[count]),
@@ -83,11 +108,15 @@ for (ind in trikinetics_analyzed) {
     abline(h = ci, col = 'red', lty = 2)
     abline(h = -ci, col = 'red', lty = 2)
 
+
+    #Only add this label if there is no NA.
+    if (!is.na(ind$acf$results$datetime)){
     text(x = as.numeric(duration(ind$acf$results$datetime,sampling_rate), 'hour'),
          y = ind$acf$results$max_peak_of_int,
          label = '*',
          col = 'red',
          cex = 3)
+    }
 
     text(x = max(x)*0.5,
           y = max(ind$acf$results$autocorrelation)*0.9,
@@ -124,18 +153,32 @@ for (ind in trikinetics_analyzed) {
 
 
   #7. Plot the cosinor of both
-  plot(ind$data$datetime, ind$data[[ncol(ind$data)]],
+  plot(ind$data$datetime, norm_values,
        type ='l', xlab = '', ylab = '')
-  lines(ind$data$datetime, ind$control$cosinor$wave, col = 'black', lty = 2)
-  text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.5,
-       label = paste('Control 24H Cosinor (dashed):',
+  lines(ind$data$datetime, norm_control_wave, col = 'red')
+  text(x = mean(ind$data$datetime), y = max(norm_values)*0.9,
+       label = paste('Control 24H Cosinor:',
                      'R^2 =', round(ind$control$cosinor$adj_r_squared, 4)
        ),
-       col = 'black'
+       col = 'red'
   )
-  if (lomb_run){
-    lines(ind$data$datetime, ind$lomb$cosinor$wave, col = 'blue')
-    text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.9,
+  if (acf_cosinor_run){
+    plot(ind$data$datetime, norm_values,
+         type ='l', xlab = '', ylab = '')
+    lines(ind$data$datetime, norm_acf_wave, col = 'blue')
+    text(x = mean(ind$data$datetime), y = max(norm_values)*0.9,
+         label = paste('Acf Cosinor:',
+                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4), '|',
+                       'Granger =', scales::scientific(ind$acf$results$grangercausal$cos_to_rawdata, 2)
+         ),
+         col = 'blue'
+    )
+  }
+  if (lomb_cosinor_run){
+    plot(ind$data$datetime, norm_values,
+         type ='l', xlab = '', ylab = '')
+    lines(ind$data$datetime, norm_lomb_wave, col = 'blue')
+    text(x = mean(ind$data$datetime), y = max(norm_values)*0.9,
          label = paste('Lomb-Scargle Cosinor:',
                        'R^2 =', round(ind$lomb$cosinor$adj_r_squared, 4), '|',
                        'Granger =', scales::scientific(ind$lomb$results$grangercausal$cos_to_rawdata, 2)
@@ -143,16 +186,7 @@ for (ind in trikinetics_analyzed) {
          col = 'blue'
     )
     }
-  if (acf_run){
-    lines(ind$data$datetime, ind$acf$cosinor$wave, col = 'red')
-    text(x = mean(ind$data$datetime), y = max(ind$data[[ncol(ind$data)]])*0.7,
-         label = paste('Acf Cosinor:',
-                       'R^2 =', round(ind$acf$cosinor$adj_r_squared, 4), '|',
-                       'Granger =', scales::scientific(ind$acf$results$grangercausal$cos_to_rawdata, 2)
-         ),
-         col = 'red'
-    )
-    }
+
 
 
 

@@ -27,12 +27,35 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
                   smoothed = 'smoothed' %in% names(window$data)
 
                   #Check if the Autocorrelation and Lom-Scargle Ran
-                  acf_run = !is.na(window$acf$results$period) #Did the autocorrelation run?
-                  lomb_run = !is.na(window$lomb$results$period) # Did the lomb-scargle run?
+                  acf_run = !all(is.na(window$acf$results$autocorrelation)) #Did the autocorrelation run?
+                  acf_cosinor_run = !is.na(window$acf$results$period) #Did the autocorrelation produce a period?
+                  lomb_run = !all(is.na(window$lomb$results$power)) # Did the lomb-scargle run?
+                  lomb_cosinor_run = !is.na(window$lomb$results$period) # Did the lomb-scargle produce a period?
+
+                  # Extract some needed information and normalize the activity.
+                  values = window$data$value
+                  norm_values =  (values - min(values)) / (max(values) - min(values))
+                  norm_values = ifelse(is.nan(norm_values), 0, norm_values)
+                  control_wave = window$control$cosinor$wave
+                  norm_control_wave = (control_wave - min(control_wave)) / (max(control_wave) - min(control_wave))
+                  norm_control_wave = ifelse(is.nan(norm_control_wave), 0, norm_control_wave)
+                  if (acf_cosinor_run){
+                    acf_wave = window$acf$cosinor$wave
+                    norm_acf_wave = (acf_wave - min(acf_wave)) / (max(acf_wave) - min(acf_wave))
+                    norm_acf_wave = ifelse(is.nan(norm_acf_wave), 0, norm_acf_wave)
+
+                  }
+                  if (lomb_cosinor_run){
+                    lomb_wave = window$lomb$cosinor$wave
+                    norm_lomb_wave = (lomb_wave - min(lomb_wave)) / (max(lomb_wave) - min(lomb_wave))
+                    norm_lomb_wave = ifelse(is.nan(norm_lomb_wave), 0, norm_lomb_wave)
+
+                  }
 
 
                   #Decide how many rows of plots the page will have
-                  n_rows = butterworth + detrended + smoothed + 4
+                  n_rows = butterworth + detrended + smoothed + acf_cosinor_run + lomb_cosinor_run + 4
+
 
                   #Adjustment for margins when an analysis fails to run
                   l_adjust = -2
@@ -84,11 +107,14 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
                     abline(h = ci, col = 'red', lty = 2)
                     abline(h = -ci, col = 'red', lty = 2)
 
+                    #only add this if there is not NA
+                    if (!is.na(window$acf$results$datetime)){
                     text(x = as.numeric(duration(window$acf$results$datetime,sampling_rate), 'hour'),
                          y = window$acf$results$max_peak_of_int,
                          label = '*',
                          col = 'red',
                          cex = 3)
+                    }
 
                     text(x = max(x)*0.5,
                          y = max(window$acf$results$autocorrelation)*0.9,
@@ -125,34 +151,38 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
 
 
                   #7. Plot the cosinor of both
-                    plot(window$data$datetime, window$data[[ncol(window$data)]],
-                         type ='l', xlab = '', ylab = '')
-                    lines(window$data$datetime, window$control$cosinor$wave, col = 'black', lty = 2)
-                    text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.5,
-                         label = paste('Control 24H Cosinor (dashed):',
-                                       'R^2 =', round(window$control$cosinor$adj_r_squared, 4)
-                         ),
-                         col = 'black'
-                    )
 
-                  if (lomb_run){
-                    lines(window$data$datetime, window$lomb$cosinor$wave, col = 'blue')
-                    text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.9,
+                  plot(window$data$datetime, norm_values,
+                       type ='l', xlab = '', ylab = '')
+                  lines(window$data$datetime, norm_control_wave, col = 'red')
+                  text(x = mean(window$data$datetime), y = max(norm_values)*0.9,
+                       label = paste('Control 24H Cosinor:',
+                                     'R^2 =', round(window$control$cosinor$adj_r_squared, 4)
+                       ),
+                       col = 'red'
+                  )
+                  if (acf_cosinor_run){
+                    plot(window$data$datetime, norm_values,
+                         type ='l', xlab = '', ylab = '')
+                    lines(window$data$datetime, norm_acf_wave, col = 'blue')
+                    text(x = mean(window$data$datetime), y = max(norm_values)*0.9,
+                         label = paste('Acf Cosinor:',
+                                       'R^2 =', round(window$acf$cosinor$adj_r_squared, 4), '|',
+                                       'Granger =', scales::scientific(window$acf$results$grangercausal$cos_to_rawdata, 2)
+                         ),
+                         col = 'blue'
+                    )
+                  }
+                  if (lomb_cosinor_run){
+                    plot(window$data$datetime, norm_values,
+                         type ='l', xlab = '', ylab = '')
+                    lines(window$data$datetime, norm_lomb_wave, col = 'blue')
+                    text(x = mean(window$data$datetime), y = max(norm_values)*0.9,
                          label = paste('Lomb-Scargle Cosinor:',
                                        'R^2 =', round(window$lomb$cosinor$adj_r_squared, 4), '|',
                                        'Granger =', scales::scientific(window$lomb$results$grangercausal$cos_to_rawdata, 2)
                          ),
                          col = 'blue'
-                    )
-                  }
-                  if (acf_run){
-                    lines(window$data$datetime, window$acf$cosinor$wave, col = 'red')
-                    text(x = mean(window$data$datetime), y = max(window$data[[ncol(window$data)]])*0.7,
-                         label = paste('Acf Cosinor:',
-                                       'R^2 =', round(window$acf$cosinor$adj_r_squared, 4), '|',
-                                       'Granger =', scales::scientific(window$acf$results$grangercausal$cos_to_rawdata, 2)
-                         ),
-                         col = 'red'
                     )
                   }
 

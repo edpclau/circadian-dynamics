@@ -97,7 +97,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   #If there are no Peaks, return NA
   if (rlang::is_empty(peaks)) {
     results$datetime = NA
-    results$autocorrelation = NA
+    results$autocorrelation = autocorrelation
     results$power = NA
     results$period = NA
     results$rythm_strength = NA
@@ -143,8 +143,8 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
   } else {
     results$datetime = NA
-    results$autocorrelation = NA
-    results$power = NA
+    results$autocorrelation = autocorrelation
+    results$power = peaks$auto_power
     results$period = NA
     results$rythm_strength = NA
     results$max_peak_of_int = NA
