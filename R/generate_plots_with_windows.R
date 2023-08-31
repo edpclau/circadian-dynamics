@@ -157,7 +157,8 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'm
                   lines(window$data$datetime, norm_control_wave, col = 'red')
                   text(x = mean(window$data$datetime), y = max(norm_values)*0.9,
                        label = paste('Control 24H Cosinor:',
-                                     'R^2 =', round(window$control$cosinor$adj_r_squared, 4)
+                                     'R^2 =', round(window$control$cosinor$adj_r_squared, 4), '|',
+                                     'Granger =', scales::scientific(window$control$granger$cos_to_rawdata, 2)
                        ),
                        col = 'red'
                   )

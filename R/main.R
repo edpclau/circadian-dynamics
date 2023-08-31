@@ -162,24 +162,26 @@ plan(multisession)
 
       acf_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
 
-      acf_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = acf_cosinor$wave, order = causal_order)
+      acf_results$grangercausal = analyze_timeseries.grangertest(value = x[[ncol(x)]], cos = acf_cosinor$wave, order = causal_order)
       #Lomb-Scargle Pipeline
 
       lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
 
       lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
 
-      lsp_results$grangercausal = analyze_timeseries.grangertest(value = x$value, cos = lsp_cosinor$wave,  order = causal_order)
+      lsp_results$grangercausal = analyze_timeseries.grangertest(value = x[[ncol(x)]], cos = lsp_cosinor$wave,  order = causal_order)
 
       # Control Pipeline (We set an arbitrary 24 hour cosinor)
       arbitrary_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = 24)
+      arbitrary_granger = analyze_timeseries.grangertest(value = x[[ncol(x)]], cos = arbitrary_cosinor$wave, order = causal_order)
 
-       return(list(data = x,
+      return(list(data = x,
                   acf = list(results = acf_results,
                              cosinor = acf_cosinor),
                   lomb = list(results = lsp_results,
                               cosinor = lsp_cosinor),
-                  control = list(cosinor = arbitrary_cosinor)
+                  control = list(cosinor = arbitrary_cosinor,
+                                 granger = arbitrary_granger)
                   )
              )
       }
@@ -197,21 +199,23 @@ plan(multisession)
                                   butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
   acf_results = analyze_timeseries.acf(df, from = from, to = to, sampling_rate = sampling_rate)
   acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
-  acf_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = acf_cosinor$wave,  order = causal_order)
+  acf_results$grangercausal = analyze_timeseries.grangertest(value = df[[ncol(df)]], cos = acf_cosinor$wave,  order = causal_order)
   #Lomb-Scargle Pipeline
   lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
   lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
-  lsp_results$grangercausal = analyze_timeseries.grangertest(value = df$value, cos = lsp_cosinor$wave,  order = causal_order)
+  lsp_results$grangercausal = analyze_timeseries.grangertest(value = df[[ncol(df)]], cos = lsp_cosinor$wave,  order = causal_order)
 
   #Control: arbitrary 24 hour cosinor
   arbitrary_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = 24)
+  arbitrary_granger = analyze_timeseries.grangertest(value = df[[ncol(df)]], cos = arbitrary_cosinor$wave, order = causal_order)
 
   return(list(data = df,
               acf = list(results = acf_results,
                          cosinor = acf_cosinor),
               lomb = list(results = lsp_results,
                           cosinor = lsp_cosinor),
-              control = list(cosinor = arbitrary_cosinor)
+              control = list(cosinor = arbitrary_cosinor,
+                             granger = arbitrary_granger)
               )
          )
 

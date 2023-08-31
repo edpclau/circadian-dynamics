@@ -158,7 +158,8 @@ for (ind in trikinetics_analyzed) {
   lines(ind$data$datetime, norm_control_wave, col = 'red')
   text(x = mean(ind$data$datetime), y = max(norm_values)*0.9,
        label = paste('Control 24H Cosinor:',
-                     'R^2 =', round(ind$control$cosinor$adj_r_squared, 4)
+                     'R^2 =', round(ind$control$cosinor$adj_r_squared, 4), '|',
+                     'Granger =', scales::scientific(ind$control$granger$cos_to_rawdata, 2)
        ),
        col = 'red'
   )
