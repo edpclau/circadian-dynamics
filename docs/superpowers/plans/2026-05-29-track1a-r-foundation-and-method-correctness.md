@@ -13,10 +13,12 @@
 ## Context for the engineer (zero-context assumptions)
 
 - This is an R **package**. Source lives in `R/*.R`; docs are roxygen comments compiled to `man/*.Rd`; exports are in `NAMESPACE`.
+- **No system R on this machine — the R toolchain lives in a pixi env.** Prefix EVERY R command with `pixi run`. `devtools`, `testthat`, `usethis`, `roxygen2`, `lomb`, and all `DESCRIPTION` imports are installed there. (`lomb` is CRAN-only; if the env is ever rebuilt, restore it with `pixi run setup-cran`.)
 - Run a single test file with:
-  `Rscript -e 'devtools::load_all("."); testthat::test_file("tests/testthat/<file>.R")'`
-- Run the whole suite with: `Rscript -e 'devtools::test()'`
-- After editing roxygen, regenerate docs with: `Rscript -e 'devtools::document()'`
+  `pixi run Rscript -e 'devtools::load_all("."); testthat::test_file("tests/testthat/<file>.R")'`
+- Run the whole suite with: `pixi run Rscript -e 'devtools::test()'` (or `pixi run test`)
+- After editing roxygen, regenerate docs with: `pixi run Rscript -e 'devtools::document()'` (or `pixi run document`)
+- `R CMD check` runs via `pixi run check`.
 - Background reading (this repo): `research/01-library-review.md` lists every issue; the umbrella spec is `docs/superpowers/specs/2026-05-29-circadiandynamics-three-track-overhaul-design.md`.
 - **Branch:** all work happens on `refactor/r-api-cleanup`, created in Task 1 off the current `planning/three-track-overhaul` branch (so the spec/plan/research come along).
 

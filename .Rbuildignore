@@ -3,3 +3,7 @@
 ^README\.md
 ^data-raw$
 ^research$
+^docs$
+^pixi\.toml$
+^pixi\.lock$
+^\.pixi$
