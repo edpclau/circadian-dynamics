@@ -2,15 +2,19 @@
 % Please edit documentation in R/simplify_data.R
 \name{simplify_data}
 \alias{simplify_data}
-\title{Simplify Data}
+\title{Simplify pipeline output into tidy data frames}
 \usage{
 simplify_data(df, big_data = FALSE)
 }
 \arguments{
-\item{df}{Output from processed_timeseries.main}
+\item{df}{Output from [process_timeseries.main].}
 
-\item{big_data}{Are you using a large dataset? TRUE or FALSE (default)}
+\item{big_data}{Logical; if TRUE use a multisession plan for large datasets. Default FALSE.}
+}
+\value{
+A named list of four tibbles: \code{data}, \code{autocorrelation}, \code{lombscargle}, \code{utils}.
 }
 \description{
-Simplify Data
+Arranges the nested output of [process_timeseries.main] into four tidy data
+  frames (data, autocorrelation, lombscargle, utils) suitable for export and plotting.
 }
