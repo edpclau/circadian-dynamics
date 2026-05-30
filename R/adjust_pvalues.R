@@ -11,6 +11,8 @@
 #' @return `df` with an added column named `paste0(p_col, "_adj")`.
 #' @export
 #'
+#' @importFrom stats p.adjust
+#'
 #' @examples
 #' df <- data.frame(cosinor_p_value = c(0.001, 0.02, 0.2))
 #' adjust_pvalues(df, p_col = "cosinor_p_value")

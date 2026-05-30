@@ -6,3 +6,9 @@ test_that("ACF rhythm_strength equals max peak over the 95% white-noise bound", 
   expect_equal(res$rythm_strength, expected, tolerance = 1e-8)
   expect_true(res$rythm_strength > 1)  # clean signal is clearly rhythmic
 })
+
+test_that("ACF rhythm_strength is NA for a flat (zero-variance) signal", {
+  flat <- make_sine(amplitude = 0)  # constant value -> zero variance
+  res <- analyze_timeseries.acf(flat, from = 18, to = 30, sampling_rate = "1 hour")
+  expect_true(is.na(res$rythm_strength))
+})

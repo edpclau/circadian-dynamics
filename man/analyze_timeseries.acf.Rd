@@ -28,7 +28,7 @@ Uses autocorrelation to find a circadian period for a given timeseries
 }
 \details{
 The reported `rythm_strength` is the maximum autocorrelation peak within the
-search band divided by the 95% white-noise confidence bound `1.965 / sqrt(n)`. Values > 1
+search band divided by the 95% white-noise confidence bound \\code{1.965 / sqrt(n)}, where \\code{n} is the number of observations in \\code{df}. Values > 1
 indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rythm_strength`
 (in [analyze_timeseries.lomb]) is a separate, experimental measure and is not directly comparable.
 }

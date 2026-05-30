@@ -75,7 +75,7 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
   type <- 'period'
 
   #ofac is an integer oversampling factor (typically 1-10), NOT the sampling rate.
-  if (!is.null(ofac) && ofac > 20) {
+  if (ofac > 20) {
     warning("ofac = ", ofac, " is implausibly large for an oversampling factor; ",
             "capping at 20. ofac is the Lomb oversampling factor, not the sampling rate.")
     ofac <- 20
