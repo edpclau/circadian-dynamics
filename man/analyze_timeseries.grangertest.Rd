@@ -6,9 +6,6 @@
 \usage{
 analyze_timeseries.grangertest(value, cos, order = 2)
 }
-\arguments{
-\item{order}{}
-}
 \description{
 Apply the Granger Causality test on both directions
 }

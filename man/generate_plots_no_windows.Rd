@@ -7,9 +7,6 @@ Must be used when 'Make Time Windows = FALSE'}
 \usage{
 generate_plots_no_windows(trikinetics_analyzed, sampling_rate = "hours")
 }
-\arguments{
-\item{sampling_rate}{}
-}
 \description{
 Function to Generate Plots of the Analyzed Data
 Must be used when 'Make Time Windows = FALSE'

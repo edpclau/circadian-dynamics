@@ -6,9 +6,6 @@
 \usage{
 detailed_plots(trikinetics_analyzed, sampling_rate = "minutes", windows = TRUE)
 }
-\arguments{
-\item{windows}{}
-}
 \description{
 Generate Detailed Plots (Utility function)
 }

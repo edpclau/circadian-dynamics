@@ -55,7 +55,8 @@
 #'
 #' @importFrom tibble tibble_row tibble
 #' @importFrom dplyr mutate n
-#' @importFrom broom tidy glance
+#' @importFrom broom glance
+#' @importFrom stats vcov
 #' @importFrom rlang is_empty
 #' @import magrittr
 #' @importFrom lubridate duration
@@ -120,15 +121,13 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
   MESOR <- as.numeric(model$coefficients[1])
   sin_coeff <- as.numeric(model$coefficients[2])
   cos_coeff <- as.numeric(model$coefficients[3])
-  sin_se <- tidy(model)$std.error[2]
-  cos_se <- tidy(model)$std.error[3]
-
   # Amplitude = sqrt(sin_coeff^2 + cos_coeff^2)
   amplitude <- sqrt(sin_coeff^2 + cos_coeff^2)
 
   # Delta-method SE for amplitude using the model covariance matrix.
   # A = sqrt(b_s^2 + b_c^2);  Var(A) = (1/A^2) * [b_s^2 Vss + b_c^2 Vcc + 2 b_s b_c Vsc]
   V   <- vcov(model)
+  # Term names come from the lm formula 'value ~ sinw + cosw'; keep these in sync if renamed.
   Vss <- V["sinw", "sinw"]; Vcc <- V["cosw", "cosw"]; Vsc <- V["sinw", "cosw"]
   amplitude_se <- sqrt(sin_coeff^2 * Vss + cos_coeff^2 * Vcc +
                          2 * sin_coeff * cos_coeff * Vsc) / amplitude

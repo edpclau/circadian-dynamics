@@ -23,4 +23,5 @@ test_that("acrophase is in [0, 2*pi) and finite", {
   expect_gte(res$acrophase, 0)
   expect_lt(res$acrophase, 2 * pi)
   expect_true(is.finite(res$acrophase_se) && res$acrophase_se > 0)
+  expect_equal(res$acrophase, pi/2, tolerance = 0.35)  # ~pi/2; loose tol absorbs the 1-sample index offset
 })

@@ -6,9 +6,6 @@
 \usage{
 read_satellite(path = NULL)
 }
-\arguments{
-\item{path}{}
-}
 \description{
 Import Weather data From satellite
 }

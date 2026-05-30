@@ -6,9 +6,6 @@
 \usage{
 lsp_peaks(object, npeaks = 5, plotit = FALSE)
 }
-\arguments{
-\item{npeaks}{}
-}
 \description{
 Find peaks in an lsp object
 }

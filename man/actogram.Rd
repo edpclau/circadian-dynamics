@@ -8,8 +8,6 @@ actogram(df, sampling, file = "actogram")
 }
 \arguments{
 \item{df}{First column is datetime, the rest are inds.}
-
-\item{file}{}
 }
 \description{
 Actogram

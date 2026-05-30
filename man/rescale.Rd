@@ -6,9 +6,6 @@
 \usage{
 rescale(x)
 }
-\arguments{
-\item{x}{}
-}
 \description{
 Rescale the data from 0 to 1.
 }

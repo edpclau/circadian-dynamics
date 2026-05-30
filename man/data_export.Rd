@@ -6,9 +6,6 @@
 \usage{
 data_export(results)
 }
-\arguments{
-\item{results}{}
-}
 \description{
 Format Data for Export
 }
