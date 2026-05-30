@@ -1,17 +1,17 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
-#' @export read_trikinetics
-#' @export read_trikinetics_folder
+#' @export read_trikinetics_long
+#' @export read_trikinetics_folder_long
 #'
 #' @examples
-#' trikinetics_data <- read_trikinetics()
+#' trikinetics_data <- read_trikinetics_long()
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite
 #' @importFrom dplyr mutate
 #' @importFrom lubridate parse_date_time
 #'
-read_trikinetics <- function(file = NULL){
+read_trikinetics_long <- function(file = NULL){
 
 ##### Flow Control #####
   #Allow for using a GUI to choose the file, if one is not supplied
@@ -32,8 +32,7 @@ read_trikinetics <- function(file = NULL){
 
 
 
-
-read_trikinetics_folder <- function(directory = NULL) {
+read_trikinetics_folder_long <- function(directory = NULL) {
 
 message("Make sure, all monitors were run on the same dates with the same LD/DD settings.")
 
@@ -45,7 +44,7 @@ message("Make sure, all monitors were run on the same dates with the same LD/DD 
 
   files <- list.files(directory)
   paths <- paste0(directory, "/", files)
-  df <- suppressMessages(purrr::map(paths, read_trikinetics))
+  df <- suppressMessages(purrr::map(paths, read_trikinetics_long))
   names(df) <- stringr::str_remove(files, "\\.txt")
   df <- furrr::future_map_dfr(df, ~ tidyr::pivot_longer(., -c(1,2)), .id = "monitor")
   df <-  tidyr::unite(df, "name", c(monitor, name), sep = " ")

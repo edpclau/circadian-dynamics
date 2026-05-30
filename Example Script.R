@@ -33,9 +33,9 @@ file = file.choose()
 ## The second column should be your Light/Dark data, if you have any.
 ## All other columns will be the signals/individuals you want to analyze.
 ###
-## If you're going to import a trikinetics file use 'read_trikinetics_2'.
+## If you're going to import a trikinetics file use 'read_trikinetics_nested'.
 ## In this example we use a trikinetics file.
-trikinetics = read_trikinetics_2(file)
+trikinetics = read_trikinetics_nested(file)
 ##
 
 #4. **** REQUIRED ***** Define meta-data (Sampling Rate)
@@ -54,7 +54,7 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 
 #5. Generate Actograms to choose which individuals to analyze
 #Run without modifying. The actogram will be saved in your working directory.
-actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics_long(file)[-2], sampling = sampling_rate_in_minutes)
 
 
 #6. Rhythm Analysis

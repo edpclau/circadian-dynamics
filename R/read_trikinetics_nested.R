@@ -1,10 +1,10 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
-#' @export read_trikinetics_2
-#' @export read_trikinetics_folder_2
+#' @export read_trikinetics_nested
+#' @export read_trikinetics_folder_nested
 #'
 #' @examples
-#' trikinetics_data <- read_trikinetics()
+#' trikinetics_data <- read_trikinetics_nested()
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite
@@ -12,7 +12,7 @@
 #' @importFrom lubridate parse_date_time
 #' @importFrom tidyr pivot_longer
 #'
-read_trikinetics_2 <- function(file = NULL){
+read_trikinetics_nested <- function(file = NULL){
 
   ##### Flow Control #####
   #Allow for using a GUI to choose the file, if one is not supplied
@@ -53,8 +53,7 @@ read_trikinetics_2 <- function(file = NULL){
 
 
 
-
-read_trikinetics_folder_2 <- function(directory = NULL) {
+read_trikinetics_folder_nested <- function(directory = NULL) {
 
   #### Flow Control ####
   #Allow for using a GUI to choose the folder, if one is not supplied
@@ -68,7 +67,7 @@ read_trikinetics_folder_2 <- function(directory = NULL) {
   files <- files[stringr::str_detect(files, '\\.txt')]
   paths <- paste0(directory, "/", files)
   names(paths) <- stringr::str_remove(files, "\\.txt")
-  df <- suppressMessages(furrr::future_map(paths, read_trikinetics_2, .options = furrr::furrr_options(seed = TRUE)))
+  df <- suppressMessages(furrr::future_map(paths, read_trikinetics_nested, .options = furrr::furrr_options(seed = TRUE)))
   df <- do.call(c, df)
   return(df)
 }
