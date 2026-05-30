@@ -71,7 +71,19 @@ maintainer input at Gate A.
 - ACF `rythm_strength` documented; Lomb variant flagged experimental (Task 9).
 - `adjust_pvalues()` BH/FDR helper added (Task 10).
 
-## Open decisions for the maintainer (resolve at the Gate A checkpoint)
+## Decisions RESOLVED at the Gate A checkpoint (2026-05-30)
+
+1. **Legacy pipeline → REMOVE ENTIRELY** in Plan 1B (breaking changes authorized).
+2. **`simplify_data2` names are CANONICAL.** Rename `simplify_data2` → `simplify_data`, delete the
+   old `simplify_data`, and update ALL plot consumers to the names `acf_peak`, `lsp_peak`,
+   `lsp_power` (drop the `_power`/`_powers` variants). Also strip the now-dead Granger columns.
+3. **`plot_actogram2` → KEEP & DOCUMENT.** Do not wire it in yet; document it as the tidy-data
+   actogram. Defer consolidation of the three actogram functions (`plot_actogram`,
+   `plot_actogram_windows`, `plot_actogram2`) to a later decision.
+4. **`read_trikinetics` family → keep both** (long-form for `actogram()`, nested for analysis) with
+   intent-revealing names instead of `_2`.
+
+## Original open decisions (now superseded by the block above)
 
 1. **Legacy pipeline:** confirm it can be removed entirely in Plan 1B. Anyone still calling
    `process_timeseries()` / `rythm_analysis_by_window()` / `export_data()` directly would break.
