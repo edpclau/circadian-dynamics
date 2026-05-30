@@ -91,7 +91,8 @@ process_timeseries.waveform <- function(df = NULL,
                                         butterworth = TRUE,
                                         f_low = 1/4,
                                         f_high = 1/73,
-                                        order = 2) {
+                                        order = 2,
+                                        binning_n = 4) {
 
 if (smooth_data) { butterworth = FALSE }
 
