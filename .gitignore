@@ -6,3 +6,6 @@
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+# baseline verification artifacts (not committed)
+baseline/

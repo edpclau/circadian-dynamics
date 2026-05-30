@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
+      "Bash(ls -d research docs)",
+      "Bash(ls -la \"/Users/eddie/.claude/projects/-Users-eddie-Library-Mobile-Documents-com-apple-CloudDocs-circadian-dynamics/memory/\")",
+      "Bash(echo \"---exit:$?---\")",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(pixi init *)",
+      "Bash(pixi config *)",
+      "Bash(pixi add *)",
+      "Bash(pixi run *)",
+      "Bash(pixi task *)",
+      "Read(//Users/eddie/.claude/plugins/cache/claude-plugins-official/superpowers/f2cbfbefebbf/skills/subagent-driven-development/**)",
+      "Bash(git commit *)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(echo \"grangercausal grep exit: $?\")",
+      "Bash(sed -n '155,165p' R/main.R)",
+      "Bash(sed -n '186,195p' R/main.R)",
+      "Bash(python3 -c ' *)",
+      "Bash(ls -la .pixi/)",
+      "Bash(ls -ld .pixi/envs)",
+      "Bash(rm -rf /tmp/cdx-check)",
+      "Bash(mkdir -p /tmp/cdx-check)",
+      "Bash(git archive *)",
+      "Bash(tar -x -C /tmp/cdx-check)",
+      "Bash(git branch *)",
+      "Bash(grep -rnE '\\\\b__TRACKED_VAR__ *\\\\\\(' R/)",
+      "Bash(git -C \"/Users/eddie/Library/Mobile Documents/com~apple~CloudDocs/circadian-dynamics\" branch)",
+      "Bash(git rm *)"
+    ],
+    "additionalDirectories": [
+      "/tmp",
+      "/private/tmp"
+    ]
+  }
+}
