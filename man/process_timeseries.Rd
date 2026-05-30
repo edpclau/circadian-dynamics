@@ -44,6 +44,9 @@ A named list of data.frames containing the output of [circadiandynamics::butterw
 \description{
 Processes raw data in such a way that it can be directly inputted to the rythm_analysis_by_window function.
 }
+\details{
+Parallelism follows the caller's \code{future::plan()}; set a plan (e.g. \code{future::plan(future::multisession)}) before calling to parallelize.
+}
 \examples{
 processed_data <- process_timeseries(df = raw_data, sampling_rate = "30 min")
 

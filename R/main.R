@@ -48,7 +48,6 @@
 #' @importFrom tibble tibble
 #' @importFrom magrittr "%>%"
 #' @importFrom lubridate hour ceiling_date
-#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map furrr_options
 #'
 #'
@@ -126,14 +125,13 @@ process_timeseries.core <- function(df = NULL,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
-                                    causal_order = 1,
                                     big_data = FALSE,
                                     ofac = 1,
                                     lomb_pvalue = 0.01) {
 
-oplan <- future::plan()
-on.exit(future::plan(oplan), add = TRUE)
-if (big_data) future::plan(future::multisession)
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
+  if (big_data) future::plan(future::multisession)
 
   if (make_windows){
   #Set step and window_size
@@ -223,7 +221,6 @@ process_timeseries.main <- function(df = NULL,
                                     f_low = 1/4,
                                     f_high = 1/73,
                                     order = 2,
-                                    causal_order = 1,
                                     big_data = FALSE,
                                     ofac = 10,
                                     lomb_pvalue = 0.01) {
@@ -251,7 +248,6 @@ process_timeseries.main <- function(df = NULL,
                                 from = from,
                                 to = to,
                                 order = order,
-                                causal_order = causal_order,
                                 big_data = big_data,
                                 ofac = ofac,
                                 lomb_pvalue = lomb_pvalue)

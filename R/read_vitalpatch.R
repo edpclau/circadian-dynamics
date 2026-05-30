@@ -9,6 +9,9 @@
 #' @param folder Optional. A path (directory) to the folder we want to analyze.
 #'
 #' @return Returns a tibble (data.frame) object with parsed dates.
+#'
+#' @details Parallelism follows the caller's \code{future::plan()}; set a plan (e.g. \code{future::plan(future::multisession)}) before calling to parallelize.
+#'
 #' @export
 #'
 #' @examples read_vitalpatch()
