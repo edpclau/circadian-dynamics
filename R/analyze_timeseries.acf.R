@@ -116,8 +116,9 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
 
 
 
+  # peaks[,2] are lags in samples; scale by the sampling bin size to get real time.
   peaks = tibble(auto_power = peaks[,1],
-                 datetime = duration(peaks[,2], sampling_rate))
+                 datetime = duration(peaks[,2] * sampling_bin_size, sampling_rate))
 
   #Keep only the positive peaks
   peaks = dplyr::filter(peaks, auto_power >= 0.2)
