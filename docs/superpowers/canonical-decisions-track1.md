@@ -81,3 +81,29 @@ maintainer input at Gate A.
    `plot_actogram`?
 4. **`read_trikinetics` family:** confirm both long-form and nested-form readers should survive, and
    approve intent-revealing names over `_2`.
+
+## Gate A status — REACHED (Plan 1A complete)
+
+Method semantics are frozen for Track 2. Plan 1A delivered (all TDD, two-stage reviewed):
+cosinor period scaling + delta-method amplitude/acrophase SEs (`atan2`), Granger removed from the
+core pipeline, dead `causal_order` removed, `binning_n` parameterized, `future::plan()` side effects
+contained, Lomb `ofac` guard, `rythm_strength` documented, `adjust_pvalues()` FDR helper.
+
+- **Tests:** 23 pass / 0 fail (`pixi run Rscript -e 'devtools::test()'`).
+- **Package loads:** `devtools::load_all()` clean.
+- **R CMD check:** run on a clean `git archive` export (the in-repo pixi env symlink breaks
+  `R CMD build`'s copy step). Results recorded in the Gate A report; structural NOTEs/WARNINGs
+  (duplicate exports, legacy roxygen) are deferred to Plan 1B by design.
+
+### Follow-ups for Plan 1B (found during Plan 1A final review; NOT regressions)
+- **binning_n propagation:** `process_timeseries.core`/`.main` don't thread `binning_n` to
+  `process_timeseries.waveform`, so the pipeline always smooths with the default 4. Thread it through
+  (or document the fixed default) when consolidating the pipeline.
+- **Nested parallelism:** `process_timeseries.main(big_data=TRUE)` sets `multisession` and then
+  dispatches `.core(big_data=TRUE)` which sets it again inside workers. Pre-existing; resolve when
+  reworking the parallel strategy.
+- **Stale `$grangercausal` consumers:** `simplify_data`/`simplify_data2`, `generate_plots_*`,
+  `format_data_for_export` still reference `$grangercausal`, which is now always absent → they will
+  produce NULL columns. Clean up alongside the legacy-pipeline removal.
+- **Residual `future::plan()` mutations** remain in out-of-scope files (`make_time_windows.R`,
+  `export_all.R`, `plot_actogram.R`, `rythm_analysis_by_window.R`, ...). Sweep in Plan 1B.
