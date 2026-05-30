@@ -13,10 +13,10 @@ Description:
     function to the data.
 License: GPL-3
 Encoding: UTF-8
-Imports: gridExtra, pracma, readr, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, magrittr, tibble, forcats, furrr, lmtest, future, ggpp
-RoxygenNote: 7.2.3
+Imports: gridExtra, pracma, readr, rstudioapi, lomb, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, tibble, forcats, furrr, lmtest, future, ggpp, purrr, stats
 Depends: 
     R (>= 2.10)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
