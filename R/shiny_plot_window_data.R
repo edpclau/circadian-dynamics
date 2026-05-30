@@ -12,7 +12,6 @@
 #' @importFrom tidyr nest unnest
 #' @importFrom ggpp geom_label_npc
 #' @importFrom furrr future_walk2
-#' @importFrom future plan sequential
 #' @importFrom gridExtra arrangeGrob grid.arrange
 #'
 shiny_plot_window_data <- function(df) {
@@ -34,7 +33,6 @@ shiny_plot_window_data <- function(df) {
   plot_df = plot_df %>% nest(window_data= -c(data, window)) %>%
     nest(unique_measure = -data)
 
-  plan(sequential)
   #Make plots for all individuals by window
   #These are the most detailed plots and will take a lot of time to process
   #Here we are doing a double for loop

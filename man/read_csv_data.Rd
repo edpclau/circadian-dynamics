@@ -2,16 +2,19 @@
 % Please edit documentation in R/read_csv_data.R
 \name{read_csv_data}
 \alias{read_csv_data}
+\alias{read_csv_data_interactive}
 \title{Import data from a Trikinetics tsv}
 \usage{
 read_csv_data(file = NULL)
+
+read_csv_data_interactive(...)
 }
 \arguments{
-\item{file}{a path to a csv file. If no path is supplied, a GUI will open and help with file selection.}
+\item{file}{a path to a csv file.}
 }
 \description{
 Import data from a Trikinetics tsv
 }
 \examples{
-circadian_data <- read_csv_data()
+circadian_data <- read_csv_data(file = "/path/to/data.csv")
 }

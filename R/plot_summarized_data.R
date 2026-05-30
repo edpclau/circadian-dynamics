@@ -13,7 +13,6 @@
 #' @examples
 #' plot_summarized_data(raw_data = monitor_downsampled, analyzed_data = monitor_analysis, dir_choose_gui = TRUE)
 #'
-#' @importFrom rstudioapi selectDirectory
 #' @importFrom purrr map
 #' @importFrom dplyr select mutate filter pull
 #' @importFrom magrittr '%>%'
@@ -26,6 +25,8 @@ plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, path = g
   df1 <- raw_data
   df2 <- analyzed_data
   #Plan for paralellization
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
   future::plan(future::multisession)
 
 ###### Plotting #####

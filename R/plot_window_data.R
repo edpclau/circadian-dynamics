@@ -12,7 +12,6 @@
 #' @importFrom tidyr nest unnest
 #' @importFrom ggpp geom_label_npc
 #' @importFrom furrr future_map
-#' @importFrom future plan sequential
 plot_window_data <- function(df, alt_cos = FALSE) {
 
 
@@ -32,7 +31,6 @@ smoothed = 'smoothed' %in% names(raw)
 plot_df = plot_df %>% nest(window_data= -c(data, window)) %>%
   nest(unique_measure = -data)
 
-plan(sequential)
 #Make plots for all individuals by window
 #These are the most detailed plots and will take a lot of time to process
 #Here we are doing a double for loop

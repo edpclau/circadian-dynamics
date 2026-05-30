@@ -2,12 +2,15 @@
 % Please edit documentation in R/read_vitalpatch.R
 \name{read_vitalpatch}
 \alias{read_vitalpatch}
+\alias{read_vitalpatch_interactive}
 \title{Read a Folder of Vital Patch Data}
 \usage{
 read_vitalpatch(folder = NULL)
+
+read_vitalpatch_interactive(...)
 }
 \arguments{
-\item{folder}{Optional. A path (directory) to the folder we want to analyze.}
+\item{folder}{A path (directory) to the folder we want to analyze.}
 }
 \value{
 Returns a tibble (data.frame) object with parsed dates.
@@ -21,6 +24,6 @@ concatenates all the data into a single tibble (data.frame) so that the user doe
 Parallelism follows the caller's \code{future::plan()}; set a plan (e.g. \code{future::plan(future::multisession)}) before calling to parallelize.
 }
 \examples{
-read_vitalpatch()
+read_vitalpatch(folder = "/path/to/folder")
 
 }

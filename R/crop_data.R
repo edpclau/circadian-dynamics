@@ -8,7 +8,6 @@
 #' @export
 #'
 #' @import magrittr
-#' @importFrom future plan sequential
 #' @importFrom furrr future_map
 #' @importFrom dplyr filter
 #' @importFrom lubridate parse_date_time
@@ -23,8 +22,6 @@ crop_data <- function(df = NULL, from = NULL, to = NULL) {
   if (is.null(to)) {to = as.character(max(df$datetime, na.rm = TRUE))}
 
 
-
-  plan(sequential)
 
   df = future_map(
     .x = df,

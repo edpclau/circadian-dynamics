@@ -2,10 +2,20 @@
 % Please edit documentation in R/read_satelite.R
 \name{read_satellite}
 \alias{read_satellite}
+\alias{read_satellite_interactive}
 \title{Import Weather data From satellite}
 \usage{
 read_satellite(path = NULL)
+
+read_satellite_interactive(...)
+}
+\arguments{
+\item{path}{A file path to the satellite data CSV.}
 }
 \description{
 Import Weather data From satellite
+}
+\examples{
+read_satellite(path = "/path/to/data.csv")
+
 }

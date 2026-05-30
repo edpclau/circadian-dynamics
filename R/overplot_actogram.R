@@ -51,6 +51,8 @@ overplot_actogram <- function(path = getwd(), df = NULL, overplot = NULL, ld_dat
   }
 
   #Plan for paralellization
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
   future::plan(future::multisession)
 
   # Make date start at midnight

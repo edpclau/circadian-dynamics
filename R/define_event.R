@@ -10,7 +10,6 @@
 #'
 #' @examples define_event(df)
 #'
-#' @importFrom future plan multisession
 #' @importFrom dplyr select mutate pull arrange case_when
 #' @importFrom purrr map_if
 #' @importFrom purrr map_chr
@@ -41,10 +40,7 @@ define_event <- function(df, core = TRUE) {
   # Nest the data by Individual ID to ease iteration
   df = nest(df, data = -UID)
 
-  # Plan for paralelization. If not running on a window's computer, it can be set as multicore.
-  if (core) {
-    plan(multicore)
-  } else { plan(multisession) }
+  # Note: parallelism is not applied here (purrr::map_if is used, not furrr).
 
 
   # Building the events

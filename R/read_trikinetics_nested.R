@@ -1,10 +1,10 @@
 #' Import data from a Trikinetics tsv
-#' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
+#' @param file a path to a Trikinetics file.
 #' @export read_trikinetics_nested
 #' @export read_trikinetics_folder_nested
 #'
 #' @examples
-#' trikinetics_data <- read_trikinetics_nested()
+#' trikinetics_data <- read_trikinetics_nested(file = "/path/to/file.txt")
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite
@@ -15,9 +15,8 @@
 read_trikinetics_nested <- function(file = NULL){
 
   ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(file)) {
-    file <- file.choose()
+  if (missing(file) || is.null(file)) {
+    stop("`file` is required. Use read_trikinetics_nested_interactive() to choose one via a dialog.")
   }
 
   # Import the file
@@ -36,9 +35,8 @@ read_trikinetics_nested <- function(file = NULL){
 .read_trikinetics <- function(file = NULL){
 
   ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(file)) {
-    file <- file.choose()
+  if (missing(file) || is.null(file)) {
+    stop("`file` is required.")
   }
 
   # Import the file
@@ -56,11 +54,12 @@ read_trikinetics_nested <- function(file = NULL){
 read_trikinetics_folder_nested <- function(directory = NULL) {
 
   #### Flow Control ####
-  #Allow for using a GUI to choose the folder, if one is not supplied
-  if (is.null(directory)) {
-    directory <- rstudioapi::selectDirectory()
+  if (missing(directory) || is.null(directory)) {
+    stop("`directory` is required. Use read_trikinetics_folder_nested_interactive() to choose one via a dialog.")
   }
-  # Create a plan for parallelization
+  # Save and restore plan for parallelization
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
   future::plan(future::multisession)
 
   files <- list.files(directory)
@@ -71,3 +70,11 @@ read_trikinetics_folder_nested <- function(directory = NULL) {
   df <- do.call(c, df)
   return(df)
 }
+
+#' @rdname read_trikinetics_nested
+#' @export
+read_trikinetics_nested_interactive <- function(...) read_trikinetics_nested(file.choose(), ...)
+
+#' @rdname read_trikinetics_nested
+#' @export
+read_trikinetics_folder_nested_interactive <- function(...) read_trikinetics_folder_nested(rstudioapi::selectDirectory(), ...)

@@ -91,14 +91,12 @@ data <- data %>%
 #' @importFrom rlang sym as_function
 #' @import magrittr
 #' @importFrom furrr future_map
-#' @importFrom future plan sequential
 #'
 downsample_time_series <- function(data = NULL,
                                    amount = 1,
                                    units = "hour",
                                    method = c("mean", "sum", "median"))
 {
- plan(sequential)
  data = future_map(
     .x = data,
     .f = ~ .downsample_one(

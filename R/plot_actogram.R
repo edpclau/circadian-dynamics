@@ -45,9 +45,6 @@ if (!is.null(ld_data)) {
  ld_data <- dplyr::filter(ld_data, ld_data$datetime >= lubridate::ceiling_date(min(ld_data$datetime), unit = "1 day"))
 }
 
-#Plan for paralellization
-future::plan(future::multisession)
-
 # Make date start at midnight
   if (lubridate::hour(min(df$datetime)) != 0) {
 

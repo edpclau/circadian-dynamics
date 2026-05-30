@@ -8,7 +8,6 @@
 #' @importFrom dplyr distinct filter select distinct
 #' @importFrom tidyr nest
 #' @importFrom lubridate days
-#' @importFrom future sequential plan
 #' @importFrom furrr future_map_dfr
 #'
 #' @export
@@ -37,7 +36,6 @@ window_size <- days(2) #Width of the window
 times <- unique(df$datetime)
 step = seq(from = min(times), to = max(times), by = '1 day')
 
-plan(sequential)
 df = future_map_dfr(
   .x = step,
   .f = ~ filter(df, (datetime >= .x) & (datetime <= .x + window_size)),
@@ -66,7 +64,6 @@ df_acto = df_acto$cols
 
 
 if (lights) {
-  plan(sequential)
   #Data for Actogram
   return(
     future_map2(
@@ -104,7 +101,6 @@ if (lights) {
 
   )
 } else {
-  plan(sequential)
   #Data for Actogram
   return(
     future_map2(

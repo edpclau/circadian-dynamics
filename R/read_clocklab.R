@@ -5,8 +5,8 @@
 #'
 #' read_clocklab_folder(directory = NULL)
 #'
-#' @param file optional. A file path for a .csv outputted form the clocklab software.
-#' @param directory optional. A folder path containing .csv files outputted from the clocklab software.
+#' @param file A file path for a .csv outputted from the clocklab software.
+#' @param directory A folder path containing .csv files outputted from the clocklab software.
 #' Make sure all individuals in the folder belong to the same experimental group and that the experiments
 #' were run on the same dates.
 #'
@@ -19,20 +19,15 @@
 #' @export read_clocklab_folder
 #'
 #' @examples
-#' df <- read_clocklab()
-#' df <- read_clocklab_folder()
+#' df <- read_clocklab(file = "/path/to/file.csv")
+#' df <- read_clocklab_folder(directory = "/path/to/folder")
 #'
 read_clocklab <- function(file = NULL) {
 
-
-
 ##### Flow Control #####
-#Allow for using a GUI to choose the file, if one is not supplied
-if (is.null(file)) {
-  file <- file.choose()
+if (missing(file) || is.null(file)) {
+  stop("`file` is required. Use read_clocklab_interactive() to choose one via a dialog.")
 }
-  #Plan for paralellization
-future::plan(future::multisession)
 
 ####### Import the file #####
 # Extract IND name
@@ -59,9 +54,8 @@ return(df)
 read_clocklab_folder <- function(directory = NULL) {
 
 #### Flow Control ####
-#Allow for using a GUI to choose the folder, if one is not supplied
-if (is.null(directory)) {
-  directory <- rstudioapi::selectDirectory()
+if (missing(directory) || is.null(directory)) {
+  stop("`directory` is required. Use read_clocklab_folder_interactive() to choose one via a dialog.")
 }
 
 files <- list.files(directory)
@@ -73,3 +67,11 @@ df <- tidyr::pivot_wider(df, c(datetime,ld))
 message("Make sure the experiments were run on the same dates")
 return(df)
 }
+
+#' @rdname read_clocklab
+#' @export
+read_clocklab_interactive <- function(...) read_clocklab(file.choose(), ...)
+
+#' @rdname read_clocklab
+#' @export
+read_clocklab_folder_interactive <- function(...) read_clocklab_folder(rstudioapi::selectDirectory(), ...)

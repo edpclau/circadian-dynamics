@@ -1,10 +1,10 @@
 #' Import data from a Trikinetics tsv
-#' @param file a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.
+#' @param file a path to a Trikinetics file.
 #' @export read_trikinetics_long
 #' @export read_trikinetics_folder_long
 #'
 #' @examples
-#' trikinetics_data <- read_trikinetics_long()
+#' trikinetics_data <- read_trikinetics_long(file = "/path/to/file.txt")
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite
@@ -14,12 +14,9 @@
 read_trikinetics_long <- function(file = NULL){
 
 ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(file)) {
-  file <- file.choose()
+  if (missing(file) || is.null(file)) {
+    stop("`file` is required. Use read_trikinetics_long_interactive() to choose one via a dialog.")
   }
-  #Plan for paralellization
-  future::plan(future::multisession)
 
 # Import the file
   df <- read_tsv(file,col_names = FALSE)
@@ -37,9 +34,8 @@ read_trikinetics_folder_long <- function(directory = NULL) {
 message("Make sure, all monitors were run on the same dates with the same LD/DD settings.")
 
   #### Flow Control ####
-  #Allow for using a GUI to choose the folder, if one is not supplied
-  if (is.null(directory)) {
-    directory <- rstudioapi::selectDirectory()
+  if (missing(directory) || is.null(directory)) {
+    stop("`directory` is required. Use read_trikinetics_folder_long_interactive() to choose one via a dialog.")
   }
 
   files <- list.files(directory)
@@ -51,3 +47,11 @@ message("Make sure, all monitors were run on the same dates with the same LD/DD 
   df <- tidyr::pivot_wider(df, c(datetime, tidyr::matches("dd|ld")))
   return(df)
 }
+
+#' @rdname read_trikinetics_long
+#' @export
+read_trikinetics_long_interactive <- function(...) read_trikinetics_long(file.choose(), ...)
+
+#' @rdname read_trikinetics_long
+#' @export
+read_trikinetics_folder_long_interactive <- function(...) read_trikinetics_folder_long(rstudioapi::selectDirectory(), ...)

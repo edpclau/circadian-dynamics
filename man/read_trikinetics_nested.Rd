@@ -2,16 +2,22 @@
 % Please edit documentation in R/read_trikinetics_nested.R
 \name{read_trikinetics_nested}
 \alias{read_trikinetics_nested}
+\alias{read_trikinetics_nested_interactive}
+\alias{read_trikinetics_folder_nested_interactive}
 \title{Import data from a Trikinetics tsv}
 \usage{
 read_trikinetics_nested(file = NULL)
+
+read_trikinetics_nested_interactive(...)
+
+read_trikinetics_folder_nested_interactive(...)
 }
 \arguments{
-\item{file}{a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.}
+\item{file}{a path to a Trikinetics file.}
 }
 \description{
 Import data from a Trikinetics tsv
 }
 \examples{
-trikinetics_data <- read_trikinetics_nested()
+trikinetics_data <- read_trikinetics_nested(file = "/path/to/file.txt")
 }

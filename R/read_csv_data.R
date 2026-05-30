@@ -1,9 +1,9 @@
 #' Import data from a Trikinetics tsv
-#' @param file a path to a csv file. If no path is supplied, a GUI will open and help with file selection.
+#' @param file a path to a csv file.
 #' @export read_csv_data
 #'
 #' @examples
-#' circadian_data <- read_csv_data()
+#' circadian_data <- read_csv_data(file = "/path/to/data.csv")
 #' @importFrom readr read_csv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr pivot_longer
@@ -12,9 +12,8 @@
 read_csv_data <- function(file = NULL){
 
   ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(file)) {
-    file = file.choose()
+  if (missing(file) || is.null(file)) {
+    stop("`file` is required. Use read_csv_data_interactive() to choose one via a dialog.")
   }
 
   # Import the file
@@ -25,3 +24,7 @@ read_csv_data <- function(file = NULL){
   df = df$data
   return(df)
 }
+
+#' @rdname read_csv_data
+#' @export
+read_csv_data_interactive <- function(...) read_csv_data(file.choose(), ...)

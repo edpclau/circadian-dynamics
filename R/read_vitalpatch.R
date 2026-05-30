@@ -6,7 +6,7 @@
 #' concatenates all the data into a single tibble (data.frame) so that the user doesn't have to do it manually.
 #'
 #'
-#' @param folder Optional. A path (directory) to the folder we want to analyze.
+#' @param folder A path (directory) to the folder we want to analyze.
 #'
 #' @return Returns a tibble (data.frame) object with parsed dates.
 #'
@@ -14,19 +14,17 @@
 #'
 #' @export
 #'
-#' @examples read_vitalpatch()
+#' @examples read_vitalpatch(folder = "/path/to/folder")
 #'
 #' @importFrom lubridate as_datetime
 #' @importFrom dplyr rename
 #' @importFrom purrr map_df
-#' @importFrom rstudioapi selectDirectory
 #'
 read_vitalpatch <- function(folder = NULL) {
 
   ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(folder)) {
-    folder <- rstudioapi::selectDirectory()
+  if (missing(folder) || is.null(folder)) {
+    stop("`folder` is required. Use read_vitalpatch_interactive() to choose one via a dialog.")
   }
 files = list.files(folder, full.names = TRUE)
 
@@ -39,3 +37,6 @@ df = dplyr::rename(df, datetime = Time)
 return(df)
 }
 
+#' @rdname read_vitalpatch
+#' @export
+read_vitalpatch_interactive <- function(...) read_vitalpatch(rstudioapi::selectDirectory(), ...)

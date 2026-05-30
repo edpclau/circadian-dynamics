@@ -33,6 +33,8 @@ step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "
 
 
 #plan for paralelization
+oplan <- future::plan()
+on.exit(future::plan(oplan), add = TRUE)
 future::plan(future::multisession, workers = 2)
 
 # Creating a new data.frame where data is partitioned by window

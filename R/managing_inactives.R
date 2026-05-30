@@ -21,7 +21,6 @@
 #' @export report_inactive_variables
 #'
 #' @import magrittr
-#' @importFrom future plan sequential
 #' @importFrom lubridate duration
 #' @importFrom furrr future_map future_map2
 #' @importFrom dplyr filter tibble group_by mutate all_of select
@@ -32,9 +31,6 @@ rm_inactive_dates <- function(df,inactivity_period = "1 day", sampling_rate = "1
 
   #Definition for what we will consider an inactive dates
   inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
-
-  #plan for paralellization
-  plan(sequential)
 
   to_return = future_map(
     .x = df,
@@ -68,7 +64,6 @@ report_inactive_variables <- function(df,inactivity_period = "1 day", sampling_r
   #Definition for what we will consider an inactive dates
   inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
 
-  plan(sequential)
   to_return = future_map2(
     .x = df,
     .y = names(df),

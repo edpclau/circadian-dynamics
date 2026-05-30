@@ -10,7 +10,6 @@
 #' @import magrittr
 #' @importFrom dplyr select distinct filter mutate
 #' @importFrom tidyr nest
-#' @importFrom future plan sequential
 #' @importFrom furrr future_map2
 #' @importFrom ggplot2 ggplot geom_line geom_tile labs theme element_text element_blank element_line scale_fill_grey
 plot_raw_values <- function(df) {
@@ -43,7 +42,6 @@ plot_raw_values <- function(df) {
 
 if (light) {
   # Plot the figures
-  plan(sequential)
   raw_plots = future_map2(.x = df_raw,
                           .y = id,
                           .f = ~ {
@@ -92,7 +90,6 @@ if (light) {
 
 
   # Plot the figures
-  plan(sequential)
   raw_plots = future_map2(.x = df_raw,
                           .y = id,
                           .f = ~ {

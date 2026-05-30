@@ -10,7 +10,9 @@
 #'
 rm_inactive <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
   #Plan for paralellization
-future::plan(future::multisession)
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
+  future::plan(future::multisession)
 
     inactivity_threshold <- lubridate::duration(inactivity_period) / lubridate::duration(sampling_rate)
     rles <- furrr::future_map(df[-1], ~ rle( .))

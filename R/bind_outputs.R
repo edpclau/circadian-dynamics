@@ -12,15 +12,11 @@
 #' @export
 #'
 #' @importFrom furrr future_map_dfr
-#' @importFrom future plan sequential
 #'
 #' @examples
 #' bind_processed(df = monitor_processed)
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
-   #Plan for paralellization
-
-  plan(sequential)
   df_bound <-  future_map_dfr(df, ~ dplyr::rename(., raw = 3), .id = "ID")
 
   filename = paste0(path,"/",substitute(df),".csv")

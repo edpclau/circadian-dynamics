@@ -9,11 +9,8 @@
 #'
 #'@importFrom dplyr select everything
 #'@importFrom furrr future_map_dfr
-#'@importFrom future plan sequential
 #'
 arbitrary_noise_subtraction <- function(df, noise = 0) {
-
-plan(sequential)
 
 noise_reduced <- future_map_dfr(df[-1], ~ ifelse(. - noise < 0 | is.na(.), 0, . - noise))
 

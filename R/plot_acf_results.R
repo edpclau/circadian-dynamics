@@ -10,7 +10,6 @@
 #' @import magrittr
 #' @importFrom dplyr select distinct filter mutate
 #' @importFrom tidyr nest
-#' @importFrom future plan sequential
 #' @importFrom furrr future_map2
 #' @importFrom ggplot2 ggplot geom_line labs theme element_text element_blank element_line scale_x_continuous element_rect geom_hline
 plot_acf_results <- function(df) {
@@ -29,7 +28,6 @@ auto_df = df %>%
   auto_df = auto_df$cols
 
   # Plot the figures
-  plan(sequential)
   period_plots = future_map2(.x = auto_df,
                           .y = id,
                           .f = ~ {

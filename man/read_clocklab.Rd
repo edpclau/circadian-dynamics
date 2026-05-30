@@ -2,17 +2,23 @@
 % Please edit documentation in R/read_clocklab.R
 \name{read_clocklab}
 \alias{read_clocklab}
+\alias{read_clocklab_interactive}
+\alias{read_clocklab_folder_interactive}
 \title{Import data from Clocklab}
 \usage{
 read_clocklab(file = NULL)
 
 
 read_clocklab_folder(directory = NULL)
+
+read_clocklab_interactive(...)
+
+read_clocklab_folder_interactive(...)
 }
 \arguments{
-\item{file}{optional. A file path for a .csv outputted form the clocklab software.}
+\item{file}{A file path for a .csv outputted from the clocklab software.}
 
-\item{directory}{optional. A folder path containing .csv files outputted from the clocklab software.
+\item{directory}{A folder path containing .csv files outputted from the clocklab software.
 Make sure all individuals in the folder belong to the same experimental group and that the experiments
 were run on the same dates.}
 }
@@ -26,7 +32,7 @@ IND Name: measurement values
 Import data from Clocklab
 }
 \examples{
-df <- read_clocklab()
-df <- read_clocklab_folder()
+df <- read_clocklab(file = "/path/to/file.csv")
+df <- read_clocklab_folder(directory = "/path/to/folder")
 
 }

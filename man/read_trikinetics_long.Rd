@@ -2,16 +2,22 @@
 % Please edit documentation in R/read_trikinetics_long.R
 \name{read_trikinetics_long}
 \alias{read_trikinetics_long}
+\alias{read_trikinetics_long_interactive}
+\alias{read_trikinetics_folder_long_interactive}
 \title{Import data from a Trikinetics tsv}
 \usage{
 read_trikinetics_long(file = NULL)
+
+read_trikinetics_long_interactive(...)
+
+read_trikinetics_folder_long_interactive(...)
 }
 \arguments{
-\item{file}{a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.}
+\item{file}{a path to a Trikinetics file.}
 }
 \description{
 Import data from a Trikinetics tsv
 }
 \examples{
-trikinetics_data <- read_trikinetics_long()
+trikinetics_data <- read_trikinetics_long(file = "/path/to/file.txt")
 }
