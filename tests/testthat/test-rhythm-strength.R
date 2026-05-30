@@ -1,0 +1,8 @@
+test_that("ACF rhythm_strength equals max peak over the 95% white-noise bound", {
+  df <- make_sine(period_h = 24, sampling_min = 60, n_days = 6)
+  res <- analyze_timeseries.acf(df, from = 18, to = 30, sampling_rate = "1 hour")
+  # Definition: max_peak_of_int / (1.965 / sqrt(n))
+  expected <- res$max_peak_of_int / (1.965 / sqrt(nrow(df)))
+  expect_equal(res$rythm_strength, expected, tolerance = 1e-8)
+  expect_true(res$rythm_strength > 1)  # clean signal is clearly rhythmic
+})

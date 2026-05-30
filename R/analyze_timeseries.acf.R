@@ -17,6 +17,11 @@
 #' For example: "1 second", "2 minutes", "1 hour" (default),"3 days", "11 months".
 #'
 #'
+#' @details The reported `rythm_strength` is the maximum autocorrelation peak within the
+#' search band divided by the 95% white-noise confidence bound `1.965 / sqrt(n)`. Values > 1
+#' indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rythm_strength`
+#' (in [analyze_timeseries.lomb]) is a separate, experimental measure and is not directly comparable.
+#'
 #' @return A data.frame with the autocorrelation results for each window which include: period, peaks,
 #' power, lags for the peaks.
 #'
