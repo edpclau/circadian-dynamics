@@ -64,9 +64,6 @@ process_timeseries <- function(df = NULL, sampling_rate = NULL, window_size_in_d
     original_names <- names(df)
     names(df) <- c("datetime", "values")
   }
-  #Plan for paralellization
-  future::plan(future::multisession)
-
 
 # if(butterworth){
 #   df_origin <- df

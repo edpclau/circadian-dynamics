@@ -131,9 +131,9 @@ process_timeseries.core <- function(df = NULL,
                                     ofac = 1,
                                     lomb_pvalue = 0.01) {
 
-if (big_data) {
-plan(multisession)
-} else {plan(sequential)}
+oplan <- future::plan()
+on.exit(future::plan(oplan), add = TRUE)
+if (big_data) future::plan(future::multisession)
 
   if (make_windows){
   #Set step and window_size
@@ -227,9 +227,9 @@ process_timeseries.main <- function(df = NULL,
                                     big_data = FALSE,
                                     ofac = 10,
                                     lomb_pvalue = 0.01) {
-  if (big_data) {
-    plan(multisession)
-  } else {plan(sequential)}
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
+  if (big_data) future::plan(future::multisession)
 
   return(
 
