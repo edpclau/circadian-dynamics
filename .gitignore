@@ -9,3 +9,8 @@
 
 # baseline verification artifacts (not committed)
 baseline/
+
+# iCloud Drive sync-conflict copies
+* [0-9].R
+* [0-9].Rd
+* [0-9].csv
