@@ -1,9 +1,9 @@
-#' Plot a sumarrized version of the Rythm data found by Rythm_analysis
+#' Plot a sumarrized version of the Rhythm data found by Rhythm_analysis
 #' @usage plot_summarized_data(raw_data = NULL, analyzed_data = NULL,
 #' dir_choose_gui = TRUE)
 #'
 #' @param raw_data data.frame or tibble containing the raw data. The first column must be a datetime.
-#' @param analyzed_data data.frame returned from the rythm_analysis_by_window and multivariate_rythm_analysis functions.
+#' @param analyzed_data data.frame returned from the rhythm_analysis_by_window and multivariate_rhythm_analysis functions.
 #' @param dir_choose_gui If TRUE (default) a GUI will help select the folder in which to save the data and plots. If FALSE,
 #' everything will be saved in the current directory.
 #'
@@ -22,7 +22,7 @@ plot_summarized_data <- function(raw_data = NULL, analyzed_data = NULL, path = g
 
 ##### Flow Control ####
   if (is.null(raw_data)) { stop("Must provide the raw data. The first column must be the datetime.")}
-  if (is.null(analyzed_data)) { stop("Must provide the output from 'multivariate_rythm_analysis' or 'rythm_analysis'.")}
+  if (is.null(analyzed_data)) { stop("Must provide the output from 'multivariate_rhythm_analysis' or 'rhythm_analysis'.")}
   df1 <- raw_data
   df2 <- analyzed_data
   #Plan for paralellization
@@ -91,12 +91,12 @@ axis(1, at = to_plot$window)
 }
 
 
-# plot Cosinor Percent Rythm
+# plot Cosinor Percent Rhythm
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "lomb_scargle") %>%
   dplyr::select(window,adj_r_squared)
 
-plot(to_plot,type="s", main ="Percent Rythm", ylab = " Cosinor Adj. R-squared", xaxt = "n",
+plot(to_plot,type="s", main ="Percent Rhythm", ylab = " Cosinor Adj. R-squared", xaxt = "n",
      ylim = c(0,1))
 points(to_plot)
 axis(1, at = to_plot$window)
@@ -147,7 +147,7 @@ if ( !all(is.na(to_plot[[2]])) ) {
   max_value = max(to_plot$lsp_p_value, na.rm = TRUE)
   min_value = min(to_plot$lsp_p_value, na.rm = TRUE)
 
-plot(to_plot, type="s", main ="Lomb-Scargle Rythm Strength", ylab = "Log (P.value / Alpha)", xlab = "Window", xaxt = "n",
+plot(to_plot, type="s", main ="Lomb-Scargle Rhythm Strength", ylab = "Log (P.value / Alpha)", xlab = "Window", xaxt = "n",
      ylim = if (min_value < 1 & 1 < max_value) {
        c(min_value, max_value)
      } else if (1 > max_value) {
@@ -162,20 +162,20 @@ abline(h = 1, lty = 2, col = "red")
 
 } else {
   plot.new()
-  title("Lomb-Scarg. Rythm Strength = NA")
+  title("Lomb-Scarg. Rhythm Strength = NA")
 }
 
-# plot Rythm Strength
+# plot Rhythm Strength
 to_plot = df2[[.]] %>%
   dplyr::filter(method == "autocorrelation") %>%
-  dplyr::select(window,rythm_strength)
+  dplyr::select(window,rhythm_strength)
 
 if ( !all(is.na(to_plot[[2]]))) {
   #max min y value:
-  max_value = max(to_plot$rythm_strength, na.rm = TRUE)
-  min_value = min(to_plot$rythm_strength, na.rm = TRUE)
+  max_value = max(to_plot$rhythm_strength, na.rm = TRUE)
+  min_value = min(to_plot$rhythm_strength, na.rm = TRUE)
 
-plot(to_plot,type="s", main ="Autocor Rythm Strength" , ylab = "C.C. / 95% C.I.",
+plot(to_plot,type="s", main ="Autocor Rhythm Strength" , ylab = "C.C. / 95% C.I.",
      xlab = "Window", xaxt = "n",
      ylim = if (min_value < 1 & 1 < max_value) {
        c(min_value, max_value)
@@ -190,7 +190,7 @@ abline(h = 1, lty = 2, col = "red")
 
 } else {
   plot.new()
-  title("Autocorrelation Rythm Strength = NA")
+  title("Autocorrelation Rhythm Strength = NA")
 }
 
  dev.off()

@@ -17,9 +17,9 @@
 #' For example: "1 second", "2 minutes", "1 hour" (default),"3 days", "11 months".
 #'
 #'
-#' @details The reported `rythm_strength` is the maximum autocorrelation peak within the
+#' @details The reported `rhythm_strength` is the maximum autocorrelation peak within the
 #' search band divided by the 95% white-noise confidence bound \code{1.965 / sqrt(n)}, where \code{n} is the number of observations in \code{df}. Values > 1
-#' indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rythm_strength`
+#' indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rhythm_strength`
 #' (in [analyze_timeseries.lomb]) is a separate, experimental measure and is not directly comparable.
 #'
 #' @return A data.frame with the autocorrelation results for each window which include: period, peaks,
@@ -54,7 +54,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   results$autocorrelation = NA
   results$power = NA
   results$period = NA
-  results$rythm_strength = NA
+  results$rhythm_strength = NA
   results$max_peak_of_int = NA
   results$start = NA
   results$end = NA
@@ -105,7 +105,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$autocorrelation = NA
     results$power = NA
     results$period = NA
-    results$rythm_strength = NA
+    results$rhythm_strength = NA
     results$max_peak_of_int = NA
     results$start = NA
     results$end = NA
@@ -152,7 +152,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
     results$autocorrelation = NA
     results$power = NA
     results$period = NA
-    results$rythm_strength = NA
+    results$rhythm_strength = NA
     results$max_peak_of_int = NA
     results$start = NA
     results$end = NA
@@ -172,7 +172,7 @@ analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
   results$autocorrelation = autocorrelation
   results$power = peaks$auto_power
   results$period = period
-  results$rythm_strength = rhythm_strength
+  results$rhythm_strength = rhythm_strength
   results$max_peak_of_int = max_peak_of_int
   results$start = start
   results$end = end

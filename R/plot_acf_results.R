@@ -18,7 +18,7 @@ plot_acf_results <- function(df) {
   if (!'window' %in% names(df)) {df$window = 1}
   #Preprocess the data to plot
 auto_df = df %>%
-    select(data, window, rythm_strength, gc_raw_to_cos, gc_cos_to_raw, period) %>%
+    select(data, window, rhythm_strength, gc_raw_to_cos, gc_cos_to_raw, period) %>%
     distinct() %>%
     mutate(window = as.numeric(window),
            granger = ifelse(gc_raw_to_cos < gc_cos_to_raw, gc_raw_to_cos, gc_cos_to_raw)) %>%
@@ -64,7 +64,7 @@ auto_df = df %>%
   rhythm_plots = future_map2(.x = auto_df,
                              .y = id,
                              .f = ~ {
-                               ggplot(.x, aes(x = window, y = rythm_strength)) +
+                               ggplot(.x, aes(x = window, y = rhythm_strength)) +
                                  geom_point(na.rm = TRUE) +
                                  geom_line(na.rm = TRUE) +
                                  geom_hline(aes(yintercept = 1), lty = 'dashed') +

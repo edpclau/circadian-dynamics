@@ -32,7 +32,8 @@
       "Bash(git branch *)",
       "Bash(grep -rnE '\\\\b__TRACKED_VAR__ *\\\\\\(' R/)",
       "Bash(git -C \"/Users/eddie/Library/Mobile Documents/com~apple~CloudDocs/circadian-dynamics\" branch)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(git mv *)"
     ],
     "additionalDirectories": [
       "/tmp",

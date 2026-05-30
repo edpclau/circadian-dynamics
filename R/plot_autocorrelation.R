@@ -124,7 +124,7 @@ test <- purrr::map_if(names(acf_df),
     legend("topright",
            legend = c(paste("Period = ", acf_df[[1]][["period_hours"]]),
                       paste("C.C. =",round(acf_df[[1]][["autocorrelation_power"]], digits = 3)),
-                      paste("R.S. = ",round(acf_df[[.]][["rythm_strength"]], digits = 3))),
+                      paste("R.S. = ",round(acf_df[[.]][["rhythm_strength"]], digits = 3))),
            bty = "n",
            cex = 1)
 
@@ -149,7 +149,7 @@ test <- purrr::map_if(names(acf_df),
     legend("topright",
            legend = c(paste("Period = ", acf_df[[.]][["period_hours"]]),
                       paste("C.C. =",round(acf_df[[.]][["autocorrelation_power"]], digits = 3)),
-                      paste("R.S. = ",round(acf_df[[.]][["rythm_strength"]], digits = 3))),
+                      paste("R.S. = ",round(acf_df[[.]][["rhythm_strength"]], digits = 3))),
            bty = "n",
            cex = 1)
 

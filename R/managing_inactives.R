@@ -10,7 +10,7 @@
 #' necessary to be removed. Default = "1 day".
 #' @param sampling_rate a string indicating the sampling rate of the data. Default = "1 hour".
 #'
-#' @examples  df = downsample_time_series_2(trikinetics, amount = 1, units = 'hour', method = 'sum')
+#' @examples  df = downsample_time_series(trikinetics, amount = 1, units = 'hour', method = 'sum')
 #' cropped_dates_df = rm_inactive_dates(df, inactivity_period = '1 day', sampling_rate = '1 hour')
 #' print(cropped_dates_df)
 #' cropped_variables_df = rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")

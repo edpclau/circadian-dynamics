@@ -1,6 +1,6 @@
 #' Helper function to prepare raw data for analysis
 #'
-#' @description Processes raw data in such a way that it can be directly inputted to the rythm_analysis_by_window function.
+#' @description Processes raw data in such a way that it can be directly inputted to the rhythm_analysis_by_window function.
 #'
 #' @usage process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
 #' movavg = TRUE, detrend_data = TRUE, butterworth = TRUE,
@@ -98,7 +98,7 @@ if (smooth_data) { butterworth = FALSE }
 df = smooth_and_detrend(df, smooth_data = smooth_data, detrend_data = detrend_data, binning_n = binning_n)
 
 if (butterworth)
-df = butterworth_filter_2(df, order = order, f_low = f_low, f_high = f_high, plot = FALSE)
+df = butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = FALSE)
 
 
 return(df)

@@ -42,7 +42,7 @@ smoothing_n = 4, datetime = NULL, values = NULL)
 A named list of data.frames containing the output of [circadiandynamics::butterworth], [find_gaps()], [makes_time_windows()], and [smooth_detrend_by_windows()] for each measurement value.
 }
 \description{
-Processes raw data in such a way that it can be directly inputted to the rythm_analysis_by_window function.
+Processes raw data in such a way that it can be directly inputted to the rhythm_analysis_by_window function.
 }
 \examples{
 processed_data <- process_timeseries(df = raw_data, sampling_rate = "30 min")

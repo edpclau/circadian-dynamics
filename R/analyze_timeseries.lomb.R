@@ -106,7 +106,7 @@ analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, 
       sig_level = NA,
       scanned = NA,
       power = NA,
-      rythm_strength = NA
+      rhythm_strength = NA
     )
     return(results)
   }
@@ -125,7 +125,7 @@ if (is_empty(lsp_of_int)) {
     sig_level = NA,
     scanned = NA,
     power = NA,
-    rythm_strength = NA
+    rhythm_strength = NA
   )
   return(results)
 }
@@ -164,7 +164,7 @@ results = list(
        scanned = as.numeric(duration(lsp_of_int$scanned * sampling_bin_size, sampling_rate), "hours"),
        power = lsp_of_int$power,
        #this is a beta measurement and needs validation
-       rythm_strength = rs
+       rhythm_strength = rs
        )
 
 

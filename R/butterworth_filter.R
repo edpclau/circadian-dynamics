@@ -13,7 +13,7 @@
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
 #' @param f_high Frequency for the high pass filter. Default = 1/72.
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.
-#' @export butterworth_filter_2
+#' @export butterworth_filter
 #' @examples
 #'
 #' butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
@@ -22,7 +22,7 @@
 #' @importFrom signal butter filtfilt
 
 
-butterworth_filter_2 <- function(df = NULL, order = 2, f_low= 1/4, f_high = 1/72, plot = TRUE, ...) {
+butterworth_filter <- function(df = NULL, order = 2, f_low= 1/4, f_high = 1/72, plot = TRUE, ...) {
 
 
   ##### Flow Control #####

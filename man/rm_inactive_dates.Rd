@@ -24,7 +24,7 @@ rm_inactive_dates drops the rows of data during which an variable was "inactive"
 rm_inactive_variables drops the rows of data during which
 }
 \examples{
- df = downsample_time_series_2(trikinetics, amount = 1, units = 'hour', method = 'sum')
+ df = downsample_time_series(trikinetics, amount = 1, units = 'hour', method = 'sum')
 cropped_dates_df = rm_inactive_dates(df, inactivity_period = '1 day', sampling_rate = '1 hour')
 print(cropped_dates_df)
 cropped_variables_df = rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")

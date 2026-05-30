@@ -19,7 +19,7 @@ plot_lsp_results <- function(df) {
   if (!'window' %in% names(df)) {df$window = 1}
   #Preprocess the data to plot
   lsp_df = df %>%
-    select(data, window, rythm_strength, gc_raw_to_cos, gc_cos_to_raw, period, amplitude, phase) %>%
+    select(data, window, rhythm_strength, gc_raw_to_cos, gc_cos_to_raw, period, amplitude, phase) %>%
     distinct() %>%
     mutate(window = as.numeric(window),
            granger = ifelse(gc_raw_to_cos < gc_cos_to_raw, gc_raw_to_cos, gc_cos_to_raw)) %>%
@@ -66,7 +66,7 @@ plot_lsp_results <- function(df) {
   rhythm_plots = future_map2(.x = lsp_df,
                              .y = id,
                              .f = ~ {
-                               ggplot(.x, aes(x = window, y = rythm_strength)) +
+                               ggplot(.x, aes(x = window, y = rhythm_strength)) +
                                  geom_point(na.rm = TRUE) +
                                  geom_line(na.rm = TRUE) +
                                  geom_hline(aes(yintercept = 1), lty = 'dashed') +

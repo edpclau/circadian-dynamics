@@ -37,7 +37,7 @@ periods <- bind_rows(lapply(names(res), function(n) data.frame(
   individual          = n,
   acf_period_h        = round(res[[n]]$acf$results$period, 3),
   lsp_period_h        = round(res[[n]]$lomb$results$period, 3),
-  acf_rhythm_strength = round(res[[n]]$acf$results$rythm_strength, 2),
+  acf_rhythm_strength = round(res[[n]]$acf$results$rhythm_strength, 2),
   lsp_p_value         = signif(res[[n]]$lomb$results$p_value, 3)
 )))
 cat("\n==== PERIODS (whole recording, 15-min) ====\n")
