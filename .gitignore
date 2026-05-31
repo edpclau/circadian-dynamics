@@ -3,9 +3,15 @@
 .RData
 .Ruserdata
 .DS_Store
-# pixi environments
-.pixi/*
-!.pixi/config.toml
+# pixi dev environment (local-only)
+.pixi/
+pixi.toml
+pixi.lock
+
+# planning / research / dev artifacts (kept local, excluded from the package & stable)
+docs/superpowers/
+research/
+data-raw/
 
 # baseline verification artifacts (not committed)
 baseline/
@@ -17,3 +23,4 @@ baseline/
 
 # Claude Code local settings
 .claude/
+* [0-9]
