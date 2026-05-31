@@ -3,6 +3,7 @@
 #' @return Invisibly returns a multi-page \code{grob} object (from \code{gridExtra::marrangeGrob}), or saves a PDF when \code{export = TRUE}.
 #' @details Exports actogram plots for each column of a data.frame of tibble with a datetime object.
 #'
+#' @param path A character string with the directory in which to save the file when \code{export = TRUE}. Default = \code{getwd()}.
 #' @param df A data.frame or tibble which contains a datetime column and measurement values.
 #' @param datetime_column An integer which indicates the column that contains the datetime. Default = 1.
 #' @param ld_data A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)
@@ -10,15 +11,19 @@
 #' @param export Logical. If FALSE (default), it will open a window with the plots. If TRUE, saves the plots on the current directory in pdf format.
 #' @param width a numeric indicating the width of the page of the pdf file. default = 12
 #' @param height a numeric indicating height of the page of the pdf file. default = 12
+#' @param dpi a numeric indicating the resolution (dots per inch) of the exported file. default = 800
 #' @param nrow a numeric indicating how many rows of plots to put in a page. default = 5
 #' @param ncol a numeric indicating how many columns of plots to put in a page. default = 5
 #' @param autosize Logical. If TRUE, will make the figures bigger as the number of days increase. If FALSE
 #' (default) will plot 25 figures per page.
+#' @param silent Logical. If TRUE, returns a single-plot-per-page \code{grob} without printing. Default = FALSE.
 #'
 #' @examples
+#' \dontrun{
 #' plot_actogram(df = monitor,
 #' datetime_column = 1, filename = "actogram.pdf",
 #' export = FALSE)
+#' }
 #'
 #' @importFrom ggplot2 ggplot geom_tile aes geom_hline geom_vline labs facet_grid scale_x_datetime scale_y_discrete theme element_blank element_text element_line ggsave unit
 #' @importFrom gridExtra marrangeGrob

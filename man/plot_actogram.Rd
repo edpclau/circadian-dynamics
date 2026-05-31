@@ -21,6 +21,8 @@ plot_actogram(
 )
 }
 \arguments{
+\item{path}{A character string with the directory in which to save the file when \code{export = TRUE}. Default = \code{getwd()}.}
+
 \item{df}{A data.frame or tibble which contains a datetime column and measurement values.}
 
 \item{ld_data}{A data.frame/Tibble with 2 columns. Column 1 is a datetime object and column 2 is the light/dark indicator. (defult = NULL)}
@@ -35,12 +37,16 @@ plot_actogram(
 
 \item{height}{a numeric indicating height of the page of the pdf file. default = 12}
 
+\item{dpi}{a numeric indicating the resolution (dots per inch) of the exported file. default = 800}
+
 \item{nrow}{a numeric indicating how many rows of plots to put in a page. default = 5}
 
 \item{ncol}{a numeric indicating how many columns of plots to put in a page. default = 5}
 
 \item{autosize}{Logical. If TRUE, will make the figures bigger as the number of days increase. If FALSE
 (default) will plot 25 figures per page.}
+
+\item{silent}{Logical. If TRUE, returns a single-plot-per-page \code{grob} without printing. Default = FALSE.}
 }
 \value{
 Invisibly returns a multi-page \code{grob} object (from \code{gridExtra::marrangeGrob}), or saves a PDF when \code{export = TRUE}.
@@ -52,8 +58,10 @@ Export/Plot Actogram
 Exports actogram plots for each column of a data.frame of tibble with a datetime object.
 }
 \examples{
+\dontrun{
 plot_actogram(df = monitor,
 datetime_column = 1, filename = "actogram.pdf",
 export = FALSE)
+}
 
 }

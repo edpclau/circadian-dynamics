@@ -2,11 +2,14 @@
 % Please edit documentation in R/read_trikinetics_nested.R
 \name{read_trikinetics_nested}
 \alias{read_trikinetics_nested}
+\alias{read_trikinetics_folder_nested}
 \alias{read_trikinetics_nested_interactive}
 \alias{read_trikinetics_folder_nested_interactive}
 \title{Import data from a Trikinetics tsv}
 \usage{
 read_trikinetics_nested(file = NULL)
+
+read_trikinetics_folder_nested(directory = NULL)
 
 read_trikinetics_nested_interactive(...)
 

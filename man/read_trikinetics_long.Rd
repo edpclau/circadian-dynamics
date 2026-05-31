@@ -2,11 +2,14 @@
 % Please edit documentation in R/read_trikinetics_long.R
 \name{read_trikinetics_long}
 \alias{read_trikinetics_long}
+\alias{read_trikinetics_folder_long}
 \alias{read_trikinetics_long_interactive}
 \alias{read_trikinetics_folder_long_interactive}
 \title{Import data from a Trikinetics tsv}
 \usage{
 read_trikinetics_long(file = NULL)
+
+read_trikinetics_folder_long(directory = NULL)
 
 read_trikinetics_long_interactive(...)
 

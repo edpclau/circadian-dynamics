@@ -30,6 +30,8 @@ read_trikinetics_long <- function(file = NULL){
 
 
 
+#' @rdname read_trikinetics_long
+#' @export
 read_trikinetics_folder_long <- function(directory = NULL) {
 
 message("Make sure, all monitors were run on the same dates with the same LD/DD settings.")

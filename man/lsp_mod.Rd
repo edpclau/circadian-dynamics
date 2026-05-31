@@ -63,7 +63,7 @@ peak.at	 The frequency/period at which the maximum peak occurred.
 p.value	 The probability that the maximum peak occurred by chance.
 }
 \description{
-A modification on the lomb-pkg's lsp function [lomb::lsp()]. Automatically increases the oversampling factor when it is too small for
+A modification on the lomb-pkg's lsp function \code{lomb::lsp()}. Automatically increases the oversampling factor when it is too small for
 the chosen from-to interval. Computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
 Allows selecting a frequency range to be inspected, as well as the spacing of frequencies scanned.
 }
@@ -71,14 +71,9 @@ Allows selecting a frequency range to be inspected, as well as the spacing of fr
 For a description of the properties of the Lomb-Scargle Periodogram, its computation and comparsion with other methods see Ruf, T. (1999). Function lsp uses the algorithm given by Press et al (1994). The Lomb-Scargle Periodogram was originaly proposed by Lomb N.R. (1976) and furher extended by Scargle J.D. (1982).
 }
 \examples{
-# ibex contains an unevenly sampled time series
-data(ibex)
-lsp(ibex[2:3],)
-lsp(ibex$temp,times=ibex$hours,type='period',ofac=5)
-# lynx contains evenly sampled data
-lsp(lynx)
-lynx.spec <- lsp(lynx,type='period',from=2,to=20,ofac=5)
-summary(lynx.spec)
+\dontrun{
+res <- lsp_mod(x = values, type = "period", from = 18, to = 30, ofac = 1, plot = FALSE)
+}
 
 }
 \references{

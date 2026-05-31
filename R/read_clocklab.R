@@ -46,6 +46,8 @@ return(df)
 }
 
 
+#' @rdname read_clocklab
+#' @export
 read_clocklab_folder <- function(directory = NULL) {
 
 #### Flow Control ####
@@ -56,7 +58,7 @@ if (missing(directory) || is.null(directory)) {
 files <- list.files(directory)
 paths <- paste0(directory, "/", files)
 df <- furrr::future_map(paths, read_clocklab)
-df <- furrr::future_map_df(df, ~ tidyr::pivot_longer(., -c(1,2)))
+df <- furrr::future_map_dfr(df, ~ tidyr::pivot_longer(., -c(1,2)))
 df <- tidyr::pivot_wider(df, c(datetime,ld))
 
 message("Make sure the experiments were run on the same dates")

@@ -27,16 +27,10 @@ Must be in hours. Default = 18.}
 \item{to}{An optional numeric indicating up to which period or frequency to start looking for peaks.
 Must be in hours. Default = 30.}
 
-\item{ofac}{[lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).}
+\item{ofac}{\code{lomb::lsp()} The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).}
 
-\item{windows}{A vector containing the windows to iterate over and to label the group to which each value belongs.
-Usually this will be the output from make_time_windows. Optional if df is provided.}
-
-\item{values}{The data to which we want to find the period. Optional if df is provided.}
-
-\item{times}{A POSIXct vector. Optional if df is provided.}
-
-\item{type}{Either “frequency” or “period” (default). Determines the type of the periodogram x-axis [lomb::lsp()].}
+\item{alpha}{The significance level used by the Lomb-Scargle periodogram. Powers exceeding the
+corresponding significance threshold are considered significant. Default = 0.01.}
 }
 \value{
 A data.frame with the following components:
@@ -59,7 +53,9 @@ sig_level        Powers > sig.level can considered significant peaks.
 Iteratively computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
 }
 \examples{
-lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
+\dontrun{
+res <- analyze_timeseries.lomb(df, sampling_rate = "1 hour", from = 18, to = 30)
+}
 
 
 }

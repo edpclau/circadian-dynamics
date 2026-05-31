@@ -21,10 +21,6 @@ Examples: If the goal is to evaluate a 24 "hour" period but the sampling rate is
 the period to use is a  48 "30 minutes" period.}
 
 \item{na.action}{Default is na.omit which excludes NA values from the analysis. See [stats::lm()] for a more detailed description.}
-
-\item{timeseries_datetime}{A vector of class POSICXct which contains the dates over which to run a COSINOR analysis.}
-
-\item{values}{The data to which we want to find the period.}
 }
 \value{
 A data.frame with:
@@ -44,7 +40,9 @@ Wave_x = timeseries_datetime + phase_in_seconds : The use is to plot the fit.
 COSINOR analysis of a timeseries.
 }
 \examples{
-cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
+\dontrun{
+res <- analyze_timeseries.cosinor(df, sampling_rate = "1 hour", period = 24)
+}
 
 }
 \seealso{

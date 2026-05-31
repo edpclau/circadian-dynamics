@@ -2,9 +2,23 @@
 % Please edit documentation in R/managing_inactives.R
 \name{rm_inactive_dates}
 \alias{rm_inactive_dates}
+\alias{report_inactive_variables}
+\alias{rm_inactive_variables}
 \title{Managing Inactive Variables}
 \usage{
 rm_inactive_dates(df, inactivity_period = "1 day", sampling_rate = "1 hour")
+
+report_inactive_variables(
+  df,
+  inactivity_period = "1 day",
+  sampling_rate = "1 hour"
+)
+
+rm_inactive_variables(
+  df,
+  inactivity_period = "1 day",
+  sampling_rate = "1 hour"
+)
 }
 \arguments{
 \item{df}{a data.frame where the first column is a datetime object.}
@@ -23,10 +37,12 @@ rm_inactive_dates drops the rows of data during which an variable was "inactive"
 rm_inactive_variables drops the rows of data during which
 }
 \examples{
- df = downsample_time_series(trikinetics, amount = 1, units = 'hour', method = 'sum')
+\dontrun{
+df = downsample_time_series(trikinetics, amount = 1, units = 'hour', method = 'sum')
 cropped_dates_df = rm_inactive_dates(df, inactivity_period = '1 day', sampling_rate = '1 hour')
 print(cropped_dates_df)
 cropped_variables_df = rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 print(cropped_variables_df)
+}
 
 }

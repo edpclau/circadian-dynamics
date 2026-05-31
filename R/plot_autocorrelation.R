@@ -3,7 +3,7 @@
 #' @usage plot_autocorrelation(df, path = NULL, filename = "actogram.pdf", dir_choose_gui = TRUE,
 #' export = TRUE, window_of_interest = NULL)
 #'
-#' @param df a data.frame containing the output from acf_window.
+#' @param df a data.frame containing the output from analyze_timeseries.acf.
 #' @param path a string containing a path in which to save the file. It is not necesssary if dir_choose_gui = TRUE.
 #' @param filename a string containing a name for the file. It must end in ".pdf". Default = "actogram.pdf".
 #' @param dir_choose_gui A gui for choosing the directory/folder in which to save the file. If, false, a path
@@ -13,6 +13,11 @@
 #'
 #' @return Invisibly returns a list of \code{ggplot} objects, or saves a PDF when \code{export = TRUE}.
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' plot_autocorrelation(df = acf_results, export = FALSE)
+#' }
 #'
 plot_autocorrelation <- function(df, path = NULL, filename = "actogram.pdf", dir_choose_gui = TRUE,
                                  export = TRUE, window_of_interest = NULL) {

@@ -1,7 +1,7 @@
 #' Crop data to specific dates
 #' @details A helper function wrapped around dplyr::filter and lubridate::parse_date_time which helps to data to
 #' datetimes of interest.
-#' @param list_df a list of data.frame/tibble with a column named datetime which is also a datetime object.
+#' @param df a list of data.frame/tibble with a column named datetime which is also a datetime object.
 #' @param from,to a string which indicates a date in the ISO 8601 format.
 #'
 #' @return A list of data.frames/tibbles with dates within the specified window of time.

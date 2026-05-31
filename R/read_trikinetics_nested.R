@@ -52,6 +52,8 @@ read_trikinetics_nested <- function(file = NULL){
 
 
 
+#' @rdname read_trikinetics_nested
+#' @export
 read_trikinetics_folder_nested <- function(directory = NULL) {
 
   #### Flow Control ####

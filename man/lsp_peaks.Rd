@@ -10,6 +10,8 @@ lsp_peaks(object, npeaks = 5, plotit = FALSE)
 \item{object}{An lsp object returned by \code{lsp_mod()}.}
 
 \item{npeaks}{Integer. Maximum number of peaks to return. Default is 5.}
+
+\item{plotit}{Logical. Currently unused; reserved for future plotting support. Default = FALSE.}
 }
 \value{
 A data.frame with columns \code{time} (period/frequency at each peak) and \code{peaks} (peak power).

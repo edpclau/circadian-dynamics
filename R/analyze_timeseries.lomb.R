@@ -7,12 +7,6 @@
 #' contains the measurement values. If the data.frame has 3 columns, column 1 contains windows, column 2 is POSIXct object,
 #' and column 3 is a measurement values.
 #'
-#' @param windows
-#' A vector containing the windows to iterate over and to label the group to which each value belongs.
-#' Usually this will be the output from make_time_windows. Optional if df is provided.
-#'
-#' @param values The data to which we want to find the period. Optional if df is provided.
-#' @param times A POSIXct vector. Optional if df is provided.
 #' @param sampling_rate
 #' A character string indicating the sampling rate of the data.
 #' Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
@@ -25,11 +19,12 @@
 #' An optional numeric indicating up to which period or frequency to start looking for peaks.
 #' Must be in hours. Default = 30.
 #'
-#' @param type
-#' Either “frequency” or “period” (default). Determines the type of the periodogram x-axis [lomb::lsp()].
-#'
 #' @param ofac
-#' [lomb::lsp()] The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).
+#' \code{lomb::lsp()} The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).
+#'
+#' @param alpha
+#' The significance level used by the Lomb-Scargle periodogram. Powers exceeding the
+#' corresponding significance threshold are considered significant. Default = 0.01.
 #'
 #' @return
 #' A data.frame with the following components:
@@ -51,7 +46,9 @@
 #' @export analyze_timeseries.lomb
 #'
 #' @examples
-#' lsp_analysis <- lsp_by_window(df = processed_data, sampling_rate = "30 min")
+#' \dontrun{
+#' res <- analyze_timeseries.lomb(df, sampling_rate = "1 hour", from = 18, to = 30)
+#' }
 #'
 #'
 #' @importFrom lubridate  duration

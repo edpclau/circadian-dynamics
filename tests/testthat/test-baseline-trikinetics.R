@@ -11,7 +11,7 @@ bin15 <- function(d) {
 }
 
 test_that("trikinetics periods match the ground-truth-validated baseline", {
-  load(testthat::test_path("..", "..", "data", "trikinetics.rda"), envir = environment())
+  data("trikinetics", package = "circadiandynamics", envir = environment())
   sub <- lapply(trikinetics[paste("IND", c(1, 2, 3, 4))], bin15)
   res <- process_timeseries.main(
     sub, make_windows = FALSE, sampling_rate = "15 minutes",

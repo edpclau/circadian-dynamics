@@ -28,9 +28,9 @@
 #' @export analyze_timeseries.acf
 #'
 #' @examples
-#' autocorrelations_multipeak <- acf_window(df = df_with_windows,
-#' multipeak_period = FALSE, peak_of_interest = 2,
-#' sampling_unit = "hours")
+#' \dontrun{
+#' res <- analyze_timeseries.acf(df, from = 18, to = 30, sampling_rate = "1 hour")
+#' }
 #'
 #' @importFrom dplyr pull filter mutate left_join select
 #' @importFrom stringr str_extract str_remove

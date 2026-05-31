@@ -29,16 +29,31 @@
 #'
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.
 #'
-#' @return A named list of data.frames containing the output of [circadiandynamics::butterworth], [find_gaps()], [makes_time_windows()], and [smooth_detrend_by_windows()] for each measurement value.
+#' @param smooth_data Logical. If TRUE will smooth the measurement values using a moving average. Default = FALSE.
+#'
+#' @param make_windows Logical. If TRUE, splits the timeseries into moving windows before analysis. Default = FALSE.
+#'
+#' @param big_data Logical. If TRUE, sets a multisession \code{future} plan for parallel processing. Default = FALSE.
+#'
+#' @param ofac The Lomb-Scargle oversampling factor passed to [analyze_timeseries.lomb]. Default = 10.
+#'
+#' @param lomb_pvalue The significance level used for the Lomb-Scargle analysis. Default = 0.01.
+#'
+#' @param binning_n A numeric indicating the amount of bins over which to run the smoothing average. Default = 4.
+#'
+#' @return A named list of data.frames containing the output of \code{butterworth_filter}, [find_gaps()],
+#' [make_time_windows()], [analyze_timeseries.acf()], [analyze_timeseries.lomb()], and
+#' [analyze_timeseries.cosinor()] for each measurement value.
+#'
+#' @name process_timeseries
+#' @rdname process_timeseries
 #'
 #' @export process_timeseries.rmv_gaps
-#' @export process_timeseries.na_to_zero
-#' @export process_timeseries.waveform
-#' @export process_timeseries.main
-#' @export process_timeseries.core
 #'
 #' @examples
-#' processed_data <- process_timeseries(df = raw_data, sampling_rate = "30 min")
+#' \dontrun{
+#' processed_data <- process_timeseries.main(list_of_dfs, sampling_rate = "1 hour")
+#' }
 #'
 #' @importFrom dplyr select right_join bind_rows filter
 #' @importFrom tibble tibble
@@ -69,6 +84,8 @@ process_timeseries.rmv_gaps <- function(df = NULL, sampling_rate = NULL) {
 }
 
 
+#' @rdname process_timeseries
+#' @export
 process_timeseries.na_to_zero <- function(df = NULL) {
 
 #Remove NA for missing data points, this is necessary for the autocorrelation
@@ -80,6 +97,8 @@ return(df)
 
 
 
+#' @rdname process_timeseries
+#' @export
 process_timeseries.waveform <- function(df = NULL,
                                         detrend_data = TRUE,
                                         smooth_data = FALSE,
@@ -107,6 +126,8 @@ return(df)
 
 
 
+#' @rdname process_timeseries
+#' @export
 process_timeseries.core <- function(df = NULL,
 
                                     make_windows = FALSE,
@@ -203,6 +224,8 @@ process_timeseries.core <- function(df = NULL,
 
 }
 
+#' @rdname process_timeseries
+#' @export
 process_timeseries.main <- function(df = NULL,
 
                                     make_windows = FALSE,

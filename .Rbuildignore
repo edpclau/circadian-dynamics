@@ -8,3 +8,5 @@
 ^pixi\.lock$
 ^\.pixi$
 ^Example Script\.R$
+^\.claude$
+^LICENSE$

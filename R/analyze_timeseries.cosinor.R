@@ -6,12 +6,6 @@
 #' @param df
 #' A data.frame which contains the dates of a time series in column 1 and the values in column 2.
 #'
-#' @param timeseries_datetime
-#' A vector of class POSICXct which contains the dates over which to run a COSINOR analysis.
-#'
-#' @param values
-#' The data to which we want to find the period.
-#'
 #' @param sampling_rate
 #' A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
 #'
@@ -49,7 +43,9 @@
 #' @export
 #'
 #' @examples
-#' cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
+#' \dontrun{
+#' res <- analyze_timeseries.cosinor(df, sampling_rate = "1 hour", period = 24)
+#' }
 #'
 #' @importFrom tibble tibble_row tibble
 #' @importFrom dplyr mutate n

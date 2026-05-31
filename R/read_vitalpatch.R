@@ -26,7 +26,7 @@ read_vitalpatch <- function(folder = NULL) {
   }
 files = list.files(folder, full.names = TRUE)
 
-df = furrr::future_map_df(files, readr::read_csv, col_types = cols(.default = 'd'))
+df = furrr::future_map_dfr(files, readr::read_csv, col_types = cols(.default = 'd'))
 
 df$Time = lubridate::as_datetime(df$Time/1000)
 

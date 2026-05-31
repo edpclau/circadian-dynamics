@@ -2,11 +2,14 @@
 % Please edit documentation in R/read_clocklab.R
 \name{read_clocklab}
 \alias{read_clocklab}
+\alias{read_clocklab_folder}
 \alias{read_clocklab_interactive}
 \alias{read_clocklab_folder_interactive}
 \title{Import data from Clocklab}
 \usage{
 read_clocklab(file = NULL)
+
+read_clocklab_folder(directory = NULL)
 
 read_clocklab_interactive(...)
 

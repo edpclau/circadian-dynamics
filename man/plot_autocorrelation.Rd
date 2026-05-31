@@ -8,7 +8,7 @@ plot_autocorrelation(df, path = NULL, filename = "actogram.pdf", dir_choose_gui 
 export = TRUE, window_of_interest = NULL)
 }
 \arguments{
-\item{df}{a data.frame containing the output from acf_window.}
+\item{df}{a data.frame containing the output from analyze_timeseries.acf.}
 
 \item{path}{a string containing a path in which to save the file. It is not necesssary if dir_choose_gui = TRUE.}
 
@@ -26,4 +26,10 @@ Invisibly returns a list of \code{ggplot} objects, or saves a PDF when \code{exp
 }
 \description{
 Plot the Autocorrelation by windows
+}
+\examples{
+\dontrun{
+plot_autocorrelation(df = acf_results, export = FALSE)
+}
+
 }

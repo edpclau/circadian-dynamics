@@ -1,3 +1,7 @@
+#' @importFrom cli rule
+#' @keywords internal
+NULL
+
 package_version <- function(x) {
   version <- as.character(unclass(utils::packageVersion(x))[[1]])
 

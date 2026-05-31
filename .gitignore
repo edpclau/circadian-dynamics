@@ -14,3 +14,6 @@ baseline/
 * [0-9].R
 * [0-9].Rd
 * [0-9].csv
+
+# Claude Code local settings
+.claude/

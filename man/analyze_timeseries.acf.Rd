@@ -32,9 +32,9 @@ indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rhyt
 (in [analyze_timeseries.lomb]) is a separate, experimental measure and is not directly comparable.
 }
 \examples{
-autocorrelations_multipeak <- acf_window(df = df_with_windows,
-multipeak_period = FALSE, peak_of_interest = 2,
-sampling_unit = "hours")
+\dontrun{
+res <- analyze_timeseries.acf(df, from = 18, to = 30, sampling_rate = "1 hour")
+}
 
 }
 \seealso{

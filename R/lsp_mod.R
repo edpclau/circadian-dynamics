@@ -1,7 +1,7 @@
 #' Lomb-Scargle Periodogram
 #'
 #' @description
-#' A modification on the lomb-pkg's lsp function [lomb::lsp()]. Automatically increases the oversampling factor when it is too small for
+#' A modification on the lomb-pkg's lsp function \code{lomb::lsp()}. Automatically increases the oversampling factor when it is too small for
 #' the chosen from-to interval. Computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
 #' Allows selecting a frequency range to be inspected, as well as the spacing of frequencies scanned.
 #'
@@ -76,15 +76,9 @@
 #' @export
 #'
 #' @examples
-#' # ibex contains an unevenly sampled time series
-#' data(ibex)
-#' lsp(ibex[2:3],)
-#' lsp(ibex$temp,times=ibex$hours,type='period',ofac=5)
-
-#' # lynx contains evenly sampled data
-#' lsp(lynx)
-#' lynx.spec <- lsp(lynx,type='period',from=2,to=20,ofac=5)
-#' summary(lynx.spec)
+#' \dontrun{
+#' res <- lsp_mod(x = values, type = "period", from = 18, to = 30, ofac = 1, plot = FALSE)
+#' }
 #'
 #' @importFrom pracma findpeaks
 lsp_mod <- function (x, times = NULL, from = NULL, to = NULL,

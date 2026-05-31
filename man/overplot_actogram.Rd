@@ -21,6 +21,8 @@ overplot_actogram(
 )
 }
 \arguments{
+\item{path}{A character string with the directory in which to save the file when \code{export = TRUE}. Default = \code{getwd()}.}
+
 \item{df}{A data.frame or tibble which contains a datetime column and measurement values.}
 
 \item{overplot}{A list or vector containing the values to be overplotted on the actograms. It must be of the same dimensions/binning as the df.}
@@ -36,6 +38,8 @@ overplot_actogram(
 \item{width}{a numeric indicating the width of the page of the pdf file. default = 12}
 
 \item{height}{a numeric indicating height of the page of the pdf file. default = 12}
+
+\item{dpi}{a numeric indicating the resolution (dots per inch) of the exported file. default = 800}
 
 \item{nrow}{a numeric indicating how many rows of plots to put in a page. default = 5}
 
@@ -54,8 +58,10 @@ Export/Plot Actogram with Temperature
 Exports actogram plots for each column of a data.frame of tibble with a datetime object.
 }
 \examples{
+\dontrun{
 overplot_actogram(df = monitor, overplot = monitor[[3]],
 datetime_column = 1, filename = "actogram.pdf",
 export = FALSE)
+}
 
 }

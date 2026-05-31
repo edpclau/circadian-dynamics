@@ -10,6 +10,7 @@
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
 #' @param f_high Frequency for the high pass filter. Default = 1/72.
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.
+#' @param ... Additional arguments (currently unused), reserved for future use.
 #' @return The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
 #' @export butterworth_filter
 #' @examples

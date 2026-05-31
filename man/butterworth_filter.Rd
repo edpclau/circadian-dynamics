@@ -23,6 +23,8 @@ butterworth_filter(
 \item{f_high}{Frequency for the high pass filter. Default = 1/72.}
 
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.}
+
+\item{...}{Additional arguments (currently unused), reserved for future use.}
 }
 \value{
 The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
