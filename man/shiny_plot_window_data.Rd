@@ -16,5 +16,7 @@ a list of plots.
 Utility Function for Plotting Detaiiled data by Window in the ShinyApp
 }
 \examples{
+\dontrun{
 window_plots = plot_window_data(df)
+}
 }

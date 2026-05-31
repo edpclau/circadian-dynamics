@@ -28,7 +28,9 @@ This function will resample time series data (downsample) to the nearest minute,
 It allows to summarise the measurement values using mean, median, or sum.
 }
 \examples{
+\dontrun{
 df_downsampled <- downsample_time_series(data = raw_data,
 amount = 30, units = "hour", method = "sum")
+}
 
 }

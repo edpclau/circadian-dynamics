@@ -16,5 +16,7 @@ a list of plots.
 Utility Function for Plotting Detaiiled data in Windows for the App
 }
 \examples{
+\dontrun{
 window_plots = plot_window_data_app(df)
+}
 }

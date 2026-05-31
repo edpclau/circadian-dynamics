@@ -7,7 +7,9 @@
 #' @export
 #'
 #' @examples
-#' plot_phase(path = choose.dir(), analysis = analysis_data)
+#' \dontrun{
+#' plot_phase(path = getwd(), analysis = analysis_data)
+#' }
 #'
 plot_phase <- function(path = getwd(), analysis = NULL) {
 

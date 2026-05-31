@@ -1,11 +1,15 @@
 #' Import Weather data From satellite
 #'
 #' @param path A file path to the satellite data CSV.
+#' @param ... Arguments passed on to \code{read_satellite}.
 #'
 #' @return A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
 #' @export
 #'
-#' @examples read_satellite(path = "/path/to/data.csv")
+#' @examples
+#' \dontrun{
+#' read_satellite(path = "/path/to/data.csv")
+#' }
 #'
 read_satellite <- function(path = NULL) {
   if (missing(path) || is.null(path)) {

@@ -5,7 +5,10 @@
 #' @return Returns a list of plots for the autocorrelation results.
 #' @export
 #'
-#' @examples plots = plot_lsp_results(df = simplified_data$lombscargle)
+#' @examples
+#' \dontrun{
+#' plots = plot_lsp_results(df = simplified_data$lombscargle)
+#' }
 #'
 #' @import magrittr
 #' @importFrom dplyr select distinct filter mutate

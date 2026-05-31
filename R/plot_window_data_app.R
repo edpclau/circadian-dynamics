@@ -5,7 +5,10 @@
 #' @return a list of plots.
 #' @export
 #'
-#' @examples window_plots = plot_window_data_app(df)
+#' @examples
+#' \dontrun{
+#' window_plots = plot_window_data_app(df)
+#' }
 #' @import magrittr
 #' @import ggplot2
 #' @importFrom lubridate duration

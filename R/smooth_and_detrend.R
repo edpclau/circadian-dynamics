@@ -4,8 +4,6 @@
 #' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
 #' @param binning_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
 #' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
-#' @param windows Optional if a data.frame is supplied. A vector with the windows.
-#' @param values  Optional if a data.frame is supplied. A vector of values from a mesurement.
 #' @return
 #'A data.frame conatining: /n
 #'
@@ -18,7 +16,9 @@
 #' @export
 #'
 #' @examples
-#' smoothed_data <- smooth_detrend_by_windows(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
+#' \dontrun{
+#' smoothed_data <- smooth_and_detrend(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
+#' }
 #'
 
 #' @importFrom dplyr mutate

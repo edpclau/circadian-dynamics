@@ -4,6 +4,7 @@
 #' @param directory A folder path containing .csv files outputted from the clocklab software.
 #' Make sure all individuals in the folder belong to the same experimental group and that the experiments
 #' were run on the same dates.
+#' @param ... Arguments passed on to \code{read_clocklab} or \code{read_clocklab_folder}.
 #'
 #' @return
 #' Returns a data.frame/tibble with 3 columns:
@@ -14,8 +15,10 @@
 #' @export read_clocklab_folder
 #'
 #' @examples
+#' \dontrun{
 #' df <- read_clocklab(file = "/path/to/file.csv")
 #' df <- read_clocklab_folder(directory = "/path/to/folder")
+#' }
 #'
 read_clocklab <- function(file = NULL) {
 

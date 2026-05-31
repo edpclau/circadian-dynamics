@@ -17,6 +17,10 @@ read_trikinetics_folder_nested_interactive(...)
 }
 \arguments{
 \item{file}{a path to a Trikinetics file.}
+
+\item{directory}{a path to a folder containing Trikinetics files.}
+
+\item{...}{Arguments passed on to \code{read_trikinetics_nested} or \code{read_trikinetics_folder_nested}.}
 }
 \value{
 A named list of tibbles, one per individual, each with columns \code{datetime}, \code{ld}, and \code{value}.
@@ -25,5 +29,7 @@ A named list of tibbles, one per individual, each with columns \code{datetime}, 
 Import data from a Trikinetics tsv
 }
 \examples{
+\dontrun{
 trikinetics_data <- read_trikinetics_nested(file = "/path/to/file.txt")
+}
 }

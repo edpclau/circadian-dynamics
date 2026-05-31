@@ -8,7 +8,9 @@
 #' @export
 #'
 #' @examples
-#' plot_summarized_data(raw_data = monitor_downsampled, analyzed_data = monitor_analysis, dir_choose_gui = TRUE)
+#' \dontrun{
+#' plot_summarized_data(raw_data = monitor_downsampled, analyzed_data = monitor_analysis)
+#' }
 #'
 #' @importFrom purrr map
 #' @importFrom dplyr select mutate filter pull

@@ -14,7 +14,9 @@
 #' @export
 #'
 #' @examples
-#' windowed_data <- function(data = df)
+#' \dontrun{
+#' windowed_data <- make_time_windows(data = df)
+#' }
 #'
 #' @importFrom lubridate days
 #' @importFrom furrr future_map_dfr

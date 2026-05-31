@@ -8,6 +8,8 @@ plot_window_data(df, alt_cos = FALSE)
 }
 \arguments{
 \item{df}{the output from 'simplify_data'.}
+
+\item{alt_cos}{Logical. If TRUE, uses the alternative cosinor fit when plotting. Default = FALSE.}
 }
 \value{
 a list of plots.
@@ -16,5 +18,7 @@ a list of plots.
 Utility Function for Plotting Detaiiled data in Windows
 }
 \examples{
+\dontrun{
 window_plots = plot_window_data(df)
+}
 }

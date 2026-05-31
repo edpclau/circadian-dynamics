@@ -18,6 +18,8 @@ a pdf with plots
 Phase plots for all individuals
 }
 \examples{
-plot_phase(path = choose.dir(), analysis = analysis_data)
+\dontrun{
+plot_phase(path = getwd(), analysis = analysis_data)
+}
 
 }

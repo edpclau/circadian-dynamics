@@ -17,6 +17,8 @@ returns the inputted data.frame with a mean column added.
 Create a timeseries mean based on all the samples in the data
 }
 \examples{
-group_average(monitor_downsampled)
+\dontrun{
+average_of_group(df = monitor_downsampled)
+}
 
 }

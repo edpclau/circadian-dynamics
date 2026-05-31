@@ -16,6 +16,8 @@ Returns a list of plots for the autocorrelation results.
 Plot Raw Values
 }
 \examples{
+\dontrun{
 plots = plot_acf_results(df = simplified_data$autocorrelation)
+}
 
 }

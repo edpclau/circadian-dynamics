@@ -35,8 +35,9 @@ It can be either a low or high pass filter for a given period. (The function can
 because it does the conversion to frequency automatically. (frequency = 1/period).
 }
 \examples{
-
+\dontrun{
 butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
 print(butter)
+}
 
 }

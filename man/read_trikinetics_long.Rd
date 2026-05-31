@@ -17,6 +17,10 @@ read_trikinetics_folder_long_interactive(...)
 }
 \arguments{
 \item{file}{a path to a Trikinetics file.}
+
+\item{directory}{a path to a folder containing Trikinetics files.}
+
+\item{...}{Arguments passed on to \code{read_trikinetics_long} or \code{read_trikinetics_folder_long}.}
 }
 \value{
 A data.frame with columns: \code{datetime}, \code{dd}, and one column per individual.
@@ -25,5 +29,7 @@ A data.frame with columns: \code{datetime}, \code{dd}, and one column per indivi
 Import data from a Trikinetics tsv
 }
 \examples{
+\dontrun{
 trikinetics_data <- read_trikinetics_long(file = "/path/to/file.txt")
+}
 }

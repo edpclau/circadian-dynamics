@@ -5,6 +5,7 @@
 #'
 #'
 #' @param folder A path (directory) to the folder we want to analyze.
+#' @param ... Arguments passed on to \code{read_vitalpatch}.
 #'
 #' @return Returns a tibble (data.frame) object with parsed dates.
 #'
@@ -12,7 +13,10 @@
 #'
 #' @export
 #'
-#' @examples read_vitalpatch(folder = "/path/to/folder")
+#' @examples
+#' \dontrun{
+#' read_vitalpatch(folder = "/path/to/folder")
+#' }
 #'
 #' @importFrom lubridate as_datetime
 #' @importFrom dplyr rename

@@ -16,6 +16,8 @@ Returns a list of plots for the raw values.
 Plot Raw Values
 }
 \examples{
+\dontrun{
 plots = plot_raw_values(df = simplified_data$data)
+}
 
 }

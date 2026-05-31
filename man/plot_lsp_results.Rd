@@ -16,6 +16,8 @@ Returns a list of plots for the autocorrelation results.
 Plot Lomb-Scargle Results
 }
 \examples{
+\dontrun{
 plots = plot_lsp_results(df = simplified_data$lombscargle)
+}
 
 }

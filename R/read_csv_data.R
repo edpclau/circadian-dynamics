@@ -1,10 +1,13 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a csv file.
+#' @param ... Arguments passed on to \code{read_csv_data}.
 #' @return A named list of tibbles, one per individual/column, each with columns \code{datetime}, \code{ld} (if present), and \code{value}.
 #' @export read_csv_data
 #'
 #' @examples
+#' \dontrun{
 #' circadian_data <- read_csv_data(file = "/path/to/data.csv")
+#' }
 #' @importFrom readr read_csv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr pivot_longer

@@ -21,6 +21,8 @@ A single data.frame with all individuals row-bound and an additional \code{ID} c
 Allows for easy export and binding of rows from the output of process_data.
 }
 \examples{
+\dontrun{
 bind_processed(df = monitor_processed)
+}
 
 }

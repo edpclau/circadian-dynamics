@@ -14,9 +14,10 @@
 #' @return The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
 #' @export butterworth_filter
 #' @examples
-#'
+#' \dontrun{
 #' butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
 #' print(butter)
+#' }
 #'
 #' @importFrom signal butter filtfilt
 

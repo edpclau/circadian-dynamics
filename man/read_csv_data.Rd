@@ -11,6 +11,8 @@ read_csv_data_interactive(...)
 }
 \arguments{
 \item{file}{a path to a csv file.}
+
+\item{...}{Arguments passed on to \code{read_csv_data}.}
 }
 \value{
 A named list of tibbles, one per individual/column, each with columns \code{datetime}, \code{ld} (if present), and \code{value}.
@@ -19,5 +21,7 @@ A named list of tibbles, one per individual/column, each with columns \code{date
 Import data from a Trikinetics tsv
 }
 \examples{
+\dontrun{
 circadian_data <- read_csv_data(file = "/path/to/data.csv")
+}
 }

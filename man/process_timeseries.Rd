@@ -87,6 +87,10 @@ process_timeseries.main(
 
 \item{window_step_in_days}{a numeric indicating the amount of day by which to move the window in day units.}
 
+\item{from}{The period (in hours) from which to start looking for peaks. Default = 18.}
+
+\item{to}{The period (in hours) up to which to look for peaks. Default = 30.}
+
 \item{big_data}{Logical. If TRUE, sets a multisession \code{future} plan for parallel processing. Default = FALSE.}
 
 \item{ofac}{The Lomb-Scargle oversampling factor passed to [analyze_timeseries.lomb]. Default = 10.}
@@ -94,14 +98,6 @@ process_timeseries.main(
 \item{lomb_pvalue}{The significance level used for the Lomb-Scargle analysis. Default = 0.01.}
 
 \item{movavg}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
-
-\item{datetime}{Optional if a data.frame is supplied. A POSIXct vector.}
-
-\item{values}{Optional if a data.frame is supplied. A vector of values from a mesurement.}
-
-\item{smoothing_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
-
-\item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.}
 }
 \value{
 A named list of data.frames containing the output of \code{butterworth_filter}, [find_gaps()],

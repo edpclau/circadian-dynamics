@@ -1,11 +1,15 @@
 #' Utility Function for Plotting Detaiiled data in Windows
 #'
 #' @param df the output from 'simplify_data'.
+#' @param alt_cos Logical. If TRUE, uses the alternative cosinor fit when plotting. Default = FALSE.
 #'
 #' @return a list of plots.
 #' @export
 #'
-#' @examples window_plots = plot_window_data(df)
+#' @examples
+#' \dontrun{
+#' window_plots = plot_window_data(df)
+#' }
 #' @import magrittr
 #' @import ggplot2
 #' @importFrom lubridate duration

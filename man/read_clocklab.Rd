@@ -21,6 +21,8 @@ read_clocklab_folder_interactive(...)
 \item{directory}{A folder path containing .csv files outputted from the clocklab software.
 Make sure all individuals in the folder belong to the same experimental group and that the experiments
 were run on the same dates.}
+
+\item{...}{Arguments passed on to \code{read_clocklab} or \code{read_clocklab_folder}.}
 }
 \value{
 Returns a data.frame/tibble with 3 columns:
@@ -32,7 +34,9 @@ IND Name: measurement values
 Import data from Clocklab
 }
 \examples{
+\dontrun{
 df <- read_clocklab(file = "/path/to/file.csv")
 df <- read_clocklab_folder(directory = "/path/to/folder")
+}
 
 }

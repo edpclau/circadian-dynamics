@@ -8,7 +8,10 @@
 #'
 #' @export define_event
 #'
-#' @examples define_event(df)
+#' @examples
+#' \dontrun{
+#' define_event(df)
+#' }
 #'
 #' @importFrom dplyr select mutate pull arrange case_when
 #' @importFrom purrr map_if

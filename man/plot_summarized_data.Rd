@@ -20,6 +20,8 @@ Invisibly saves plots and data summaries as PDF/CSV to \code{path} (the working 
 Plot a sumarrized version of the Rhythm data found by Rhythm_analysis
 }
 \examples{
-plot_summarized_data(raw_data = monitor_downsampled, analyzed_data = monitor_analysis, dir_choose_gui = TRUE)
+\dontrun{
+plot_summarized_data(raw_data = monitor_downsampled, analyzed_data = monitor_analysis)
+}
 
 }

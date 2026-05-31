@@ -1,11 +1,14 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file.
+#' @param directory a path to a folder containing Trikinetics files.
+#' @param ... Arguments passed on to \code{read_trikinetics_nested} or \code{read_trikinetics_folder_nested}.
 #' @return A named list of tibbles, one per individual, each with columns \code{datetime}, \code{ld}, and \code{value}.
 #' @export read_trikinetics_nested
-#' @export read_trikinetics_folder_nested
 #'
 #' @examples
+#' \dontrun{
 #' trikinetics_data <- read_trikinetics_nested(file = "/path/to/file.txt")
+#' }
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite

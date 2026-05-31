@@ -80,8 +80,10 @@ data <- data %>%
 #' @export downsample_time_series
 #'
 #' @examples
+#' \dontrun{
 #' df_downsampled <- downsample_time_series(data = raw_data,
 #' amount = 30, units = "hour", method = "sum")
+#' }
 #'
 #' @importFrom dplyr pull summarise group_by
 #' @importFrom lubridate floor_date period

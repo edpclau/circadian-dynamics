@@ -5,7 +5,10 @@
 #' @return Returns a list of plots for the raw values.
 #' @export
 #'
-#' @examples plots = plot_raw_values(df = simplified_data$data)
+#' @examples
+#' \dontrun{
+#' plots = plot_raw_values(df = simplified_data$data)
+#' }
 #'
 #' @import magrittr
 #' @importFrom dplyr select distinct filter mutate

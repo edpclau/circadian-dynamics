@@ -11,6 +11,8 @@ read_vitalpatch_interactive(...)
 }
 \arguments{
 \item{folder}{A path (directory) to the folder we want to analyze.}
+
+\item{...}{Arguments passed on to \code{read_vitalpatch}.}
 }
 \value{
 Returns a tibble (data.frame) object with parsed dates.
@@ -24,6 +26,8 @@ concatenates all the data into a single tibble (data.frame) so that the user doe
 Parallelism follows the caller's \code{future::plan()}; set a plan (e.g. \code{future::plan(future::multisession)}) before calling to parallelize.
 }
 \examples{
+\dontrun{
 read_vitalpatch(folder = "/path/to/folder")
+}
 
 }

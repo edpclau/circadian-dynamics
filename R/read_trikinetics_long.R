@@ -1,11 +1,14 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file.
+#' @param directory a path to a folder containing Trikinetics files.
+#' @param ... Arguments passed on to \code{read_trikinetics_long} or \code{read_trikinetics_folder_long}.
 #' @return A data.frame with columns: \code{datetime}, \code{dd}, and one column per individual.
 #' @export read_trikinetics_long
-#' @export read_trikinetics_folder_long
 #'
 #' @examples
+#' \dontrun{
 #' trikinetics_data <- read_trikinetics_long(file = "/path/to/file.txt")
+#' }
 #' @importFrom readr read_tsv
 #' @importFrom magrittr '%>%'
 #' @importFrom tidyr unite

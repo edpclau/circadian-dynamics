@@ -13,7 +13,9 @@
 #' @importFrom furrr future_map_dfr
 #'
 #' @examples
+#' \dontrun{
 #' bind_processed(df = monitor_processed)
+#' }
 #'
  bind_processed <- function(df = NULL, export = FALSE, path = getwd()) {
   df_bound <-  future_map_dfr(df, ~ dplyr::rename(., raw = 3), .id = "ID")

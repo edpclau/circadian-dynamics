@@ -11,6 +11,8 @@ read_satellite_interactive(...)
 }
 \arguments{
 \item{path}{A file path to the satellite data CSV.}
+
+\item{...}{Arguments passed on to \code{read_satellite}.}
 }
 \value{
 A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
@@ -19,6 +21,8 @@ A tibble with columns \code{datetime} and one column of numeric satellite measur
 Import Weather data From satellite
 }
 \examples{
+\dontrun{
 read_satellite(path = "/path/to/data.csv")
+}
 
 }

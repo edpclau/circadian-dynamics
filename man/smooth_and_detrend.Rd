@@ -19,10 +19,6 @@ smooth_and_detrend(
 \item{binning_n}{A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.}
 
 \item{detrend_data}{Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.}
-
-\item{windows}{Optional if a data.frame is supplied. A vector with the windows.}
-
-\item{values}{Optional if a data.frame is supplied. A vector of values from a mesurement.}
 }
 \value{
 A data.frame conatining: /n
@@ -37,6 +33,8 @@ smoothed_and_detrended A column with data that's been both smoothed and detrende
 Smooth and/or Detrend Data by Windows
 }
 \examples{
-smoothed_data <- smooth_detrend_by_windows(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
+\dontrun{
+smoothed_data <- smooth_and_detrend(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
+}
 
 }

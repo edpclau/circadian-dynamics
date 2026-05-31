@@ -17,17 +17,13 @@
 #'
 #' @param butterworth Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.
 #'
-#' @param datetime Optional if a data.frame is supplied. A POSIXct vector.
-#'
-#' @param values  Optional if a data.frame is supplied. A vector of values from a mesurement.
-#'
-#' @param smoothing_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
-#'
 #' @param order filter order. Default = 2.
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
 #' @param f_high Frequency for the high pass filter. Default = 1/72.
 #'
-#' @param plot logical. If TRUE (default) plots the filtered data over the raw data. If FALSE, does not plot.
+#' @param from The period (in hours) from which to start looking for peaks. Default = 18.
+#'
+#' @param to The period (in hours) up to which to look for peaks. Default = 30.
 #'
 #' @param smooth_data Logical. If TRUE will smooth the measurement values using a moving average. Default = FALSE.
 #'
