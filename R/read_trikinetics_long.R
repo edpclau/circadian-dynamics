@@ -1,5 +1,6 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file.
+#' @return A data.frame with columns: \code{datetime}, \code{dd}, and one column per individual.
 #' @export read_trikinetics_long
 #' @export read_trikinetics_folder_long
 #'

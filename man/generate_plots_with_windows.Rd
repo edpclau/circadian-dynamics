@@ -7,6 +7,14 @@ Must be used when 'Make Time Windows = TRUE'}
 \usage{
 generate_plots_with_windows(trikinetics_analyzed, sampling_rate = "minutes")
 }
+\arguments{
+\item{trikinetics_analyzed}{The output from the rhythm analysis pipeline (with time windows).}
+
+\item{sampling_rate}{A character string for the sampling rate units. Default is \code{"minutes"}.}
+}
+\value{
+Invisibly saves a PDF file per individual (e.g., \code{"Window_plots_IND1.pdf"}) to the working directory.
+}
 \description{
 Function to Generate Plots of the Analyzed Data
 Must be used when 'Make Time Windows = TRUE'

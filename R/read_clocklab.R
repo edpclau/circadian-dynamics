@@ -1,9 +1,4 @@
 #' Import data from Clocklab
-#' @usage
-#' read_clocklab(file = NULL)
-#'
-#'
-#' read_clocklab_folder(directory = NULL)
 #'
 #' @param file A file path for a .csv outputted from the clocklab software.
 #' @param directory A folder path containing .csv files outputted from the clocklab software.

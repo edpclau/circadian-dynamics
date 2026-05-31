@@ -12,6 +12,9 @@ read_satellite_interactive(...)
 \arguments{
 \item{path}{A file path to the satellite data CSV.}
 }
+\value{
+A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
+}
 \description{
 Import Weather data From satellite
 }

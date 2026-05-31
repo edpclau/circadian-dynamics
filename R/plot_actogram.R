@@ -1,8 +1,7 @@
 #' Export/Plot Actogram
 #' @export
+#' @return Invisibly returns a multi-page \code{grob} object (from \code{gridExtra::marrangeGrob}), or saves a PDF when \code{export = TRUE}.
 #' @details Exports actogram plots for each column of a data.frame of tibble with a datetime object.
-#' @usage plot_actogram(df = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
-#' export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 #'
 #' @param df A data.frame or tibble which contains a datetime column and measurement values.
 #' @param datetime_column An integer which indicates the column that contains the datetime. Default = 1.

@@ -7,3 +7,4 @@
 ^pixi\.toml$
 ^pixi\.lock$
 ^\.pixi$
+^Example Script\.R$

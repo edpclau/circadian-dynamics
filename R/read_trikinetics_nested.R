@@ -1,5 +1,6 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a Trikinetics file.
+#' @return A named list of tibbles, one per individual, each with columns \code{datetime}, \code{ld}, and \code{value}.
 #' @export read_trikinetics_nested
 #' @export read_trikinetics_folder_nested
 #'

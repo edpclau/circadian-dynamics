@@ -4,7 +4,12 @@
 \alias{smooth_and_detrend}
 \title{Smooth and/or Detrend Data by Windows}
 \usage{
-smooth_detrend_by_windows(df = NULL, smooth_data = TRUE, detrend_data = TRUE, windows = NULL, values = NULL)
+smooth_and_detrend(
+  df = NULL,
+  smooth_data = TRUE,
+  binning_n = 4,
+  detrend_data = TRUE
+)
 }
 \arguments{
 \item{df}{a data.frame with 2 columns. The first column must be the windows. The second column the values to process.}

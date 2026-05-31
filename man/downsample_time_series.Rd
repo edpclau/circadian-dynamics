@@ -4,8 +4,12 @@
 \alias{downsample_time_series}
 \title{Downsample a timeseries with a datetime object}
 \usage{
-downsample_time_series(data = NULL, amount = 30,
-       units = c("minute", "hour", "day", "week"), method = c("mean", "sum", "median"))
+downsample_time_series(
+  data = NULL,
+  amount = 1,
+  units = "hour",
+  method = c("mean", "sum", "median")
+)
 }
 \arguments{
 \item{data}{a list of data frames or tibbles, each with a POSIXct datetime column.}

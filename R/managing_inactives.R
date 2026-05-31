@@ -1,7 +1,4 @@
 #' Managing Inactive Variables
-#' @usage rm_inactive_dates(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-#' @usage rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-#' @usage report_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 #'
 #' @description rm_inactive_dates drops the rows of data during which an variable was "inactive" ie. equal to 0.
 #' @description rm_inactive_variables drops the rows of data during which
@@ -16,6 +13,7 @@
 #' cropped_variables_df = rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 #' print(cropped_variables_df)
 #'
+#' @return \code{rm_inactive_dates} and \code{rm_inactive_variables} return a subset of the input list with inactive individuals removed. \code{report_inactive_variables} returns a character vector of inactive individual names.
 #' @export rm_inactive_dates
 #' @export rm_inactive_variables
 #' @export report_inactive_variables

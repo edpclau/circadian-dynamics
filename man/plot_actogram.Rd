@@ -4,8 +4,21 @@
 \alias{plot_actogram}
 \title{Export/Plot Actogram}
 \usage{
-plot_actogram(df = NULL, ld_data = NULL, datetime_column = 1, filename = "actogram.pdf",
-export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
+plot_actogram(
+  path = getwd(),
+  df = NULL,
+  ld_data = NULL,
+  datetime_column = 1,
+  filename = "actogram.pdf",
+  export = FALSE,
+  width = 12,
+  height = 12,
+  dpi = 800,
+  nrow = 5,
+  ncol = 5,
+  autosize = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{df}{A data.frame or tibble which contains a datetime column and measurement values.}
@@ -28,6 +41,9 @@ export = FALSE, width = 12, height = 12, dpi = 800, nrow = 5, ncol = 5)
 
 \item{autosize}{Logical. If TRUE, will make the figures bigger as the number of days increase. If FALSE
 (default) will plot 25 figures per page.}
+}
+\value{
+Invisibly returns a multi-page \code{grob} object (from \code{gridExtra::marrangeGrob}), or saves a PDF when \code{export = TRUE}.
 }
 \description{
 Export/Plot Actogram

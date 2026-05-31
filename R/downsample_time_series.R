@@ -65,9 +65,6 @@ data <- data %>%
 
 
 #' Downsample a timeseries with a datetime object
-#' @usage
-#' downsample_time_series(data = NULL, amount = 30,
-#'        units = c("minute", "hour", "day", "week"), method = c("mean", "sum", "median"))
 #'
 #' @description
 #' This function will resample time series data (downsample) to the nearest minute, half-hour, hour, or day.

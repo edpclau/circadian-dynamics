@@ -4,10 +4,7 @@
 \alias{process_timeseries.rmv_gaps}
 \title{Helper function to prepare raw data for analysis}
 \usage{
-process_timeseries(df = NULL, sampling_rate = NULL, window_size_in_days = 3, window_step_in_days = 1,
-movavg = TRUE, detrend_data = TRUE, butterworth = TRUE,
-f_low = 1/4, f_high = 1/73, plot = TRUE,
-smoothing_n = 4, datetime = NULL, values = NULL)
+process_timeseries.rmv_gaps(df = NULL, sampling_rate = NULL)
 }
 \arguments{
 \item{df}{A data.frame where the first column is a POSIXct object and the rest are independent measurement values.}

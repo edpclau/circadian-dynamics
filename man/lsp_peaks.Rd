@@ -6,6 +6,14 @@
 \usage{
 lsp_peaks(object, npeaks = 5, plotit = FALSE)
 }
+\arguments{
+\item{object}{An lsp object returned by \code{lsp_mod()}.}
+
+\item{npeaks}{Integer. Maximum number of peaks to return. Default is 5.}
+}
+\value{
+A data.frame with columns \code{time} (period/frequency at each peak) and \code{peaks} (peak power).
+}
 \description{
 Find peaks in an lsp object
 }

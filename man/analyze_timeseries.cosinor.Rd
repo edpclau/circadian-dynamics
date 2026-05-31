@@ -4,7 +4,12 @@
 \alias{analyze_timeseries.cosinor}
 \title{Cosinor Analysis}
 \usage{
-analyze_timeseries.cosinor(df = data, timeseries_datetime = NULL, values = NULL, sampling_rate = "30 min", period = 48, na.action = na.omit)
+analyze_timeseries.cosinor(
+  df = NULL,
+  sampling_rate = NULL,
+  period = NULL,
+  na.action = na.omit
+)
 }
 \arguments{
 \item{df}{A data.frame which contains the dates of a time series in column 1 and the values in column 2.}

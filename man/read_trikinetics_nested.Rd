@@ -15,6 +15,9 @@ read_trikinetics_folder_nested_interactive(...)
 \arguments{
 \item{file}{a path to a Trikinetics file.}
 }
+\value{
+A named list of tibbles, one per individual, each with columns \code{datetime}, \code{ld}, and \code{value}.
+}
 \description{
 Import data from a Trikinetics tsv
 }

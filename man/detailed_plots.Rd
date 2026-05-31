@@ -6,6 +6,16 @@
 \usage{
 detailed_plots(trikinetics_analyzed, sampling_rate = "minutes", windows = TRUE)
 }
+\arguments{
+\item{trikinetics_analyzed}{The output from the rhythm analysis pipeline.}
+
+\item{sampling_rate}{A character string for the sampling rate (e.g., \code{"minutes"}).}
+
+\item{windows}{Logical. If \code{TRUE} (default), calls \code{generate_plots_with_windows}; otherwise calls \code{generate_plots_no_windows}.}
+}
+\value{
+Invisibly saves PDF plot files to the working directory.
+}
 \description{
 Generate Detailed Plots (Utility function)
 }

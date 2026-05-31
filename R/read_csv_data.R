@@ -1,5 +1,6 @@
 #' Import data from a Trikinetics tsv
 #' @param file a path to a csv file.
+#' @return A named list of tibbles, one per individual/column, each with columns \code{datetime}, \code{ld} (if present), and \code{value}.
 #' @export read_csv_data
 #'
 #' @examples

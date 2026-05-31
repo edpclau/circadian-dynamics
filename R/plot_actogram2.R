@@ -1,8 +1,15 @@
-#' Plot Actograms
+#' Plot Actograms (alternative workflow)
 #'
-#' @param df The 'data' output from simplify_data
+#' @description Produces double-plotted (48-hour) actograms from the \code{data} element returned by
+#'   \code{\link{simplify_data}}. This function overlaps in purpose with
+#'   \code{\link{plot_actogram_windows}} but consumes the simplified nested output rather than the
+#'   raw windowed data.frame, and is not yet wired into the default \code{process_timeseries} workflow.
 #'
-#' @return a list of actograms
+#' @param df The \code{data} tibble from the list returned by \code{simplify_data()}, containing
+#'   columns \code{datetime}, \code{raw_values}, and optionally \code{window} and \code{ld}.
+#'
+#' @return A named list of \code{ggplot} objects, one per individual/data series, each showing a
+#'   double-plotted actogram faceted by day.
 #'
 #'
 #' @importFrom dplyr distinct filter select distinct

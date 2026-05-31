@@ -1,13 +1,10 @@
 #' Plot a sumarrized version of the Rhythm data found by Rhythm_analysis
-#' @usage plot_summarized_data(raw_data = NULL, analyzed_data = NULL,
-#' dir_choose_gui = TRUE)
 #'
 #' @param raw_data data.frame or tibble containing the raw data. The first column must be a datetime.
 #' @param analyzed_data data.frame returned from the rhythm_analysis_by_window and multivariate_rhythm_analysis functions.
-#' @param dir_choose_gui If TRUE (default) a GUI will help select the folder in which to save the data and plots. If FALSE,
-#' everything will be saved in the current directory.
+#' @param path A character string specifying the directory in which to save the output. Defaults to the current working directory.
 #'
-#' @return
+#' @return Invisibly saves plots and data summaries as PDF/CSV to \code{path} (the working directory by default).
 #' @export
 #'
 #' @examples

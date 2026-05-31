@@ -2,7 +2,7 @@
 #'
 #' @param path A file path to the satellite data CSV.
 #'
-#' @return
+#' @return A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
 #' @export
 #'
 #' @examples read_satellite(path = "/path/to/data.csv")

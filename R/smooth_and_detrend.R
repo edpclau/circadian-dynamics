@@ -1,5 +1,5 @@
 #' Smooth and/or Detrend Data by Windows
-#' @usage smooth_detrend_by_windows(df = NULL, smooth_data = TRUE, detrend_data = TRUE, windows = NULL, values = NULL)
+#'
 #' @param df a data.frame with 2 columns. The first column must be the windows. The second column the values to process.
 #' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
 #' @param binning_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.

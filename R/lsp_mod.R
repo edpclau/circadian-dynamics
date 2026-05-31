@@ -4,8 +4,6 @@
 #' A modification on the lomb-pkg's lsp function [lomb::lsp()]. Automatically increases the oversampling factor when it is too small for
 #' the chosen from-to interval. Computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
 #' Allows selecting a frequency range to be inspected, as well as the spacing of frequencies scanned.
-#' @usage
-#' lsp_mod(x, times = NULL, from = NULL, to = NULL, type = c("frequency", "period"), ofac = 1, alpha = 0.01, plot = TRUE, ...)
 #'
 #' @param x
 #' The data to be analysed. x can be either a two-column numerical dataframe or matrix, with sampling times in columnn 1 and measurements in column 2, a single numerical vector containing measurements, or a single vector ts object (which will be converted to a numerical vector).

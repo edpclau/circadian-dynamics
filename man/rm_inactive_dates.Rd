@@ -4,11 +4,7 @@
 \alias{rm_inactive_dates}
 \title{Managing Inactive Variables}
 \usage{
-rm_inactive_dates(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-
-rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-
-report_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
+rm_inactive_dates(df, inactivity_period = "1 day", sampling_rate = "1 hour")
 }
 \arguments{
 \item{df}{a data.frame where the first column is a datetime object.}
@@ -17,6 +13,9 @@ report_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hou
 necessary to be removed. Default = "1 day".}
 
 \item{sampling_rate}{a string indicating the sampling rate of the data. Default = "1 hour".}
+}
+\value{
+\code{rm_inactive_dates} and \code{rm_inactive_variables} return a subset of the input list with inactive individuals removed. \code{report_inactive_variables} returns a character vector of inactive individual names.
 }
 \description{
 rm_inactive_dates drops the rows of data during which an variable was "inactive" ie. equal to 0.

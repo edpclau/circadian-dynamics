@@ -1,13 +1,11 @@
 #' Function to Generate Plots of the Analyzed Data
 #' Must be used when 'Make Time Windows = FALSE'
 #'
-#' @param trikinetics_analyzed
-#' @param sampling_rate
+#' @param trikinetics_analyzed The output from the rhythm analysis pipeline (without time windows).
+#' @param sampling_rate A character string for the sampling rate units. Default is \code{"hours"}.
 #'
-#' @return
+#' @return Invisibly saves a PDF file \code{"Window_plots.pdf"} to the working directory.
 #' @export
-#'
-#' @examples
 #'
 #'
 generate_plots_no_windows <- function(trikinetics_analyzed, sampling_rate = 'hours'){

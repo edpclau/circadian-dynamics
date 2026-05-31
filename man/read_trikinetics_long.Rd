@@ -15,6 +15,9 @@ read_trikinetics_folder_long_interactive(...)
 \arguments{
 \item{file}{a path to a Trikinetics file.}
 }
+\value{
+A data.frame with columns: \code{datetime}, \code{dd}, and one column per individual.
+}
 \description{
 Import data from a Trikinetics tsv
 }

@@ -4,7 +4,17 @@
 \alias{lsp_mod}
 \title{Lomb-Scargle Periodogram}
 \usage{
-lsp_mod(x, times = NULL, from = NULL, to = NULL, type = c("frequency", "period"), ofac = 1, alpha = 0.01, plot = TRUE, ...)
+lsp_mod(
+  x,
+  times = NULL,
+  from = NULL,
+  to = NULL,
+  type = c("frequency", "period"),
+  ofac = 1,
+  alpha = 1e-04,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{The data to be analysed. x can be either a two-column numerical dataframe or matrix, with sampling times in columnn 1 and measurements in column 2, a single numerical vector containing measurements, or a single vector ts object (which will be converted to a numerical vector).}

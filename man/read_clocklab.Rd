@@ -8,9 +8,6 @@
 \usage{
 read_clocklab(file = NULL)
 
-
-read_clocklab_folder(directory = NULL)
-
 read_clocklab_interactive(...)
 
 read_clocklab_folder_interactive(...)

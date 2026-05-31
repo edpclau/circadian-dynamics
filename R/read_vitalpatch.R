@@ -1,6 +1,4 @@
-#' @title  Read a Folder of Vital Patch Data
-#'
-#'
+#' @title Read a Folder of Vital Patch Data
 #' @description This function imports a folder of Vital Patch data in the standard format. That is,
 #' the format provided in Vital Patch's Eval Data. There should be a folder per channel. read_vitalpatch
 #' concatenates all the data into a single tibble (data.frame) so that the user doesn't have to do it manually.

@@ -4,10 +4,14 @@
 \alias{analyze_timeseries.lomb}
 \title{Lomb Scargle Periodogram by window}
 \usage{
-lsp_by_window(df = NULL, windows = NULL, values = NULL,
-times = NULL, sampling_rate = NULL,
-from = 18, to = 30, type = c("period", "frequency"),
-ofac = 60, alpha = 0.01, plot = FALSE)
+analyze_timeseries.lomb(
+  df = NULL,
+  sampling_rate = NULL,
+  from = 18,
+  to = 30,
+  ofac = 1,
+  alpha = 0.01
+)
 }
 \arguments{
 \item{df}{optional data.frame with 2 or 3 columns. If the data.frame has 2 columns, column 1 contains the windows, column 2

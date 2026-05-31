@@ -11,7 +11,7 @@
 #' @param export If FALSE, will plot the figures in the console. If TRUE, will export the figures as a .pdf file.
 #' @param window_of_interest optional. a number or list of numbers which indicate the windows to be plotted.
 #'
-#' @return
+#' @return Invisibly returns a list of \code{ggplot} objects, or saves a PDF when \code{export = TRUE}.
 #' @export
 #'
 plot_autocorrelation <- function(df, path = NULL, filename = "actogram.pdf", dir_choose_gui = TRUE,

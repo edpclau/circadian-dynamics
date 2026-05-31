@@ -1,15 +1,11 @@
 #' Function to Generate Plots of the Analyzed Data
 #' Must be used when 'Make Time Windows = TRUE'
 #'
-#' @param trikinetics_analyzed
-#' @param sampling_rate
+#' @param trikinetics_analyzed The output from the rhythm analysis pipeline (with time windows).
+#' @param sampling_rate A character string for the sampling rate units. Default is \code{"minutes"}.
 #'
-#' @return
+#' @return Invisibly saves a PDF file per individual (e.g., \code{"Window_plots_IND1.pdf"}) to the working directory.
 #' @export
-#'
-#' @examples
-#'
-#'
 generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = 'minutes'){
   #Create a loop over Samples
   purrr::map2(.x = trikinetics_analyzed, .y = names(trikinetics_analyzed),

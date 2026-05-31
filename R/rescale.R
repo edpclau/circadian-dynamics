@@ -1,11 +1,9 @@
 #' Rescale the data from 0 to 1.
 #'
-#' @param x
+#' @param x A numeric vector to rescale.
 #'
-#' @return
+#' @return A numeric vector rescaled to the range \code{[0, 1]}.
 #' @export
-#'
-#' @examples
 rescale <- function(x){
   return(
     (x-min(x))/(max(x)-min(x))

@@ -21,6 +21,9 @@ is needed. Default = TRUE.}
 
 \item{window_of_interest}{optional. a number or list of numbers which indicate the windows to be plotted.}
 }
+\value{
+Invisibly returns a list of \code{ggplot} objects, or saves a PDF when \code{export = TRUE}.
+}
 \description{
 Plot the Autocorrelation by windows
 }

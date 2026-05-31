@@ -1,7 +1,5 @@
 #' Cosinor Analysis
 #'
-#' @usage
-#' analyze_timeseries.cosinor(df = data, timeseries_datetime = NULL, values = NULL, sampling_rate = "30 min", period = 48, na.action = na.omit)
 #'
 #' @description COSINOR analysis of a timeseries.
 #'

@@ -4,15 +4,13 @@
 #' It can be either a low or high pass filter for a given period. (The function can take the period argument
 #' because it does the conversion to frequency automatically. (frequency = 1/period).
 #'
-#' @usage
-#' butterworth_filter(df = NULL, order = 2,
-#' f_low= 1/4, f_high = 1/72, plot = TRUE)
 #'
 #' @param df required. A data.frame object where column 1 is a POSIXct object and the other columns are measurement values.
 #' @param order filter order. Default = 2.
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
 #' @param f_high Frequency for the high pass filter. Default = 1/72.
 #' @param plot logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.
+#' @return The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
 #' @export butterworth_filter
 #' @examples
 #'

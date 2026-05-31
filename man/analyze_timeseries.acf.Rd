@@ -4,8 +4,7 @@
 \alias{analyze_timeseries.acf}
 \title{Auto Correlation with a moving window}
 \usage{
-function(df = NULL,  from = 18, to = 30,
-sampling_rate = "1 hour", window_vector = NULL, values = NULL)
+analyze_timeseries.acf(df = NULL, from = 18, to = 30, sampling_rate = "1 hour")
 }
 \arguments{
 \item{df}{A data.frame with 2 columns. Column 1 must contain the windows to iterate over.

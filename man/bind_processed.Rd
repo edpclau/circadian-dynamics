@@ -4,7 +4,7 @@
 \alias{bind_processed}
 \title{Bind Rows of Processed data}
 \usage{
-bind_processed(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(df),".csv"))
+bind_processed(df = NULL, export = FALSE, path = getwd())
 }
 \arguments{
 \item{df}{the output from process_data}
@@ -13,6 +13,9 @@ bind_processed(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(d
 will return the bound data.frame.}
 
 \item{path}{Where to save the file if export = TRUE. Defaults to current directory.}
+}
+\value{
+A single data.frame with all individuals row-bound and an additional \code{ID} column, or \code{NULL} (invisibly) when \code{export = TRUE}.
 }
 \description{
 Allows for easy export and binding of rows from the output of process_data.

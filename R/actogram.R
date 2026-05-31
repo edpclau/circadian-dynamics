@@ -1,14 +1,12 @@
 #sampling in minutes
 #' Actogram
 #'
-#' @param df First column is datetime, the rest are inds.
-#' @param sampling
-#' @param file
+#' @param df A data.frame where the first column is datetime and the rest are individual measurement values.
+#' @param sampling Sampling rate in minutes.
+#' @param file A character string for the output PDF filename (without extension). Default is \code{"actogram"}.
 #'
-#' @return
+#' @return Invisibly saves a PDF actogram file named \code{file}.pdf to the working directory.
 #' @export
-#'
-#' @examples
 actogram <- function (df, sampling, file = 'actogram') {
 
   df = dplyr::filter(df, datetime >= lubridate::round_date(min(datetime), unit = 'day'))
