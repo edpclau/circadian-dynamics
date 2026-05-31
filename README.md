@@ -7,10 +7,15 @@ A repository for analyzing circadian data
 devtools::install_github("edpclau/circadian-dynamics")
 ```
 
-# June 13, 2023
-I am temporarily removing the Granger Test.We have recently found many instances of this test returning false positives and false negatives. Although we wanted to use this test as a novel test of rhythmicity it seems we can't do that at this moment. 
-Remember that this test evaluates whether the Cosinor fit we create,can be used to predict future changes in the raw data and vice versa. The idea is that if an individual or signal is rhythmic for a given period, it should present a causal relationship between the cosinor and raw data.
-Note that if the Cosinor and the data match perfectly, the granger test will output an NA. If the granger test returns a pvalue > 0.05 or NA, this does not mean your data is generally arhythmic! We can only say that the data is not-rythimic for the specific period/frequency given to the cosinor. Your data may still be rhythmic just with a different period.
+# What's new in 3.0.0 (breaking changes)
+
+- The **Granger causality test was removed** (it produced too many false positives/negatives to serve as a rhythmicity test).
+- The Trikinetics readers were renamed for clarity: **`read_trikinetics_nested`** (per-individual list, for analysis) and **`read_trikinetics_long`** (long form, for actograms).
+- Readers now take an explicit path; use the `*_interactive()` variants (e.g. `read_trikinetics_nested_interactive()`) to pick a file via a dialog.
+- `rythm` → `rhythm` throughout (e.g. the `rhythm_strength` field).
+- New helper `adjust_pvalues()` applies Benjamini-Hochberg/FDR correction across many tests.
+
+A runnable end-to-end example on the bundled `trikinetics` dataset is in the package vignette: `vignette("circadiandynamics")`.
 
 # Usage:
 
@@ -33,7 +38,7 @@ trikinetics = read_trikinetics_nested(file)
 ```
 
 # 4. **** REQUIRED ***** Define meta-data (Sampling Rate)
-It is critical that the sampling_rate is specified correctly. We are working on some stability improvements, in the meantime you will have to specify the sampling_rate twice.
+It is critical that the sampling rate is specified correctly. The helper values below are reused for the actogram sampling (step 5) and the Butterworth cutoffs (step 6).
 ```{r}
 sampling_rate_in_seconds = 60 #This is an example of 1 minute.
 ```
@@ -97,9 +102,10 @@ trikinetics_analyzed = process_timeseries.main(
   #it run slower as there is an overhead to paralleling the analysis.
   big_data = FALSE,
 
-  ##Control the p.value threshold and the ovarsampling factor for the
-  #lomb-scargle periodogram
-  ofac = sampling_rate_in_seconds,
+  ##Control the p.value threshold and the oversampling factor for the
+  #Lomb-Scargle periodogram. ofac is a small integer (typically 1-10);
+  #values above 20 are capped with a warning.
+  ofac = 10,
   lomb_pvalue = 0.05
 )
 ```
@@ -114,7 +120,7 @@ If the output we get for a period is NA, we don't run a Cosinor analysis for it.
 
 # 8. Export Data
 ## 8.1 Tidy Data
-The data outputted by 'process_timeseries.main) is not easily read by humans. Therefore, we have deviced a function that arranges the data into 3 data.frames that are easy to export and read.
+The data outputted by `process_timeseries.main()` is nested and not easy to read by hand. `simplify_data()` arranges it into 4 tidy data.frames — `data`, `autocorrelation`, `lombscargle`, and `utils` — that are easy to export and read.
 ```{r}
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 ```
