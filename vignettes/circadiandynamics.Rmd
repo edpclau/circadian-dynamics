@@ -3,7 +3,7 @@ title: "Analyzing circadian rhythms with circadiandynamics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Analyzing circadian rhythms with circadiandynamics}
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
