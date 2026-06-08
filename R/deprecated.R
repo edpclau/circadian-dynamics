@@ -82,3 +82,29 @@ read_satellite_interactive <- function() read_satellite(file.choose())
 #' @rdname circadiandynamics-deprecated
 #' @export
 read_vitalpatch_interactive <- function() read_vitalpatch(rstudioapi::selectDirectory())
+
+# --- renamed analysis functions (dotted names were never real S3 methods) ---
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+analyze_timeseries.acf <- function(...) { .Deprecated("analyze_acf"); analyze_acf(...) }
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+analyze_timeseries.cosinor <- function(...) { .Deprecated("analyze_cosinor"); analyze_cosinor(...) }
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+analyze_timeseries.lomb <- function(...) { .Deprecated("analyze_lomb"); analyze_lomb(...) }
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+process_timeseries.main <- function(...) { .Deprecated("process_timeseries_main"); process_timeseries_main(...) }
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+process_timeseries.core <- function(...) { .Deprecated("process_timeseries_core"); process_timeseries_core(...) }
+
+#' @rdname circadiandynamics-deprecated
+#' @export
+process_timeseries.waveform <- function(...) { .Deprecated("process_timeseries_waveform"); process_timeseries_waveform(...) }

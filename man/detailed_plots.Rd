@@ -7,7 +7,7 @@
 detailed_plots(trikinetics_analyzed, sampling_rate = "minutes", windows = TRUE)
 }
 \arguments{
-\item{trikinetics_analyzed}{Output from [process_timeseries.main].}
+\item{trikinetics_analyzed}{Output from [process_timeseries_main].}
 
 \item{sampling_rate}{Character sampling-rate unit, e.g. `"minutes"` or `"hours"`.}
 

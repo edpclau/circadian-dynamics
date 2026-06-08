@@ -59,7 +59,7 @@ actogram(read_trikinetics_long(file)[-2], sampling = sampling_rate_in_minutes)
 
 #6. Rhythm Analysis
 ## This is the main function of the library.
-trikinetics_analyzed = process_timeseries.main(
+trikinetics_analyzed = process_timeseries_main(
 
   df = trikinetics,
 
@@ -120,7 +120,7 @@ detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
 
 
 # 8. Tidy up data for export
-## The data outputted by 'process_timeseries.main) is not easily read
+## The data outputted by 'process_timeseries_main) is not easily read
 ##by humans. Therefore, we have deviced a function that arranges the data
 ## into 3 data.frames that are easy to export and read.
 trikinetics_tidy = simplify_data(trikinetics_analyzed)

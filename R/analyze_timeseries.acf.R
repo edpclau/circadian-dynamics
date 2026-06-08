@@ -18,18 +18,18 @@
 #' @details The reported `rhythm_strength` is the maximum autocorrelation peak within the
 #' search band divided by the 95% white-noise confidence bound \code{1.965 / sqrt(n)}, where \code{n} is the number of observations in \code{df}. Values > 1
 #' indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rhythm_strength`
-#' (in [analyze_timeseries.lomb]) is a separate, experimental measure and is not directly comparable.
+#' (in [analyze_lomb]) is a separate, experimental measure and is not directly comparable.
 #'
 #' @return A data.frame with the autocorrelation results for each window which include: period, peaks,
 #' power, lags for the peaks.
 #'
 #' @seealso [stats::acf()] which this functions uses to run the autocorrelation.
 #'
-#' @export analyze_timeseries.acf
+#' @export analyze_acf
 #'
 #' @examples
 #' \dontrun{
-#' res <- analyze_timeseries.acf(df, from = 18, to = 30, sampling_rate = "1 hour")
+#' res <- analyze_acf(df, from = 18, to = 30, sampling_rate = "1 hour")
 #' }
 #'
 #' @importFrom dplyr pull filter mutate left_join select
@@ -38,7 +38,7 @@
 #' @importFrom tibble tibble
 #' @importFrom pracma findpeaks movavg
 #'
-analyze_timeseries.acf <- function(df = NULL,  from = 18, to = 30,
+analyze_acf <- function(df = NULL,  from = 18, to = 30,
                        sampling_rate = "1 hour") {
 
   #Create results list

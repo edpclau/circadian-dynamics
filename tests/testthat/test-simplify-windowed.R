@@ -2,7 +2,7 @@
 # Pins the structure so the branch-merge refactor cannot drift it.
 test_that("simplify_data tidies windowed output with a window column and stable schema", {
   df <- list(ind1 = make_sine(period_h = 24, sampling_min = 60, n_days = 6))
-  out <- process_timeseries.main(
+  out <- process_timeseries_main(
     df, make_windows = TRUE, window_size_in_days = 3, window_step_in_days = 1,
     sampling_rate = "1 hour", detrend_data = FALSE, butterworth = FALSE, from = 18, to = 30
   )

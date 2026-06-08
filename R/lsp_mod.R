@@ -73,7 +73,7 @@
 #' Ruf, T. (1999) The Lomb-Scargle Periodogram in Biological Rhythm Research: Analysis of Incomplete and Unequally Spaced Time-Series. Biological Rhythm Research 30: 178–201.
 #' Scargle J.D. (1982) Studies in astronomical time series. II. Statistical aspects of spectral analysis of unevenly spaced data. The Astrophysical Journal 302: 757–763.
 #'
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' \dontrun{

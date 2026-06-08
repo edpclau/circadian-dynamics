@@ -1,10 +1,10 @@
 #' Simplify pipeline output into tidy data frames
 #'
-#' @description Arranges the nested output of [process_timeseries.main] into four
+#' @description Arranges the nested output of [process_timeseries_main] into four
 #'   tidy tibbles (`data`, `autocorrelation`, `lombscargle`, `utils`) suitable for
 #'   export and plotting. Works for both windowed and non-windowed output; the
 #'   windowed case adds a `window` column.
-#' @param df Output from [process_timeseries.main].
+#' @param df Output from [process_timeseries_main].
 #' @param big_data Logical; if TRUE use a multisession plan for large datasets. Default FALSE.
 #' @return A named list of four tibbles: `data`, `autocorrelation`, `lombscargle`, `utils`.
 #' @export

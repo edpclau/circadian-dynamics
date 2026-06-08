@@ -4,7 +4,7 @@
 #'   detrend/smooth/butterworth traces, autocorrelation, Lomb-Scargle, and the
 #'   fitted cosinors) for each analysis unit.
 #'
-#' @param trikinetics_analyzed Output from [process_timeseries.main].
+#' @param trikinetics_analyzed Output from [process_timeseries_main].
 #' @param sampling_rate Character sampling-rate unit, e.g. `"minutes"` or `"hours"`.
 #' @param windows Logical. If `TRUE` (default) one PDF per individual is written,
 #'   each with one page per window; if `FALSE` a single `Window_plots.pdf` with

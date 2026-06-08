@@ -16,6 +16,12 @@
 \alias{read_csv_data_interactive}
 \alias{read_satellite_interactive}
 \alias{read_vitalpatch_interactive}
+\alias{analyze_timeseries.acf}
+\alias{analyze_timeseries.cosinor}
+\alias{analyze_timeseries.lomb}
+\alias{process_timeseries.main}
+\alias{process_timeseries.core}
+\alias{process_timeseries.waveform}
 \title{Deprecated reader aliases}
 \usage{
 read_trikinetics_nested(file = NULL)
@@ -45,6 +51,18 @@ read_csv_data_interactive()
 read_satellite_interactive()
 
 read_vitalpatch_interactive()
+
+analyze_timeseries.acf(...)
+
+analyze_timeseries.cosinor(...)
+
+analyze_timeseries.lomb(...)
+
+process_timeseries.main(...)
+
+process_timeseries.core(...)
+
+process_timeseries.waveform(...)
 }
 \arguments{
 \item{path, file, directory, folder}{Path forwarded to the replacement function.}

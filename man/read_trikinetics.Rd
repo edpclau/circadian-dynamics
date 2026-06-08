@@ -20,7 +20,7 @@ For `"nested"`, a named list of tibbles with columns `datetime`, `ld`,
 \description{
 Reads a single Trikinetics `.txt` (tab-separated) file or a whole
   folder of them. `layout = "nested"` returns a named list of per-individual
-  tibbles (the form consumed by [process_timeseries.main]); `layout = "long"`
+  tibbles (the form consumed by [process_timeseries_main]); `layout = "long"`
   returns one wide data.frame with a column per individual (handy for [actogram]).
 }
 \examples{

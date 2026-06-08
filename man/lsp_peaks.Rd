@@ -19,3 +19,4 @@ A data.frame with columns \code{time} (period/frequency at each peak) and \code{
 \description{
 Find peaks in an lsp object
 }
+\keyword{internal}

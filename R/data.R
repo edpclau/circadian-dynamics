@@ -2,7 +2,7 @@
 #'
 #' Drosophila locomotor activity recorded with a Trikinetics DAM system: 32
 #' individuals at 1-minute resolution over ~26 days, already parsed into the
-#' nested per-individual format expected by [process_timeseries.main].
+#' nested per-individual format expected by [process_timeseries_main].
 #'
 #' @format A named list of 32 tibbles (one per individual, `IND 1`..`IND 32`),
 #'   each with columns:

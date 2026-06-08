@@ -31,24 +31,22 @@
 #'
 #' @param big_data Logical. If TRUE, sets a multisession \code{future} plan for parallel processing. Default = FALSE.
 #'
-#' @param ofac The Lomb-Scargle oversampling factor passed to [analyze_timeseries.lomb]. Default = 10.
+#' @param ofac The Lomb-Scargle oversampling factor passed to [analyze_lomb]. Default = 10.
 #'
 #' @param lomb_pvalue The significance level used for the Lomb-Scargle analysis. Default = 0.01.
 #'
 #' @param binning_n A numeric indicating the amount of bins over which to run the smoothing average. Default = 4.
 #'
 #' @return A named list of data.frames containing the output of \code{butterworth_filter}, [find_gaps()],
-#' [make_time_windows()], [analyze_timeseries.acf()], [analyze_timeseries.lomb()], and
-#' [analyze_timeseries.cosinor()] for each measurement value.
+#' [make_time_windows()], [analyze_acf()], [analyze_lomb()], and
+#' [analyze_cosinor()] for each measurement value.
 #'
 #' @name process_timeseries
 #' @rdname process_timeseries
 #'
-#' @export process_timeseries.rmv_gaps
-#'
 #' @examples
 #' \dontrun{
-#' processed_data <- process_timeseries.main(list_of_dfs, sampling_rate = "1 hour")
+#' processed_data <- process_timeseries_main(list_of_dfs, sampling_rate = "1 hour")
 #' }
 #'
 #' @importFrom dplyr select right_join bind_rows filter
@@ -63,32 +61,22 @@
 
 
 
-process_timeseries.rmv_gaps <- function(df = NULL, sampling_rate = NULL) {
-
-  df <- right_join(df,
-                   find_gaps(times = df$datetime, sampling_rate = sampling_rate),
-                                by = "datetime")
-  return(df)
-
+# Insert NA rows for sampling gaps so the series is evenly spaced. Internal.
+.rmv_gaps <- function(df = NULL, sampling_rate = NULL) {
+  right_join(df, find_gaps(times = df$datetime, sampling_rate = sampling_rate), by = "datetime")
 }
 
-
-#' @rdname process_timeseries
-#' @export
-process_timeseries.na_to_zero <- function(df = NULL) {
-
-#Remove NA for missing data points, this is necessary for the autocorrelation
-#Turn NA's into 0
-df$value <- ifelse(is.na(df$value), 0, df$value)
-return(df)
-
+# Turn NA measurements into 0 (required by the autocorrelation). Internal.
+.na_to_zero <- function(df = NULL) {
+  df$value <- ifelse(is.na(df$value), 0, df$value)
+  df
 }
 
 
 
 #' @rdname process_timeseries
 #' @export
-process_timeseries.waveform <- function(df = NULL,
+process_timeseries_waveform <- function(df = NULL,
                                         detrend_data = TRUE,
                                         smooth_data = FALSE,
                                         butterworth = TRUE,
@@ -117,7 +105,7 @@ return(df)
 
 #' @rdname process_timeseries
 #' @export
-process_timeseries.core <- function(df = NULL,
+process_timeseries_core <- function(df = NULL,
 
                                     make_windows = FALSE,
                                     window_size_in_days = 3,
@@ -141,15 +129,15 @@ process_timeseries.core <- function(df = NULL,
 
   # Full per-series pipeline: clean -> waveform -> ACF + Lomb-Scargle + cosinors.
   run_one <- function(x) {
-    x <- process_timeseries.rmv_gaps(x, sampling_rate = sampling_rate)
-    x <- process_timeseries.na_to_zero(x)
-    x <- process_timeseries.waveform(x,
+    x <- .rmv_gaps(x, sampling_rate = sampling_rate)
+    x <- .na_to_zero(x)
+    x <- process_timeseries_waveform(x,
                                      detrend_data = detrend_data, smooth_data = smooth_data,
                                      butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
-    acf_results <- analyze_timeseries.acf(x, from = from, to = to, sampling_rate = sampling_rate)
-    acf_cosinor <- analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
-    lsp_results <- analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
-    lsp_cosinor <- analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
+    acf_results <- analyze_acf(x, from = from, to = to, sampling_rate = sampling_rate)
+    acf_cosinor <- analyze_cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
+    lsp_results <- analyze_lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
+    lsp_cosinor <- analyze_cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
     list(
       data = x,
       acf = list(results = acf_results, cosinor = acf_cosinor),
@@ -172,7 +160,7 @@ process_timeseries.core <- function(df = NULL,
 
 #' @rdname process_timeseries
 #' @export
-process_timeseries.main <- function(df = NULL,
+process_timeseries_main <- function(df = NULL,
 
                                     make_windows = FALSE,
                                     window_size_in_days = 3,
@@ -199,7 +187,7 @@ process_timeseries.main <- function(df = NULL,
       .x = df,
       .options = furrr_options(seed = 42),
       .f = ~ {
-        process_timeseries.core(df = .x,
+        process_timeseries_core(df = .x,
 
                                 make_windows = make_windows,
                                 window_size_in_days = window_size_in_days,

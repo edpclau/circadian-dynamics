@@ -59,7 +59,7 @@ actogram(read_trikinetics_long(file)[-2], sampling = sampling_rate_in_minutes)
 # 6. Rhythm Analysis
 ### This is the main function of the library.
 ```{r}
-trikinetics_analyzed = process_timeseries.main(
+trikinetics_analyzed = process_timeseries_main(
 
   df = trikinetics,
 
@@ -120,7 +120,7 @@ If the output we get for a period is NA, we don't run a Cosinor analysis for it.
 
 # 8. Export Data
 ## 8.1 Tidy Data
-The data outputted by `process_timeseries.main()` is nested and not easy to read by hand. `simplify_data()` arranges it into 4 tidy data.frames — `data`, `autocorrelation`, `lombscargle`, and `utils` — that are easy to export and read.
+The data outputted by `process_timeseries_main()` is nested and not easy to read by hand. `simplify_data()` arranges it into 4 tidy data.frames — `data`, `autocorrelation`, `lombscargle`, and `utils` — that are easy to export and read.
 ```{r}
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 ```

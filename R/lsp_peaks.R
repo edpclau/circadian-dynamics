@@ -5,7 +5,7 @@
 #' @param plotit Logical. Currently unused; reserved for future plotting support. Default = FALSE.
 #'
 #' @return A data.frame with columns \code{time} (period/frequency at each peak) and \code{peaks} (peak power).
-#' @export
+#' @keywords internal
 #' @importFrom pracma findpeaks
 lsp_peaks = function (object, npeaks = 5, plotit = FALSE)
 {

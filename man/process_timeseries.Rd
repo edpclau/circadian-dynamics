@@ -2,18 +2,15 @@
 % Please edit documentation in R/main.R
 \name{process_timeseries}
 \alias{process_timeseries}
-\alias{process_timeseries.rmv_gaps}
-\alias{process_timeseries.na_to_zero}
-\alias{process_timeseries.waveform}
-\alias{process_timeseries.core}
-\alias{process_timeseries.main}
+\alias{.rmv_gaps}
+\alias{process_timeseries_waveform}
+\alias{process_timeseries_core}
+\alias{process_timeseries_main}
 \title{Helper function to prepare raw data for analysis}
 \usage{
-process_timeseries.rmv_gaps(df = NULL, sampling_rate = NULL)
+.rmv_gaps(df = NULL, sampling_rate = NULL)
 
-process_timeseries.na_to_zero(df = NULL)
-
-process_timeseries.waveform(
+process_timeseries_waveform(
   df = NULL,
   detrend_data = TRUE,
   smooth_data = FALSE,
@@ -24,7 +21,7 @@ process_timeseries.waveform(
   binning_n = 4
 )
 
-process_timeseries.core(
+process_timeseries_core(
   df = NULL,
   make_windows = FALSE,
   window_size_in_days = 3,
@@ -43,7 +40,7 @@ process_timeseries.core(
   lomb_pvalue = 0.01
 )
 
-process_timeseries.main(
+process_timeseries_main(
   df = NULL,
   make_windows = FALSE,
   window_size_in_days = 3,
@@ -93,7 +90,7 @@ process_timeseries.main(
 
 \item{big_data}{Logical. If TRUE, sets a multisession \code{future} plan for parallel processing. Default = FALSE.}
 
-\item{ofac}{The Lomb-Scargle oversampling factor passed to [analyze_timeseries.lomb]. Default = 10.}
+\item{ofac}{The Lomb-Scargle oversampling factor passed to [analyze_lomb]. Default = 10.}
 
 \item{lomb_pvalue}{The significance level used for the Lomb-Scargle analysis. Default = 0.01.}
 
@@ -101,15 +98,15 @@ process_timeseries.main(
 }
 \value{
 A named list of data.frames containing the output of \code{butterworth_filter}, [find_gaps()],
-[make_time_windows()], [analyze_timeseries.acf()], [analyze_timeseries.lomb()], and
-[analyze_timeseries.cosinor()] for each measurement value.
+[make_time_windows()], [analyze_acf()], [analyze_lomb()], and
+[analyze_cosinor()] for each measurement value.
 }
 \description{
 Processes raw data in such a way that it can be directly inputted to the rhythm_analysis_by_window function.
 }
 \examples{
 \dontrun{
-processed_data <- process_timeseries.main(list_of_dfs, sampling_rate = "1 hour")
+processed_data <- process_timeseries_main(list_of_dfs, sampling_rate = "1 hour")
 }
 
 }

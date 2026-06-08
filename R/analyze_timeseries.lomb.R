@@ -43,18 +43,18 @@
 #'
 #' sig_level        Powers > sig.level can considered significant peaks.
 #'
-#' @export analyze_timeseries.lomb
+#' @export analyze_lomb
 #'
 #' @examples
 #' \dontrun{
-#' res <- analyze_timeseries.lomb(df, sampling_rate = "1 hour", from = 18, to = 30)
+#' res <- analyze_lomb(df, sampling_rate = "1 hour", from = 18, to = 30)
 #' }
 #'
 #'
 #' @importFrom lubridate  duration
 #' @importFrom stringr str_remove str_extract
 #'
-analyze_timeseries.lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
+analyze_lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
                             ofac = 1, alpha = 0.01) {
 
   ###### Flow control parameters######

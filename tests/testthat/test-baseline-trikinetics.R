@@ -13,7 +13,7 @@ bin15 <- function(d) {
 test_that("trikinetics periods match the ground-truth-validated baseline", {
   data("trikinetics", package = "circadiandynamics", envir = environment())
   sub <- lapply(trikinetics[paste("IND", c(1, 2, 3, 4))], bin15)
-  res <- process_timeseries.main(
+  res <- process_timeseries_main(
     sub, make_windows = FALSE, sampling_rate = "15 minutes",
     from = 15, to = 33, detrend_data = FALSE, butterworth = TRUE,
     f_low = 1/(12*4), f_high = 1/(35*4), order = 2, ofac = 1

@@ -44,7 +44,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' res <- analyze_timeseries.cosinor(df, sampling_rate = "1 hour", period = 24)
+#' res <- analyze_cosinor(df, sampling_rate = "1 hour", period = 24)
 #' }
 #'
 #' @importFrom tibble tibble_row tibble
@@ -55,7 +55,7 @@
 #' @import magrittr
 #' @importFrom lubridate duration
 #' @importFrom stringr str_extract str_remove
-analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
+analyze_cosinor <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
 
 
 
