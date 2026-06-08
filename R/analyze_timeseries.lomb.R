@@ -134,13 +134,6 @@ if (any(position)) {
   period = peaks$time[position][1]
   peak = peaks$peaks[position][1]
 
-
-# } else if (any(from <= peaks$time | to >= peaks$time)) {
-#   position = c(from <= peaks$time | to >= peaks$time)
-#   rs  = peaks$peaks[position][1]/ sqrt(length(lsp_of_int$scanned)/lsp_of_int$sig.level)
-#   period = peaks$time[position][1]
-#   peak = peaks$peaks[position][1]
-
 } else {
   rs = NA
   period = NA

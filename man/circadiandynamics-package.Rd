@@ -9,14 +9,14 @@
 Finds the period of univariate and multivariate timeseries (datetime) data by window. It will iterate over each window and find any changes in the period. Also fits a COSINOR function to the data.
 }
 \author{
-\strong{Maintainer}: Eddie P<U+00E9>rez Claudio \email{eddieperezclaudio@gmail.com}
+\strong{Maintainer}: Eddie Pérez Claudio \email{eddieperezclaudio@gmail.com}
 
 Authors:
 \itemize{
-  \item Eddie P<U+00E9>rez Claudio \email{eddieperezclaudio@gmail.com}
-  \item Manuel Guiannoni-Guzm<U+00E1>n
-  \item Jonathan Alem<U+00E1>n
-  \item Jos<U+00E9> L. Agosto-Rivera
+  \item Eddie Pérez Claudio \email{eddieperezclaudio@gmail.com}
+  \item Manuel Guiannoni-Guzmán
+  \item Jonathan Alemán
+  \item José L. Agosto-Rivera
 }
 
 }

@@ -213,7 +213,6 @@ while (n.out == 0 & type == "period" & !is.null(from)) {
   } else {
   PN.max <- max(PN.peaks)
   }
-  # if (PN.max == -Inf) {PN.max = max(PN)}
 # If we can't find a peak, return NA.
   if(rlang::is_null(PN.max) | is.na(PN.max)) {
     scanned <- if (type == "frequency")

@@ -63,13 +63,6 @@
 
 
 
-# Here we create a moving window
-# The window size will be dynamic as well as steps to slide the window
-# df <- make_time_windows_2(df,
-#                           window_size_in_days = window_size_in_days,
-#                           window_step_in_days = window_step_in_days
-# )
-
 process_timeseries.rmv_gaps <- function(df = NULL, sampling_rate = NULL) {
 
   df <- right_join(df,

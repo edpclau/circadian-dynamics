@@ -16,7 +16,6 @@ read_satellite <- function(path = NULL) {
     stop("`path` is required. Use read_satellite_interactive() to choose one via a dialog.")
   }
   df <- readr::read_csv(path, skip = 8, col_types = list(readr::col_datetime(), readr::col_double()))
-  # df$time <- lubridate::mdy_hm(df$time)
   df <- dplyr::rename(df, 'datetime'=time)
   return(df)
 }
