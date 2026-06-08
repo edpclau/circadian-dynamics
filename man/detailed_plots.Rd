@@ -2,20 +2,24 @@
 % Please edit documentation in R/detailed_plots.R
 \name{detailed_plots}
 \alias{detailed_plots}
-\title{Generate Detailed Plots (Utility function)}
+\title{Generate detailed per-unit analysis plots}
 \usage{
 detailed_plots(trikinetics_analyzed, sampling_rate = "minutes", windows = TRUE)
 }
 \arguments{
-\item{trikinetics_analyzed}{The output from the rhythm analysis pipeline.}
+\item{trikinetics_analyzed}{Output from [process_timeseries.main].}
 
-\item{sampling_rate}{A character string for the sampling rate (e.g., \code{"minutes"}).}
+\item{sampling_rate}{Character sampling-rate unit, e.g. `"minutes"` or `"hours"`.}
 
-\item{windows}{Logical. If \code{TRUE} (default), calls \code{generate_plots_with_windows}; otherwise calls \code{generate_plots_no_windows}.}
+\item{windows}{Logical. If `TRUE` (default) one PDF per individual is written,
+each with one page per window; if `FALSE` a single `Window_plots.pdf` with
+one page per individual.}
 }
 \value{
-Invisibly saves PDF plot files to the working directory.
+Invisibly `NULL`; called for the PDF side effect.
 }
 \description{
-Generate Detailed Plots (Utility function)
+Saves a stacked multi-panel PDF (raw signal, optional
+  detrend/smooth/butterworth traces, autocorrelation, Lomb-Scargle, and the
+  fitted cosinors) for each analysis unit.
 }

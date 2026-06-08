@@ -152,14 +152,14 @@ future_map(
   .x = names(raw_plots),
   .f = ~ {
     layout = rbind(c(1,1,1,1),
-                   c(2,2,3,6),
-                   c(2,2,4,7),
-                   c(2,2,5,8),
-                   c(2,2,9,10))
+                   c(2,2,3,5),
+                   c(2,2,4,6),
+                   c(2,2,7,7),
+                   c(2,2,8,8))
     plots =  arrangeGrob(raw_plots[[.x]],
                          actograms_by_window[[.x]],
-                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
-                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
+                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]],
+                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]],
                          lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
                          nrow = 5, ncol = 4,
                          layout_matrix = layout)
