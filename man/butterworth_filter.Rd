@@ -4,8 +4,14 @@
 \alias{butterworth_filter}
 \title{Butterworth Filter Helper}
 \usage{
-butterworth_filter(df = NULL, order = 2,
-f_low= 1/4, f_high = 1/72, plot = TRUE)
+butterworth_filter(
+  df = NULL,
+  order = 2,
+  f_low = 1/4,
+  f_high = 1/72,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{df}{required. A data.frame object where column 1 is a POSIXct object and the other columns are measurement values.}
@@ -17,6 +23,11 @@ f_low= 1/4, f_high = 1/72, plot = TRUE)
 \item{f_high}{Frequency for the high pass filter. Default = 1/72.}
 
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.}
+
+\item{...}{Additional arguments (currently unused), reserved for future use.}
+}
+\value{
+The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
 }
 \description{
 A helper function which wraps around the [signal::butter()] and [signal::filfilt()] functions.
@@ -24,8 +35,9 @@ It can be either a low or high pass filter for a given period. (The function can
 because it does the conversion to frequency automatically. (frequency = 1/period).
 }
 \examples{
-
+\dontrun{
 butter <- butterworth_filter(df = data, f_low = 1/4, f_high = 1/72)
 print(butter)
+}
 
 }

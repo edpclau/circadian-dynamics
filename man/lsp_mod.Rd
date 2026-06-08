@@ -4,7 +4,17 @@
 \alias{lsp_mod}
 \title{Lomb-Scargle Periodogram}
 \usage{
-lsp_mod(x, times = NULL, from = NULL, to = NULL, type = c("frequency", "period"), ofac = 1, alpha = 0.01, plot = TRUE, ...)
+lsp_mod(
+  x,
+  times = NULL,
+  from = NULL,
+  to = NULL,
+  type = c("frequency", "period"),
+  ofac = 1,
+  alpha = 1e-04,
+  plot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{The data to be analysed. x can be either a two-column numerical dataframe or matrix, with sampling times in columnn 1 and measurements in column 2, a single numerical vector containing measurements, or a single vector ts object (which will be converted to a numerical vector).}
@@ -53,7 +63,7 @@ peak.at	 The frequency/period at which the maximum peak occurred.
 p.value	 The probability that the maximum peak occurred by chance.
 }
 \description{
-A modification on the lomb-pkg's lsp function [lomb::lsp()]. Automatically increases the oversampling factor when it is too small for
+A modification on the lomb-pkg's lsp function \code{lomb::lsp()}. Automatically increases the oversampling factor when it is too small for
 the chosen from-to interval. Computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
 Allows selecting a frequency range to be inspected, as well as the spacing of frequencies scanned.
 }
@@ -61,14 +71,9 @@ Allows selecting a frequency range to be inspected, as well as the spacing of fr
 For a description of the properties of the Lomb-Scargle Periodogram, its computation and comparsion with other methods see Ruf, T. (1999). Function lsp uses the algorithm given by Press et al (1994). The Lomb-Scargle Periodogram was originaly proposed by Lomb N.R. (1976) and furher extended by Scargle J.D. (1982).
 }
 \examples{
-# ibex contains an unevenly sampled time series
-data(ibex)
-lsp(ibex[2:3],)
-lsp(ibex$temp,times=ibex$hours,type='period',ofac=5)
-# lynx contains evenly sampled data
-lsp(lynx)
-lynx.spec <- lsp(lynx,type='period',from=2,to=20,ofac=5)
-summary(lynx.spec)
+\dontrun{
+res <- lsp_mod(x = values, type = "period", from = 18, to = 30, ofac = 1, plot = FALSE)
+}
 
 }
 \references{
@@ -82,3 +87,4 @@ Original code by: Thomas Ruf thomas.ruf@vetmeduni.ac.at based on code by Press e
 
 Modified by: Eddie Perez Claudio eddieperezclaudio@gmail.com
 }
+\keyword{internal}

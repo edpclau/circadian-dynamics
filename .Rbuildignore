@@ -2,3 +2,11 @@
 ^\.Rproj\.user$
 ^README\.md
 ^data-raw$
+^research$
+^docs$
+^pixi\.toml$
+^pixi\.lock$
+^\.pixi$
+^Example Script\.R$
+^\.claude$
+^LICENSE$

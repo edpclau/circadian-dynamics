@@ -2,16 +2,30 @@
 % Please edit documentation in R/read_trikinetics.R
 \name{read_trikinetics}
 \alias{read_trikinetics}
-\title{Import data from a Trikinetics tsv}
+\title{Import Trikinetics data}
 \usage{
-read_trikinetics(file = NULL)
+read_trikinetics(path = NULL, layout = c("nested", "long"))
 }
 \arguments{
-\item{file}{a path to a Trikinetics file. If no path is supplied, a GUI will open and help with file selection.}
+\item{path}{Path to a Trikinetics file *or* a directory of them. If `NULL`
+(default) a file dialog opens. A directory is detected automatically.}
+
+\item{layout}{One of `"nested"` (default) or `"long"`.}
+}
+\value{
+For `"nested"`, a named list of tibbles with columns `datetime`, `ld`,
+  and `value`. For `"long"`, a data.frame with `datetime`, a light/dark column,
+  and one column per individual.
 }
 \description{
-Import data from a Trikinetics tsv
+Reads a single Trikinetics `.txt` (tab-separated) file or a whole
+  folder of them. `layout = "nested"` returns a named list of per-individual
+  tibbles (the form consumed by [process_timeseries_main]); `layout = "long"`
+  returns one wide data.frame with a column per individual (handy for [actogram]).
 }
 \examples{
-trikinetics_data <- read_trikinetics()
+\dontrun{
+trikinetics <- read_trikinetics("/path/to/file.txt")
+wide <- read_trikinetics("/path/to/folder", layout = "long")
+}
 }

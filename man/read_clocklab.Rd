@@ -4,29 +4,23 @@
 \alias{read_clocklab}
 \title{Import data from Clocklab}
 \usage{
-read_clocklab(file = NULL)
-
-
-read_clocklab_folder(directory = NULL)
+read_clocklab(path = NULL)
 }
 \arguments{
-\item{file}{optional. A file path for a .csv outputted form the clocklab software.}
-
-\item{directory}{optional. A folder path containing .csv files outputted from the clocklab software.
-Make sure all individuals in the folder belong to the same experimental group and that the experiments
-were run on the same dates.}
+\item{path}{A `.csv` exported from Clocklab, *or* a directory of them (all
+individuals must belong to the same group and be run on the same dates).
+If `NULL` (default) a file dialog opens; a directory is detected automatically.}
 }
 \value{
-Returns a data.frame/tibble with 3 columns:
-datatetime of the experiment
-ld : light switch status
-IND Name: measurement values
+A tibble with `datetime`, `ld` (light status), and one column of
+  measurement values per individual.
 }
 \description{
 Import data from Clocklab
 }
 \examples{
-df <- read_clocklab()
-df <- read_clocklab_folder()
-
+\dontrun{
+df <- read_clocklab("/path/to/file.csv")
+df <- read_clocklab("/path/to/folder")
+}
 }

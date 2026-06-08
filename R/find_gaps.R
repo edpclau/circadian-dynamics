@@ -10,7 +10,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' completed_dates <- find_gaps(times = df$datetime, sampling_rate = "30 min")
+#' }
 #'
 #' @importFrom tibble tibble
 #' @importFrom tidyr complete

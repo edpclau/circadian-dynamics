@@ -2,24 +2,27 @@
 % Please edit documentation in R/bind_outputs.R
 \name{bind_processed}
 \alias{bind_processed}
-\title{Bind Rows of Processed and Analyzed data}
+\title{Bind Rows of Processed data}
 \usage{
-bind_processed(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(df),".csv"))
-bind_analysis(df = NULL, export = FALSE, path = paste0(getwd(),"/",substitute(df),".csv"))
+bind_processed(df = NULL, export = FALSE, path = getwd())
 }
 \arguments{
-\item{df}{the output from either process_data or rythm_analysis}
+\item{df}{the output from process_data}
 
 \item{export}{If TRUE, will save the data.frame as a .csv in the current directory. If FALSE (default),
 will return the bound data.frame.}
 
 \item{path}{Where to save the file if export = TRUE. Defaults to current directory.}
 }
+\value{
+A single data.frame with all individuals row-bound and an additional \code{ID} column, or \code{NULL} (invisibly) when \code{export = TRUE}.
+}
 \description{
-Allows for easy export and binding of rows from the outputs of process_data and rythm_analysis.
+Allows for easy export and binding of rows from the output of process_data.
 }
 \examples{
+\dontrun{
 bind_processed(df = monitor_processed)
-bind_analysis(df = monitor_analysis)
+}
 
 }

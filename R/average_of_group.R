@@ -7,7 +7,9 @@
 #' @export
 #'
 #' @examples
-#' group_average(monitor_downsampled)
+#' \dontrun{
+#' average_of_group(df = monitor_downsampled)
+#' }
 #'
 #' @importFrom tidyr pivot_longer everything
 #' @importFrom dplyr group_by summarise left_join select

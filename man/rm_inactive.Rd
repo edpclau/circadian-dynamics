@@ -4,7 +4,7 @@
 \alias{rm_inactive}
 \title{Remove Inactive Individuals}
 \usage{
-rm_inactive(df,inactivity_period = "1 day", sampling_rate = "1 hour")
+rm_inactive(df, inactivity_period = "1 day", sampling_rate = "1 hour")
 }
 \arguments{
 \item{df}{a data.frame where the first column is a datetime object.}
@@ -13,6 +13,9 @@ rm_inactive(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 necessary to be removed. Default = "1 day".}
 
 \item{sampling_rate}{a string indicating the sampling rate of the data. Default = "1 hour".}
+}
+\value{
+A data.frame with only the active individuals (columns) retained.
 }
 \description{
 Remove Inactive Individuals

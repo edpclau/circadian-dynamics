@@ -2,22 +2,23 @@
 % Please edit documentation in R/read_vitalpatch.R
 \name{read_vitalpatch}
 \alias{read_vitalpatch}
-\title{Read a Folder of Vital Patch Data}
+\title{Import a folder of Vital Patch data}
 \usage{
 read_vitalpatch(folder = NULL)
 }
 \arguments{
-\item{folder}{Optional. A path (directory) to the folder we want to analyze.}
+\item{folder}{Path to the folder to import. If `NULL` (default) a directory
+dialog opens. Parallelism follows the caller's [future::plan()].}
 }
 \value{
-Returns a tibble (data.frame) object with parsed dates.
+A tibble with parsed `datetime` and the channel columns.
 }
 \description{
-This function imports a folder of Vital Patch data in the standard format. That is,
-the format provided in Vital Patch's Eval Data. There should be a folder per channel. read_vitalpatch
-concatenates all the data into a single tibble (data.frame) so that the user doesn't have to do it manually.
+Imports a folder of Vital Patch "Eval Data" (one subfolder per
+  channel) and concatenates it into a single tibble.
 }
 \examples{
-read_vitalpatch()
-
+\dontrun{
+read_vitalpatch("/path/to/folder")
+}
 }

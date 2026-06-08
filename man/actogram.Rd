@@ -7,9 +7,14 @@
 actogram(df, sampling, file = "actogram")
 }
 \arguments{
-\item{df}{First column is datetime, the rest are inds.}
+\item{df}{A data.frame where the first column is datetime and the rest are individual measurement values.}
 
-\item{file}{}
+\item{sampling}{Sampling rate in minutes.}
+
+\item{file}{A character string for the output PDF filename (without extension). Default is \code{"actogram"}.}
+}
+\value{
+Invisibly saves a PDF actogram file named \code{file}.pdf to the working directory.
 }
 \description{
 Actogram

@@ -3,3 +3,24 @@
 .RData
 .Ruserdata
 .DS_Store
+# pixi dev environment (local-only)
+.pixi/
+pixi.toml
+pixi.lock
+
+# planning / research / dev artifacts (kept local, excluded from the package & stable)
+docs/superpowers/
+research/
+data-raw/
+
+# baseline verification artifacts (not committed)
+baseline/
+
+# iCloud Drive sync-conflict copies
+* [0-9].R
+* [0-9].Rd
+* [0-9].csv
+
+# Claude Code local settings
+.claude/
+* [0-9]

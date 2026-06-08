@@ -7,9 +7,9 @@
 crop_data(df = NULL, from = NULL, to = NULL)
 }
 \arguments{
-\item{from, to}{a string which indicates a date in the ISO 8601 format.}
+\item{df}{a list of data.frame/tibble with a column named datetime which is also a datetime object.}
 
-\item{list_df}{a list of data.frame/tibble with a column named datetime which is also a datetime object.}
+\item{from, to}{a string which indicates a date in the ISO 8601 format.}
 }
 \value{
 A list of data.frames/tibbles with dates within the specified window of time.

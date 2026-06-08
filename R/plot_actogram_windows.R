@@ -56,7 +56,6 @@ plot_actogram_windows <- function(df) {
 
 
   if (lights) {
-    plan(sequential)
     #Data for Actogram
     return(
       future_map2(
@@ -92,7 +91,6 @@ plot_actogram_windows <- function(df) {
 
     )
   } else {
-    plan(sequential)
     #Data for Actogram
     return(
       future_map2(

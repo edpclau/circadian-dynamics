@@ -1,12 +1,11 @@
 #' Find peaks in an lsp object
 #'
-#' @param object
-#' @param npeaks
+#' @param object An lsp object returned by \code{lsp_mod()}.
+#' @param npeaks Integer. Maximum number of peaks to return. Default is 5.
+#' @param plotit Logical. Currently unused; reserved for future plotting support. Default = FALSE.
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return A data.frame with columns \code{time} (period/frequency at each peak) and \code{peaks} (peak power).
+#' @keywords internal
 #' @importFrom pracma findpeaks
 lsp_peaks = function (object, npeaks = 5, plotit = FALSE)
 {

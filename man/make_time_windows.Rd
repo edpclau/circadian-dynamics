@@ -23,6 +23,8 @@ values     raw measurement data
 Creates iterable time windows for a data.frame
 }
 \examples{
-windowed_data <- function(data = df)
+\dontrun{
+windowed_data <- make_time_windows(data = df)
+}
 
 }

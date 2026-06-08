@@ -1,20 +1,4 @@
-#Important Announcement#
-# June 13, 2023 #
-# I am temporarily removing the Granger Test.
-# We have recently found many instances of this test returning
-# false positives and false negatives. Although we wanted to use this test as a
-# novel test of rhythmicity it seems we can't do that at this moment.
-# Remember that this test evaluates whether the Cosinor fit we create,
-# can be used to predict future changes in the raw data and vice versa.
-# The idea is that if an individual or signal is rhythmic for a given period,
-# it should present a causal relationship between the cosinor and raw data.
-# Note that if the Cosinor and the data match perfectly, the granget test will
-# output an NA.
-#If the granger test returns a pvalue > 0.05 or NA, this does not mean
-#your data is generally arhythmic! We can only say that the data is not-rythimic for
-#the specific period/frequency given to the cosinor. Your data may still be
-#rhythmic just with a different period.
-
+# End-to-end example: read -> analyze -> tidy -> export figures and tables.
 
 # 1. Load Library
 library(circadiandynamics)
@@ -33,9 +17,9 @@ file = file.choose()
 ## The second column should be your Light/Dark data, if you have any.
 ## All other columns will be the signals/individuals you want to analyze.
 ###
-## If you're going to import a trikinetics file use 'read_trikinetics_2'.
+## If you're going to import a trikinetics file use 'read_trikinetics'.
 ## In this example we use a trikinetics file.
-trikinetics = read_trikinetics_2(file)
+trikinetics = read_trikinetics(file)
 ##
 
 #4. **** REQUIRED ***** Define meta-data (Sampling Rate)
@@ -54,12 +38,12 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 
 #5. Generate Actograms to choose which individuals to analyze
 #Run without modifying. The actogram will be saved in your working directory.
-actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics(file, layout = "long")[-2], sampling = sampling_rate_in_minutes)
 
 
 #6. Rhythm Analysis
 ## This is the main function of the library.
-trikinetics_analyzed = process_timeseries.main(
+trikinetics_analyzed = process_timeseries_main(
 
   df = trikinetics,
 
@@ -120,7 +104,7 @@ detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
 
 
 # 8. Tidy up data for export
-## The data outputted by 'process_timeseries.main) is not easily read
+## The data outputted by 'process_timeseries_main) is not easily read
 ##by humans. Therefore, we have deviced a function that arranges the data
 ## into 3 data.frames that are easy to export and read.
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
@@ -152,14 +136,14 @@ future_map(
   .x = names(raw_plots),
   .f = ~ {
     layout = rbind(c(1,1,1,1),
-                   c(2,2,3,6),
-                   c(2,2,4,7),
-                   c(2,2,5,8),
-                   c(2,2,9,10))
+                   c(2,2,3,5),
+                   c(2,2,4,6),
+                   c(2,2,7,7),
+                   c(2,2,8,8))
     plots =  arrangeGrob(raw_plots[[.x]],
                          actograms_by_window[[.x]],
-                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]], acf_plots$granger_plots[[.x]],
-                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]], lsp_plots$granger_plots[[.x]],
+                         acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]],
+                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]],
                          lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
                          nrow = 5, ncol = 4,
                          layout_matrix = layout)

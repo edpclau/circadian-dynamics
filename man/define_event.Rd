@@ -19,7 +19,9 @@ returns a data.frame with an additional column called "event".
 This function takes data from a specific USDA project. It's not meant to be used with any other datasets.
 }
 \examples{
+\dontrun{
 define_event(df)
+}
 
 }
 \author{

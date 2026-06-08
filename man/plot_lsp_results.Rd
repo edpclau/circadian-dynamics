@@ -2,20 +2,22 @@
 % Please edit documentation in R/plot_lsp_results.R
 \name{plot_lsp_results}
 \alias{plot_lsp_results}
-\title{Plot Lomb-Scargle Results}
+\title{Plot Lomb-Scargle results by window}
 \usage{
 plot_lsp_results(df)
 }
 \arguments{
-\item{df}{Use the third output from 'simplify_data'.}
+\item{df}{The `lombscargle` table from [simplify_data()].}
 }
 \value{
-Returns a list of plots for the autocorrelation results.
+A named list with `period_plots`, `rhythm_plots`, `amplitude_plots`,
+  and `phase_plots`, one ggplot per individual.
 }
 \description{
-Plot Lomb-Scargle Results
+Plot Lomb-Scargle results by window
 }
 \examples{
-plots = plot_lsp_results(df = simplified_data$lombscargle)
-
+\dontrun{
+plots <- plot_lsp_results(simplified$lombscargle)
+}
 }

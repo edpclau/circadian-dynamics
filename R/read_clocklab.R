@@ -1,75 +1,43 @@
 #' Import data from Clocklab
-#' @usage
-#' read_clocklab(file = NULL)
 #'
+#' @param path A `.csv` exported from Clocklab, *or* a directory of them (all
+#'   individuals must belong to the same group and be run on the same dates).
+#'   If `NULL` (default) a file dialog opens; a directory is detected automatically.
 #'
-#' read_clocklab_folder(directory = NULL)
-#'
-#' @param file optional. A file path for a .csv outputted form the clocklab software.
-#' @param directory optional. A folder path containing .csv files outputted from the clocklab software.
-#' Make sure all individuals in the folder belong to the same experimental group and that the experiments
-#' were run on the same dates.
-#'
-#' @return
-#' Returns a data.frame/tibble with 3 columns:
-#' datatetime of the experiment
-#' ld : light switch status
-#' IND Name: measurement values
-#' @export read_clocklab
-#' @export read_clocklab_folder
-#'
+#' @return A tibble with `datetime`, `ld` (light status), and one column of
+#'   measurement values per individual.
+#' @export
 #' @examples
-#' df <- read_clocklab()
-#' df <- read_clocklab_folder()
-#'
-read_clocklab <- function(file = NULL) {
-
-
-
-##### Flow Control #####
-#Allow for using a GUI to choose the file, if one is not supplied
-if (is.null(file)) {
-  file <- file.choose()
-}
-  #Plan for paralellization
-future::plan(future::multisession)
-
-####### Import the file #####
-# Extract IND name
-ind_label <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 1, n_max = 1)) %>%
-  dplyr::pull(1) %>%
-  stringr::str_replace_all(" ", "_")
-
-#Extract Date
-start_date <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 2, n_max = 1)) %>%
-  dplyr::pull(1) %>%
-  lubridate::dmy()
-
-# Extract datetime
-df <- suppressMessages(readr::read_csv(file, skip = 3))
-df <- df %>% dplyr::mutate(datetime = start_date + suppressMessages(lubridate::days(df$Day) - lubridate::days(df$Day)[1]) + lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
-  dplyr::select(datetime, ld = Lights, `Cnts/min`)
-names(df)[3] <- ind_label
-
-
-return(df)
+#' \dontrun{
+#' df <- read_clocklab("/path/to/file.csv")
+#' df <- read_clocklab("/path/to/folder")
+#' }
+read_clocklab <- function(path = NULL) {
+  if (is.null(path)) path <- file.choose()
+  if (dir.exists(path)) return(.read_clocklab_folder(path))
+  .parse_clocklab(path)
 }
 
-
-read_clocklab_folder <- function(directory = NULL) {
-
-#### Flow Control ####
-#Allow for using a GUI to choose the folder, if one is not supplied
-if (is.null(directory)) {
-  directory <- rstudioapi::selectDirectory()
+.parse_clocklab <- function(file) {
+  ind_label <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 1, n_max = 1)) %>%
+    dplyr::pull(1) %>%
+    stringr::str_replace_all(" ", "_")
+  start_date <- suppressMessages(readr::read_csv(file, col_names = FALSE, skip = 2, n_max = 1)) %>%
+    dplyr::pull(1) %>%
+    lubridate::dmy()
+  df <- suppressMessages(readr::read_csv(file, skip = 3))
+  df <- df %>%
+    dplyr::mutate(datetime = start_date + (lubridate::days(df$Day) - lubridate::days(df$Day)[1]) +
+                    lubridate::hours(Hr) + lubridate::minutes(Min)) %>%
+    dplyr::select(datetime, ld = Lights, `Cnts/min`)
+  names(df)[3] <- ind_label
+  df
 }
 
-files <- list.files(directory)
-paths <- paste0(directory, "/", files)
-df <- furrr::future_map(paths, read_clocklab)
-df <- furrr::future_map_df(df, ~ tidyr::pivot_longer(., -c(1,2)))
-df <- tidyr::pivot_wider(df, c(datetime,ld))
-
-message("Make sure the experiments were run on the same dates")
-return(df)
+.read_clocklab_folder <- function(directory) {
+  message("Make sure the experiments were run on the same dates.")
+  paths <- list.files(directory, full.names = TRUE)
+  df <- purrr::map(paths, .parse_clocklab)
+  df <- purrr::list_rbind(lapply(df, function(d) tidyr::pivot_longer(d, -c(1, 2))))
+  tidyr::pivot_wider(df, id_cols = c("datetime", "ld"))
 }

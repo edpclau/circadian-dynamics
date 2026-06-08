@@ -2,20 +2,21 @@
 % Please edit documentation in R/plot_acf_results.R
 \name{plot_acf_results}
 \alias{plot_acf_results}
-\title{Plot Raw Values}
+\title{Plot autocorrelation results by window}
 \usage{
 plot_acf_results(df)
 }
 \arguments{
-\item{df}{Use the second output from 'simplify_data'.}
+\item{df}{The `autocorrelation` table from [simplify_data()].}
 }
 \value{
-Returns a list of plots for the autocorrelation results.
+A named list with `period_plots` and `rhythm_plots`, one ggplot per individual.
 }
 \description{
-Plot Raw Values
+Plot autocorrelation results by window
 }
 \examples{
-plots = plot_acf_results(df = simplified_data$autocorrelation)
-
+\dontrun{
+plots <- plot_acf_results(simplified$autocorrelation)
+}
 }

@@ -1,0 +1,67 @@
+---
+title: "Analyzing circadian rhythms with circadiandynamics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analyzing circadian rhythms with circadiandynamics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(circadiandynamics)
+```
+
+## Reading data
+
+Each format has one reader (`read_trikinetics()`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, `read_vitalpatch()`). Pass a file or a folder; leave the path `NULL` to pick one via a dialog. Trikinetics supports a nested per-individual `layout` for analysis and a `"long"` layout for actograms.
+
+```{r, eval = FALSE}
+# nested per-individual list, for analysis:
+monitor <- read_trikinetics("path/to/monitor.txt")
+# long form, for actograms:
+actogram(read_trikinetics("path/to/monitor.txt", layout = "long")[-2], sampling = 1)
+```
+
+## A worked example on the bundled dataset
+
+`trikinetics` is a bundled example (32 individuals, 1-min resolution). We bin to 15 minutes (plenty for circadian period estimation) and analyze two individuals.
+
+```{r}
+data(trikinetics)
+library(lubridate); library(dplyr)
+bin15 <- function(d) d |>
+  mutate(datetime = floor_date(datetime, "15 minutes")) |>
+  group_by(datetime) |>
+  summarise(value = sum(value), .groups = "drop")
+
+sub <- lapply(trikinetics[c("IND 2", "IND 4")], bin15)
+result <- process_timeseries_main(
+  sub, make_windows = FALSE, sampling_rate = "15 minutes",
+  from = 15, to = 33, detrend_data = FALSE, butterworth = TRUE,
+  f_low = 1/(12*4), f_high = 1/(35*4), order = 2, ofac = 1
+)
+periods <- data.frame(
+  individual = names(result),
+  acf_period_h = sapply(result, \(x) x$acf$results$period),
+  lsp_period_h = sapply(result, \(x) x$lomb$results$period)
+)
+knitr::kable(periods)
+```
+
+## Tidying and multiple-testing correction
+
+```{r}
+tidy <- simplify_data(result)
+names(tidy)
+# Benjamini-Hochberg FDR across the Lomb-Scargle p-values:
+adjust_pvalues(tidy$lombscargle, p_col = "cosinor_p_value")$cosinor_p_value_adj
+```
+
+## Plots
+
+`detailed_plots()` writes per-individual figures, and `simplify_data()` output feeds the `plot_*` family (e.g. `plot_actogram_windows()`, `plot_lsp_results()`).
+
+```{r, eval = FALSE}
+detailed_plots(result, sampling_rate = "minutes", windows = FALSE)
+```

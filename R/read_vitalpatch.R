@@ -1,41 +1,23 @@
-#' @title  Read a Folder of Vital Patch Data
+#' Import a folder of Vital Patch data
 #'
+#' @description Imports a folder of Vital Patch "Eval Data" (one subfolder per
+#'   channel) and concatenates it into a single tibble.
 #'
-#' @description This function imports a folder of Vital Patch data in the standard format. That is,
-#' the format provided in Vital Patch's Eval Data. There should be a folder per channel. read_vitalpatch
-#' concatenates all the data into a single tibble (data.frame) so that the user doesn't have to do it manually.
-#'
-#'
-#' @param folder Optional. A path (directory) to the folder we want to analyze.
-#'
-#' @return Returns a tibble (data.frame) object with parsed dates.
+#' @param folder Path to the folder to import. If `NULL` (default) a directory
+#'   dialog opens. Parallelism follows the caller's [future::plan()].
+#' @return A tibble with parsed `datetime` and the channel columns.
 #' @export
-#'
-#' @examples read_vitalpatch()
-#'
+#' @examples
+#' \dontrun{
+#' read_vitalpatch("/path/to/folder")
+#' }
 #' @importFrom lubridate as_datetime
 #' @importFrom dplyr rename
-#' @importFrom purrr map_df
-#' @importFrom rstudioapi selectDirectory
-#'
+#' @importFrom readr cols
 read_vitalpatch <- function(folder = NULL) {
-
-  ##### Flow Control #####
-  #Allow for using a GUI to choose the file, if one is not supplied
-  if (is.null(folder)) {
-    folder <- rstudioapi::selectDirectory()
-  }
-  #Plan for paralellization
-  future::plan(future::multisession)
-
-files = list.files(folder, full.names = TRUE)
-
-df = furrr::future_map_df(files, readr::read_csv, col_types = cols(.default = 'd'))
-
-df$Time = lubridate::as_datetime(df$Time/1000)
-
-df = dplyr::rename(df, datetime = Time)
-
-return(df)
+  if (is.null(folder)) folder <- rstudioapi::selectDirectory()
+  files <- list.files(folder, full.names = TRUE)
+  df <- furrr::future_map_dfr(files, readr::read_csv, col_types = cols(.default = "d"))
+  df$Time <- lubridate::as_datetime(df$Time / 1000)
+  dplyr::rename(df, datetime = Time)
 }
-

@@ -14,7 +14,9 @@
 #' @export
 #'
 #' @examples
-#' windowed_data <- function(data = df)
+#' \dontrun{
+#' windowed_data <- make_time_windows(data = df)
+#' }
 #'
 #' @importFrom lubridate days
 #' @importFrom furrr future_map_dfr
@@ -33,6 +35,8 @@ step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "
 
 
 #plan for paralelization
+oplan <- future::plan()
+on.exit(future::plan(oplan), add = TRUE)
 future::plan(future::multisession, workers = 2)
 
 # Creating a new data.frame where data is partitioned by window

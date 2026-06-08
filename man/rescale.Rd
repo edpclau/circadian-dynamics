@@ -7,7 +7,10 @@
 rescale(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{A numeric vector to rescale.}
+}
+\value{
+A numeric vector rescaled to the range \code{[0, 1]}.
 }
 \description{
 Rescale the data from 0 to 1.

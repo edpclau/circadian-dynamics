@@ -1,246 +1,111 @@
-#' Simplify Data
+#' Simplify pipeline output into tidy data frames
 #'
-#' @param df Output from processed_timeseries.main
-#' @param big_data Are you using a large dataset? TRUE or FALSE (default)
-#'
-#' @return
+#' @description Arranges the nested output of [process_timeseries_main] into four
+#'   tidy tibbles (`data`, `autocorrelation`, `lombscargle`, `utils`) suitable for
+#'   export and plotting. Works for both windowed and non-windowed output; the
+#'   windowed case adds a `window` column.
+#' @param df Output from [process_timeseries_main].
+#' @param big_data Logical; if TRUE use a multisession plan for large datasets. Default FALSE.
+#' @return A named list of four tibbles: `data`, `autocorrelation`, `lombscargle`, `utils`.
 #' @export
-#'
-#' @importFrom future multisession sequential
+#' @importFrom future multisession plan
 #' @importFrom furrr future_map_dfr
-#' @importFrom dplyr tibble
-#'
+#' @importFrom rlang is_empty
 simplify_data <- function(df, big_data = FALSE) {
-  if (big_data) {
-    plan(multisession)
-  } else {
-    plan(sequential)
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
+  if (big_data) future::plan(future::multisession)
+
+  windowed <- any(class(df[[1]][[1]]) == "list")
+
+  # Flatten one analysis unit (an individual, or an individual's window) with a
+  # builder, keyed by individual (and window, when windowed).
+  collect <- function(builder) {
+    if (windowed) {
+      future_map_dfr(df, function(ind) future_map_dfr(ind, builder, .id = "window"), .id = "data")
+    } else {
+      future_map_dfr(df, builder, .id = "data")
+    }
   }
 
-  if (any(class(df[[1]][[1]]) == 'list')) {
-    print('TRUE')
-    #### Tibble Processed Data Values ####
-    processed_data = future_map_dfr(.x = df,
-                                    .id = 'data',
-                                    .f = ~ {
-                                      df = .x
-                                      windows = seq(length(.x))
-                                      future_map_dfr(.x = windows,
-                                                     .f = ~ {
-                                                       data = df[[.x]]$data
-                                                       data$lomb_cosinor = df[[.x]]$lomb$cosinor$wave
-                                                       data$autocorr_cosinor = df[[.x]]$acf$cosinor$wave
-                                                       names(data)[which(names(data) == 'value')] = 'raw_values'
-                                                       data
-                                                     },
-                                                     .id = 'window')
-                                    })
-    ##### Autocorrelation Results #####
-    autocorrelation = future_map_dfr(.x = df,
-                                     .id = 'data',
-                                     .f = ~ {
-                                       df = .x
-                                       windows = seq(length(.x))
-                                       future_map_dfr(.x = windows,
-                                                      .f = ~ {
-                                                        tibble(
-                                                          peak_datetime = df[[.x]]$acf$results$datetime,
-                                                          period = df[[.x]]$acf$results$period,
-                                                          rythm_strength = df[[.x]]$acf$results$rythm_strength,
-                                                          acf_peak_power = df[[.x]]$acf$results$max_peak_of_int,
-                                                          gc_raw_to_cos = df[[.x]]$acf$results$grangercausal$rawdata_to_cos,
-                                                          gc_cos_to_raw = df[[.x]]$acf$results$grangercausal$cos_to_rawdata,
-                                                          mesor = df[[.x]]$acf$cosinor$mesor,
-                                                          amplitude = df[[.x]]$acf$cosinor$amplitude,
-                                                          amp_se = df[[.x]]$acf$cosinor$amplitude_se,
-                                                          acrophase = df[[.x]]$acf$cosinor$acrophase,
-                                                          acro_se = df[[.x]]$acf$cosinor$acrophase_se,
-                                                          phase = df[[.x]]$acf$cosinor$phase,
-                                                          phase_se = df[[.x]]$acf$cosinor$phase_se,
-                                                          adj_r_squared = df[[.x]]$acf$cosinor$adj_r_squared,
-                                                          cosinor_p_value = df[[.x]]$acf$cosinor$p_value
-                                                        )
-                                                      },
-                                                      .id = 'window')
-                                     })
+  list(
+    data = collect(.unit_data),
+    autocorrelation = collect(.unit_acf),
+    lombscargle = collect(.unit_lomb),
+    utils = collect(.unit_utils)
+  )
+}
 
+# --- per-unit builders (one definition each; shared by both branches) ---
 
+.unit_data <- function(u) {
+  data <- u$data
+  data$lomb_cosinor <- u$lomb$cosinor$wave
+  data$autocorr_cosinor <- u$acf$cosinor$wave
+  names(data)[names(data) == "value"] <- "raw_values"
+  data
+}
 
+.unit_acf <- function(u) {
+  tibble::tibble(
+    peak_datetime = u$acf$results$datetime,
+    period = u$acf$results$period,
+    rhythm_strength = u$acf$results$rhythm_strength,
+    acf_peak = u$acf$results$max_peak_of_int,
+    mesor = u$acf$cosinor$mesor,
+    amplitude = u$acf$cosinor$amplitude,
+    amp_se = u$acf$cosinor$amplitude_se,
+    acrophase = u$acf$cosinor$acrophase,
+    acro_se = u$acf$cosinor$acrophase_se,
+    phase = u$acf$cosinor$phase,
+    phase_se = u$acf$cosinor$phase_se,
+    adj_r_squared = u$acf$cosinor$adj_r_squared,
+    cosinor_p_value = u$acf$cosinor$p_value
+  )
+}
 
-    ##### Lomb Scargle Results #####
-    lombscargle = future_map_dfr(.x = df,
-                                 .id = 'data',
-                                 .f = ~ {
-                                   df = .x
-                                   windows = seq(length(.x))
-                                   future_map_dfr(.x = windows,
-                                                  .f = ~ {
-                                                    tibble(
-                                                      peak_datetime = df[[.x]]$lomb$results$datetime,
-                                                      period = ifelse(is_empty(df[[.x]]$lomb$results$period), NA, df[[.x]]$lomb$results$period),
-                                                      rythm_strength = ifelse(is_empty(df[[.x]]$lomb$results$rythm_strength), NA, df[[.x]]$lomb$results$rythm_strength),
-                                                      lsp_peak_power = df[[.x]]$lomb$results$peak,
-                                                      gc_raw_to_cos = df[[.x]]$lomb$results$grangercausal$rawdata_to_cos,
-                                                      gc_cos_to_raw = df[[.x]]$lomb$results$grangercausal$cos_to_rawdata,
-                                                      mesor = df[[.x]]$lomb$cosinor$mesor,
-                                                      amplitude = df[[.x]]$lomb$cosinor$amplitude,
-                                                      amp_se = df[[.x]]$lomb$cosinor$amplitude_se,
-                                                      acrophase = df[[.x]]$lomb$cosinor$acrophase,
-                                                      acro_se = df[[.x]]$lomb$cosinor$acrophase_se,
-                                                      phase = df[[.x]]$lomb$cosinor$phase,
-                                                      phase_se = df[[.x]]$lomb$cosinor$phase_se,
-                                                      adj_r_squared = df[[.x]]$lomb$cosinor$adj_r_squared,
-                                                      cosinor_p_value = df[[.x]]$lomb$cosinor$p_value
-                                                    )
-                                                  },
-                                                  .id = 'window')
-                                 })
+.unit_lomb <- function(u) {
+  tibble::tibble(
+    peak_datetime = u$lomb$results$datetime,
+    period = if (is_empty(u$lomb$results$period)) NA else u$lomb$results$period,
+    rhythm_strength = if (is_empty(u$lomb$results$rhythm_strength)) NA else u$lomb$results$rhythm_strength,
+    lsp_peak = u$lomb$results$peak,
+    mesor = u$lomb$cosinor$mesor,
+    amplitude = u$lomb$cosinor$amplitude,
+    amp_se = u$lomb$cosinor$amplitude_se,
+    acrophase = u$lomb$cosinor$acrophase,
+    acro_se = u$lomb$cosinor$acrophase_se,
+    phase = u$lomb$cosinor$phase,
+    phase_se = u$lomb$cosinor$phase_se,
+    adj_r_squared = u$lomb$cosinor$adj_r_squared,
+    cosinor_p_value = u$lomb$cosinor$p_value
+  )
+}
 
-    #### Tibble utils data ####
-    utils_data = future_map_dfr(.x = df,
-                                    .id = 'data',
-                                    .f = ~ {
-                                      df = .x
-                                      windows = seq(length(.x))
-                                      future_map_dfr(.x = windows,
-                                                     .f = ~ {
-
-                                                      tibble(
-                                                      datetime = df[[.x]]$data$datetime,
-                                                      acf = df[[.x]]$acf$results$autocorrelation,
-                                                      acf_period = df[[.x]]$acf$results$period,
-                                                      acf_rs = df[[.x]]$acf$results$rythm_strength,
-                                                      acf_peak_power = df[[.x]]$acf$results$max_peak_of_int,
-                                                      acf_peak_time = df[[.x]]$acf$results$datetime,
-                                                      lsp_period = ifelse(is_empty(df[[.x]]$lomb$results$period), NA, df[[.x]]$lomb$results$period),
-                                                      lsp_peak_power = df[[.x]]$lomb$results$peak,
-                                                      lsp_sig_level = df[[.x]]$lomb$results$sig_level,
-                                                      lsp_p_value = df[[.x]]$lomb$results$p_value,
-                                                      lsp_scanned = list(df[[.x]]$lomb$results$scanned),
-                                                      lsp_powers = list(df[[.x]]$lomb$results$power),
-                                                      lsp_rs = ifelse(is_empty(df[[.x]]$lomb$results$rythm_strength), NA, df[[.x]]$lomb$results$rythm_strength),
-                                                      acf_start = df[[.x]]$acf$results$start,
-                                                      acf_end = df[[.x]]$acf$results$end,
-                                                      acf_from = df[[.x]]$acf$results$from,
-                                                      acf_to = df[[.x]]$acf$results$to,
-                                                      lsp_phase = df[[.x]]$lomb$cosinor$phase,
-                                                      acf_phase = df[[.x]]$acf$cosinor$phase,
-                                                      acf_amp = df[[.x]]$acf$cosinor$amplitude,
-                                                      acf_pr = df[[.x]]$acf$cosinor$adj_r_squared,
-                                                      lsp_amp = df[[.x]]$lomb$cosinor$amplitude,
-                                                      lsp_pr = df[[.x]]$lomb$cosinor$adj_r_squared,
-                                                      lsp_gc = ifelse(df[[.x]]$lomb$results$grangercausal$rawdata_to_cos < df[[.x]]$lomb$results$grangercausal$cos_to_rawdata, df[[.x]]$lomb$results$grangercausal$rawdata_to_cos, df[[.x]]$lomb$results$grangercausal$cos_to_rawdata),
-                                                      acf_gc = ifelse(df[[.x]]$acf$results$grangercausal$rawdata_to_cos < df[[.x]]$acf$results$grangercausal$cos_to_rawdata, df[[.x]]$acf$results$grangercausal$rawdata_to_cos, df[[.x]]$acf$results$grangercausal$cos_to_rawdata)
-                                                       )
-                                                     },
-                                                     .id = 'window')
-                                      })
-
-
-
-
-  } else {
-    #### Tibble Processed Data Values ####
-    processed_data = future_map_dfr(.x = df,
-                     .f = ~ {
-                       data = .x$data
-                       data$lomb_cosinor = .x$lomb$cosinor$wave
-                       data$autocorr_cosinor = .x$acf$cosinor$wave
-                       names(data)[which(names(data) == 'value')] = 'raw_values'
-                       data
-                     },
-                     .id = 'data')
-    ##### Autocorrelation Results #####
-    autocorrelation = future_map_dfr(.x = df,
-                                     .f = ~ {
-                                       tibble(
-                                         peak_datetime = .x$acf$results$datetime,
-                                         period = .x$acf$results$period,
-                                         rythm_strength = .x$acf$results$rythm_strength,
-                                         acf_peak_power = .x$acf$results$max_peak_of_int,
-                                         gc_raw_to_cos = .x$acf$results$grangercausal$rawdata_to_cos,
-                                         gc_cos_to_raw = .x$acf$results$grangercausal$cos_to_rawdata,
-                                         mesor = .x$acf$cosinor$mesor,
-                                         amplitude = .x$acf$cosinor$amplitude,
-                                         amp_se = .x$acf$cosinor$amplitude_se,
-                                         acrophase = .x$acf$cosinor$acrophase,
-                                         acro_se = .x$acf$cosinor$acrophase_se,
-                                         phase = .x$acf$cosinor$phase,
-                                         phase_se = .x$acf$cosinor$phase_se,
-                                         adj_r_squared = .x$acf$cosinor$adj_r_squared,
-                                         cosinor_p_value = .x$acf$cosinor$p_value
-                                       )
-                                     },
-                                     .id = 'data')
-
-
-
-
-    ##### Lomb Scargle Results #####
-    lombscargle = future_map_dfr(.x = df,
-                                 .f = ~ {
-                                   tibble(
-                                     peak_datetime = .x$lomb$results$datetime,
-                                     period = .x$lomb$results$period,
-                                     rythm_strength = .x$lomb$results$rythm_strength,
-                                     lsp_peak_power = .x$lomb$results$peak,
-                                     gc_raw_to_cos = .x$lomb$results$grangercausal$rawdata_to_cos,
-                                     gc_cos_to_raw = .x$lomb$results$grangercausal$cos_to_rawdata,
-                                     mesor = .x$lomb$cosinor$mesor,
-                                     amplitude = .x$lomb$cosinor$amplitude,
-                                     amp_se = .x$lomb$cosinor$amplitude_se,
-                                     acrophase = .x$lomb$cosinor$acrophase,
-                                     acro_se = .x$lomb$cosinor$acrophase_se,
-                                     phase = .x$lomb$cosinor$phase,
-                                     phase_se = .x$lomb$cosinor$phase_se,
-                                     adj_r_squared = .x$lomb$cosinor$adj_r_squared,
-                                     cosinor_p_value = .x$lomb$cosinor$p_value
-                                   )
-                                 },
-                                 .id = 'data')
-
-    #### Tibble utils data ####
-    utils_data = future_map_dfr(.x = df,
-                                .id = 'data',
-                                .f = ~ {
-                                                   tibble(
-                                                     datetime = .x$data$datetime,
-                                                     acf = .x$acf$results$autocorrelation,
-                                                     acf_period = .x$acf$results$period,
-                                                     acf_rs = .x$acf$results$rythm_strength,
-                                                     acf_peak_power = .x$acf$results$max_peak_of_int,
-                                                     acf_peak_time = .x$acf$results$datetime,
-                                                     lsp_period = .x$lomb$results$period,
-                                                     lsp_peak_power = .x$lomb$results$peak,
-                                                     lsp_sig_level = .x$lomb$results$sig_level,
-                                                     lsp_p_value = .x$lomb$results$p_value,
-                                                     lsp_scanned = list(.x$lomb$results$scanned),
-                                                     lsp_powers = list(.x$lomb$results$power),
-                                                     lsp_rs = .x$lomb$results$rythm_strength,
-                                                     acf_start = .x$acf$results$start,
-                                                     acf_end = .x$acf$results$end,
-                                                     acf_from = .x$acf$results$from,
-                                                     acf_to = .x$acf$results$to,
-                                                     lsp_phase = .x$lomb$cosinor$phase,
-                                                     acf_phase = .x$acf$cosinor$phase,
-                                                     acf_amp = .x$acf$cosinor$amplitude,
-                                                     acf_pr = .x$acf$cosinor$adj_r_squared,
-                                                     lsp_amp = .x$lomb$cosinor$amplitude,
-                                                     lsp_pr = .x$lomb$cosinor$adj_r_squared,
-                                                     lsp_gc = ifelse(.x$lomb$results$grangercausal$rawdata_to_cos < .x$lomb$results$grangercausal$cos_to_rawdata, .x$lomb$results$grangercausal$rawdata_to_cos, .x$lomb$results$grangercausal$cos_to_rawdata),
-                                                     acf_gc = ifelse(.x$acf$results$grangercausal$rawdata_to_cos < .x$acf$results$grangercausal$cos_to_rawdata, .x$acf$results$grangercausal$rawdata_to_cos, .x$acf$results$grangercausal$cos_to_rawdata)
-
-                                                   )
-
-                                })
-
-  }
-  return(
-    list(
-      data = processed_data,
-      autocorrelation = autocorrelation,
-      lombscargle = lombscargle,
-      utils = utils_data
-    )
+.unit_utils <- function(u) {
+  tibble::tibble(
+    datetime = u$data$datetime,
+    acf = u$acf$results$autocorrelation,
+    acf_period = u$acf$results$period,
+    acf_rs = u$acf$results$rhythm_strength,
+    acf_peak = u$acf$results$max_peak_of_int,
+    acf_peak_time = u$acf$results$datetime,
+    lsp_period = if (is_empty(u$lomb$results$period)) NA else u$lomb$results$period,
+    lsp_peak = u$lomb$results$peak,
+    lsp_sig_level = u$lomb$results$sig_level,
+    lsp_p_value = u$lomb$results$p_value,
+    lsp_scanned = list(u$lomb$results$scanned),
+    lsp_power = list(u$lomb$results$power),
+    lsp_rs = if (is_empty(u$lomb$results$rhythm_strength)) NA else u$lomb$results$rhythm_strength,
+    acf_start = u$acf$results$start,
+    acf_end = u$acf$results$end,
+    acf_from = u$acf$results$from,
+    acf_to = u$acf$results$to,
+    lsp_phase = u$lomb$cosinor$phase,
+    acf_phase = u$acf$cosinor$phase,
+    acf_amp = u$acf$cosinor$amplitude,
+    acf_pr = u$acf$cosinor$adj_r_squared,
+    lsp_amp = u$lomb$cosinor$amplitude,
+    lsp_pr = u$lomb$cosinor$adj_r_squared
   )
 }

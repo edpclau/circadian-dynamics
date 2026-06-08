@@ -7,10 +7,16 @@ A repository for analyzing circadian data
 devtools::install_github("edpclau/circadian-dynamics")
 ```
 
-# June 13, 2023
-I am temporarily removing the Granger Test.We have recently found many instances of this test returning false positives and false negatives. Although we wanted to use this test as a novel test of rhythmicity it seems we can't do that at this moment. 
-Remember that this test evaluates whether the Cosinor fit we create,can be used to predict future changes in the raw data and vice versa. The idea is that if an individual or signal is rhythmic for a given period, it should present a causal relationship between the cosinor and raw data.
-Note that if the Cosinor and the data match perfectly, the granger test will output an NA. If the granger test returns a pvalue > 0.05 or NA, this does not mean your data is generally arhythmic! We can only say that the data is not-rythimic for the specific period/frequency given to the cosinor. Your data may still be rhythmic just with a different period.
+# What's new in 4.0.0 (breaking changes)
+
+- **One reader per format.** `read_trikinetics(path, layout)`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, and `read_vitalpatch()` each accept a file *or* a folder and open a dialog when the path is `NULL`. The old `*_interactive()` / `*_folder()` and `read_trikinetics_nested|long()` names still work but are deprecated.
+- **Analysis functions renamed** off their misleading S3-style dotted names: `analyze_acf()`, `analyze_cosinor()`, `analyze_lomb()`, and `process_timeseries_main()` / `_core()` / `_waveform()`. The old dotted names are deprecated shims.
+- **Lomb-Scargle rhythm strength** is now `peak / significance_threshold`, so it is comparable across windows.
+- Many unused plotting functions were removed and the result plotters de-duplicated; the Granger test (dropped in 3.0.0) no longer appears anywhere.
+
+Earlier 3.0.0 changes: Granger causality test removed; `rythm` → `rhythm` throughout; new `adjust_pvalues()` for Benjamini-Hochberg/FDR correction.
+
+A runnable end-to-end example on the bundled `trikinetics` dataset is in the package vignette: `vignette("circadiandynamics")`.
 
 # Usage:
 
@@ -27,13 +33,13 @@ library(gridExtra)
 file = file.choose()
 ```
 # 3. Depending on the file choose your import function
-The general import function is 'read_csv_data'. It requires that your file is in .csv format. The first column must be the datetime column. The second column should be your Light/Dark data, if you have any. All other columns will be the signals/individuals you want to analyze. If you're going to import a trikinetics file use 'read_trikinetics_2'. In this example we use a trikinetics file.
+The general import function is `read_csv_data()`. It requires that your file is in .csv format. The first column must be the datetime column. The second column should be your Light/Dark data, if you have any. All other columns will be the signals/individuals you want to analyze. For a Trikinetics file use `read_trikinetics()`. In this example we use a trikinetics file.
 ```{r}
-trikinetics = read_trikinetics_2(file)
+trikinetics = read_trikinetics(file)
 ```
 
 # 4. **** REQUIRED ***** Define meta-data (Sampling Rate)
-It is critical that the sampling_rate is specified correctly. We are working on some stability improvements, in the meantime you will have to specify the sampling_rate twice.
+It is critical that the sampling rate is specified correctly. The helper values below are reused for the actogram sampling (step 5) and the Butterworth cutoffs (step 6).
 ```{r}
 sampling_rate_in_seconds = 60 #This is an example of 1 minute.
 ```
@@ -49,12 +55,12 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 # 5. Generate Actograms to choose which individuals to analyze
 Run without modifying. The actogram will be saved in your working directory.
 ```{r}
-actogram(read_trikinetics(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics(file, layout = "long")[-2], sampling = sampling_rate_in_minutes)
 ```
 # 6. Rhythm Analysis
 ### This is the main function of the library.
 ```{r}
-trikinetics_analyzed = process_timeseries.main(
+trikinetics_analyzed = process_timeseries_main(
 
   df = trikinetics,
 
@@ -97,9 +103,10 @@ trikinetics_analyzed = process_timeseries.main(
   #it run slower as there is an overhead to paralleling the analysis.
   big_data = FALSE,
 
-  ##Control the p.value threshold and the ovarsampling factor for the
-  #lomb-scargle periodogram
-  ofac = sampling_rate_in_seconds,
+  ##Control the p.value threshold and the oversampling factor for the
+  #Lomb-Scargle periodogram. ofac is a small integer (typically 1-10);
+  #values above 20 are capped with a warning.
+  ofac = 10,
   lomb_pvalue = 0.05
 )
 ```
@@ -114,7 +121,7 @@ If the output we get for a period is NA, we don't run a Cosinor analysis for it.
 
 # 8. Export Data
 ## 8.1 Tidy Data
-The data outputted by 'process_timeseries.main) is not easily read by humans. Therefore, we have deviced a function that arranges the data into 3 data.frames that are easy to export and read.
+The data outputted by `process_timeseries_main()` is nested and not easy to read by hand. `simplify_data()` arranges it into 4 tidy data.frames — `data`, `autocorrelation`, `lombscargle`, and `utils` — that are easy to export and read.
 ```{r}
 trikinetics_tidy = simplify_data(trikinetics_analyzed)
 ```

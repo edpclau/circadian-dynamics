@@ -1,7 +1,4 @@
 #' Managing Inactive Variables
-#' @usage rm_inactive_dates(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-#' @usage rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
-#' @usage report_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 #'
 #' @description rm_inactive_dates drops the rows of data during which an variable was "inactive" ie. equal to 0.
 #' @description rm_inactive_variables drops the rows of data during which
@@ -10,18 +7,21 @@
 #' necessary to be removed. Default = "1 day".
 #' @param sampling_rate a string indicating the sampling rate of the data. Default = "1 hour".
 #'
-#' @examples  df = downsample_time_series_2(trikinetics, amount = 1, units = 'hour', method = 'sum')
+#' @examples
+#' \dontrun{
+#' df = downsample_time_series(trikinetics, amount = 1, units = 'hour', method = 'sum')
 #' cropped_dates_df = rm_inactive_dates(df, inactivity_period = '1 day', sampling_rate = '1 hour')
 #' print(cropped_dates_df)
 #' cropped_variables_df = rm_inactive_variables(df,inactivity_period = "1 day", sampling_rate = "1 hour")
 #' print(cropped_variables_df)
+#' }
 #'
+#' @return \code{rm_inactive_dates} and \code{rm_inactive_variables} return a subset of the input list with inactive individuals removed. \code{report_inactive_variables} returns a character vector of inactive individual names.
+#' @name rm_inactive_dates
+#' @rdname rm_inactive_dates
 #' @export rm_inactive_dates
-#' @export rm_inactive_variables
-#' @export report_inactive_variables
 #'
 #' @import magrittr
-#' @importFrom future plan sequential
 #' @importFrom lubridate duration
 #' @importFrom furrr future_map future_map2
 #' @importFrom dplyr filter tibble group_by mutate all_of select
@@ -32,9 +32,6 @@ rm_inactive_dates <- function(df,inactivity_period = "1 day", sampling_rate = "1
 
   #Definition for what we will consider an inactive dates
   inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
-
-  #plan for paralellization
-  plan(sequential)
 
   to_return = future_map(
     .x = df,
@@ -63,12 +60,13 @@ rm_inactive_dates <- function(df,inactivity_period = "1 day", sampling_rate = "1
   }
 
 
+#' @rdname rm_inactive_dates
+#' @export
 report_inactive_variables <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
 
   #Definition for what we will consider an inactive dates
   inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
 
-  plan(sequential)
   to_return = future_map2(
     .x = df,
     .y = names(df),
@@ -95,6 +93,8 @@ report_inactive_variables <- function(df,inactivity_period = "1 day", sampling_r
 }
 
 
+#' @rdname rm_inactive_dates
+#' @export
 rm_inactive_variables <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
 
   inactive = report_inactive_variables(df, inactivity_period, sampling_rate)

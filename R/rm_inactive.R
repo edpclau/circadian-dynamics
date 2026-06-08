@@ -1,16 +1,19 @@
 #' Remove Inactive Individuals
-#' @usage rm_inactive(df,inactivity_period = "1 day", sampling_rate = "1 hour")
+#'
 #' @param df a data.frame where the first column is a datetime object.
 #' @param inactivity_period a string indicating what will be considered the period of inactivity
 #' necessary to be removed. Default = "1 day".
 #' @param sampling_rate a string indicating the sampling rate of the data. Default = "1 hour".
+#' @return A data.frame with only the active individuals (columns) retained.
 #'
 #' @export
 #'
 #'
 rm_inactive <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
   #Plan for paralellization
-future::plan(future::multisession)
+  oplan <- future::plan()
+  on.exit(future::plan(oplan), add = TRUE)
+  future::plan(future::multisession)
 
     inactivity_threshold <- lubridate::duration(inactivity_period) / lubridate::duration(sampling_rate)
     rles <- furrr::future_map(df[-1], ~ rle( .))

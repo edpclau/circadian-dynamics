@@ -1,0 +1,65 @@
+#' Smooth and/or Detrend Data by Windows
+#'
+#' @param df a data.frame with 2 columns. The first column must be the windows. The second column the values to process.
+#' @param smooth_data Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
+#' @param binning_n A numeric which indicated the amount of bins over which to run the smoothing average. Default = 4.
+#' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
+#' @return
+#'A data.frame conatining: /n
+#'
+#' window                 A vector with the windows. /n
+#' values                 The raw measurement values. /n
+#' smoothed               A column with the smoothed data. /n
+#' detrended              A column with the detrended data. /n
+#' smoothed_and_detrended A column with data that's been both smoothed and detrended.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' smoothed_data <- smooth_and_detrend(df = windowed_data, smooth_data = TRUE, detrend_data = FALSE)
+#' }
+#'
+
+#' @importFrom dplyr mutate
+#' @importFrom magrittr "%>%"
+#' @importFrom pracma movavg detrend
+#'
+smooth_and_detrend <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
+                                      detrend_data = TRUE) {
+
+
+  ####### Catch ERRORS (too little data) #######
+  if (nrow(df) <= 1) {
+    return(
+      mutate(df, detrended =  NA)
+      )
+  }
+
+
+  ####### Data Smoothing or Detrending ######
+  if (smooth_data & detrend_data) {
+      df =  df %>%
+          mutate(
+            smoothed =  movavg(value, n = binning_n, type = "s"),
+            smoothed_and_detrended = c(detrend(smoothed)))
+
+
+
+  } else if (smooth_data) {
+
+    df =  df %>%
+      mutate(
+        smoothed =  movavg(value, n = binning_n, type = "s"))
+
+
+  } else if (detrend_data) {
+
+    df =  df %>%
+      mutate(
+        detrended =  c(detrend(value)))
+
+  }
+
+  return(df)
+}

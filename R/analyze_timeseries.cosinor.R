@@ -1,18 +1,10 @@
 #' Cosinor Analysis
 #'
-#' @usage
-#' analyze_timeseries.cosinor(df = data, timeseries_datetime = NULL, values = NULL, sampling_rate = "30 min", period = 48, na.action = na.omit)
 #'
 #' @description COSINOR analysis of a timeseries.
 #'
 #' @param df
 #' A data.frame which contains the dates of a time series in column 1 and the values in column 2.
-#'
-#' @param timeseries_datetime
-#' A vector of class POSICXct which contains the dates over which to run a COSINOR analysis.
-#'
-#' @param values
-#' The data to which we want to find the period.
 #'
 #' @param sampling_rate
 #' A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.
@@ -51,16 +43,19 @@
 #' @export
 #'
 #' @examples
-#' cosinor <- cosinor_lm(df = data, sampling_rate = "30 min", period = 48)
+#' \dontrun{
+#' res <- analyze_cosinor(df, sampling_rate = "1 hour", period = 24)
+#' }
 #'
 #' @importFrom tibble tibble_row tibble
 #' @importFrom dplyr mutate n
-#' @importFrom broom tidy glance
+#' @importFrom broom glance
+#' @importFrom stats vcov
 #' @importFrom rlang is_empty
 #' @import magrittr
 #' @importFrom lubridate duration
 #' @importFrom stringr str_extract str_remove
-analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
+analyze_cosinor <- function(df = NULL, sampling_rate = NULL, period = NULL, na.action = na.omit) {
 
 
 
@@ -99,8 +94,8 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
   sampling_bin_size = as.numeric(str_extract(sampling_rate, "\\d*"))
   sampling_rate = str_remove(sampling_rate, "\\d* *")
 
-  #3. Period must be in the correct sampling_rate
-  period = as.numeric(lubridate::duration(period, 'hours'), sampling_rate)
+  #3. Period must be in the correct sampling_rate (in number of samples per cycle)
+  period = as.numeric(lubridate::duration(period, 'hours'), sampling_rate) / sampling_bin_size
 
 
   ##### Format the data so we can run the cosinor ####
@@ -120,32 +115,25 @@ analyze_timeseries.cosinor <- function(df = NULL, sampling_rate = NULL, period =
   MESOR <- as.numeric(model$coefficients[1])
   sin_coeff <- as.numeric(model$coefficients[2])
   cos_coeff <- as.numeric(model$coefficients[3])
-  sin_se <- tidy(model)$std.error[2]
-  cos_se <- tidy(model)$std.error[3]
-
-  # Calculating Amplitude and phase
-  # Amplitude of the function = square root of (sin_coeff^2 + cos_coeff^2)
+  # Amplitude = sqrt(sin_coeff^2 + cos_coeff^2)
   amplitude <- sqrt(sin_coeff^2 + cos_coeff^2)
-  amplitude_se <- sqrt((sin_coeff^2*sin_se^2) + (cos_coeff^2 * cos_se^2))/ amplitude^2
-  #Phase equals arctan(- cos_coeff / sin_coeff)
-  acrophase <- atan( sin_coeff / cos_coeff )
-  acrophase_se <- ((cos_se^2 * sin_coeff^-2) + (cos_coeff^2 / sin_coeff^3 * sin_se^2)) / (1 + (cos_coeff/sin_coeff)^2)^2
 
+  # Delta-method SE for amplitude using the model covariance matrix.
+  # A = sqrt(b_s^2 + b_c^2);  Var(A) = (1/A^2) * [b_s^2 Vss + b_c^2 Vcc + 2 b_s b_c Vsc]
+  V   <- vcov(model)
+  # Term names come from the lm formula 'value ~ sinw + cosw'; keep these in sync if renamed.
+  Vss <- V["sinw", "sinw"]; Vcc <- V["cosw", "cosw"]; Vsc <- V["sinw", "cosw"]
+  amplitude_se <- sqrt(sin_coeff^2 * Vss + cos_coeff^2 * Vcc +
+                         2 * sin_coeff * cos_coeff * Vsc) / amplitude
 
-  if (cos_coeff < 0 & sin_coeff >= 0) {
-    acrophase <-   acrophase + pi
-  }
-  if (cos_coeff < 0 & sin_coeff < 0) {
-    acrophase <- pi + acrophase
-  }
+  # Acrophase via atan2 (correct quadrant), mapped to [0, 2*pi).
+  acrophase <- atan2(sin_coeff, cos_coeff)
+  if (acrophase < 0) acrophase <- acrophase + 2 * pi
 
-  if (cos_coeff >= 0 & sin_coeff < 0) {
-    acrophase <- 2*pi + acrophase
-  }
-
-  # if (cos_coeff >= 0 & sin_coeff >= 0) {
-  #   acrophase <- acrophase + pi
-  # }
+  # Delta-method SE for acrophase.
+  # phi = atan2(b_s, b_c); Var(phi) = (1/A^4)[b_c^2 Vss + b_s^2 Vcc - 2 b_s b_c Vsc]
+  acrophase_se <- sqrt(cos_coeff^2 * Vss + sin_coeff^2 * Vcc -
+                         2 * sin_coeff * cos_coeff * Vsc) / amplitude^2
 
 
   #Calculating the phase and translating it into the same units as the sampling_rate
