@@ -16,7 +16,7 @@
 #' @importFrom lubridate floor_date period
 #' @importFrom rlang sym as_function
 #' @importFrom stringr str_remove
-#' @importFrom magrittr '%>%'
+#' @importFrom magrittr "%>%"
 #'
 .downsample_one <- function(data = NULL,
                                  datetime_column = "datetime",

@@ -10,7 +10,7 @@
 #' circadian_data <- read_csv_data("/path/to/data.csv")
 #' }
 #' @importFrom readr read_csv
-#' @importFrom magrittr '%>%'
+#' @importFrom magrittr "%>%"
 #' @importFrom tidyr pivot_longer nest
 read_csv_data <- function(file = NULL) {
   if (is.null(file)) file <- file.choose()

@@ -12,9 +12,7 @@ NULL
 
 utils::globalVariables(c(
   "datetime", "value", "values", "ld", "window", "auto_power", "id", "ind",
-  "data", "median", "na.pass", "UTCTime", "Address", "UID", "ScanCount",
-  "Cnts/min", "Hr", "IND", "Lights", "Min", "Time", "amplitude", "dur",
-  "gc_cos_to_raw", "gc_raw_to_cos", "max_zeroes", "method", "monitor",
-  "name", "phase", "phase_in_seconds", "phase_se_seconds", "raw_values",
-  "rhythm_strength", "smoothed", "time", "window_ends", "window_starts"
+  "data", "Cnts/min", "Hr", "Lights", "Min", "Time", "amplitude",
+  "monitor", "name", "phase", "raw_values", "rhythm_strength", "smoothed",
+  "time", "UTCTime", "Address", "UID", "ScanCount", "max_zeroes", "IND", "dur"
 ))

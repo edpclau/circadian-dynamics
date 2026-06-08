@@ -7,13 +7,14 @@ A repository for analyzing circadian data
 devtools::install_github("edpclau/circadian-dynamics")
 ```
 
-# What's new in 3.0.0 (breaking changes)
+# What's new in 4.0.0 (breaking changes)
 
-- The **Granger causality test was removed** (it produced too many false positives/negatives to serve as a rhythmicity test).
-- The Trikinetics readers were renamed for clarity: **`read_trikinetics_nested`** (per-individual list, for analysis) and **`read_trikinetics_long`** (long form, for actograms).
-- Readers now take an explicit path; use the `*_interactive()` variants (e.g. `read_trikinetics_nested_interactive()`) to pick a file via a dialog.
-- `rythm` → `rhythm` throughout (e.g. the `rhythm_strength` field).
-- New helper `adjust_pvalues()` applies Benjamini-Hochberg/FDR correction across many tests.
+- **One reader per format.** `read_trikinetics(path, layout)`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, and `read_vitalpatch()` each accept a file *or* a folder and open a dialog when the path is `NULL`. The old `*_interactive()` / `*_folder()` and `read_trikinetics_nested|long()` names still work but are deprecated.
+- **Analysis functions renamed** off their misleading S3-style dotted names: `analyze_acf()`, `analyze_cosinor()`, `analyze_lomb()`, and `process_timeseries_main()` / `_core()` / `_waveform()`. The old dotted names are deprecated shims.
+- **Lomb-Scargle rhythm strength** is now `peak / significance_threshold`, so it is comparable across windows.
+- Many unused plotting functions were removed and the result plotters de-duplicated; the Granger test (dropped in 3.0.0) no longer appears anywhere.
+
+Earlier 3.0.0 changes: Granger causality test removed; `rythm` → `rhythm` throughout; new `adjust_pvalues()` for Benjamini-Hochberg/FDR correction.
 
 A runnable end-to-end example on the bundled `trikinetics` dataset is in the package vignette: `vignette("circadiandynamics")`.
 
@@ -32,9 +33,9 @@ library(gridExtra)
 file = file.choose()
 ```
 # 3. Depending on the file choose your import function
-The general import function is 'read_csv_data'. It requires that your file is in .csv format. The first column must be the datetime column. The second column should be your Light/Dark data, if you have any. All other columns will be the signals/individuals you want to analyze. If you're going to import a trikinetics file use 'read_trikinetics_nested'. In this example we use a trikinetics file.
+The general import function is `read_csv_data()`. It requires that your file is in .csv format. The first column must be the datetime column. The second column should be your Light/Dark data, if you have any. All other columns will be the signals/individuals you want to analyze. For a Trikinetics file use `read_trikinetics()`. In this example we use a trikinetics file.
 ```{r}
-trikinetics = read_trikinetics_nested(file)
+trikinetics = read_trikinetics(file)
 ```
 
 # 4. **** REQUIRED ***** Define meta-data (Sampling Rate)
@@ -54,7 +55,7 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 # 5. Generate Actograms to choose which individuals to analyze
 Run without modifying. The actogram will be saved in your working directory.
 ```{r}
-actogram(read_trikinetics_long(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics(file, layout = "long")[-2], sampling = sampling_rate_in_minutes)
 ```
 # 6. Rhythm Analysis
 ### This is the main function of the library.

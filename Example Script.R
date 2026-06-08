@@ -1,20 +1,4 @@
-#Important Announcement#
-# June 13, 2023 #
-# I am temporarily removing the Granger Test.
-# We have recently found many instances of this test returning
-# false positives and false negatives. Although we wanted to use this test as a
-# novel test of rhythmicity it seems we can't do that at this moment.
-# Remember that this test evaluates whether the Cosinor fit we create,
-# can be used to predict future changes in the raw data and vice versa.
-# The idea is that if an individual or signal is rhythmic for a given period,
-# it should present a causal relationship between the cosinor and raw data.
-# Note that if the Cosinor and the data match perfectly, the granget test will
-# output an NA.
-#If the granger test returns a pvalue > 0.05 or NA, this does not mean
-#your data is generally arhythmic! We can only say that the data is not-rythimic for
-#the specific period/frequency given to the cosinor. Your data may still be
-#rhythmic just with a different period.
-
+# End-to-end example: read -> analyze -> tidy -> export figures and tables.
 
 # 1. Load Library
 library(circadiandynamics)
@@ -33,9 +17,9 @@ file = file.choose()
 ## The second column should be your Light/Dark data, if you have any.
 ## All other columns will be the signals/individuals you want to analyze.
 ###
-## If you're going to import a trikinetics file use 'read_trikinetics_nested'.
+## If you're going to import a trikinetics file use 'read_trikinetics'.
 ## In this example we use a trikinetics file.
-trikinetics = read_trikinetics_nested(file)
+trikinetics = read_trikinetics(file)
 ##
 
 #4. **** REQUIRED ***** Define meta-data (Sampling Rate)
@@ -54,7 +38,7 @@ sampling_rate_in_minutes = 60/sampling_rate_in_seconds
 
 #5. Generate Actograms to choose which individuals to analyze
 #Run without modifying. The actogram will be saved in your working directory.
-actogram(read_trikinetics_long(file)[-2], sampling = sampling_rate_in_minutes)
+actogram(read_trikinetics(file, layout = "long")[-2], sampling = sampling_rate_in_minutes)
 
 
 #6. Rhythm Analysis

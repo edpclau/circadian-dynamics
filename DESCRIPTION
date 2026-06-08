@@ -1,7 +1,7 @@
 Package: circadiandynamics
 Type: Package
 Title: Period and Rhythm Analysis of Timeseries Data
-Version: 3.0.0
+Version: 4.0.0
 Authors@R: c(
     person("Eddie", "Pérez Claudio", email = "eddieperezclaudio@gmail.com", role = c("aut", "cre")),
     person("Manuel", "Guiannoni-Guzmán", role = "aut"),
@@ -13,13 +13,14 @@ Description:
     function to the data.
 License: GPL-3
 Encoding: UTF-8
-Imports: gridExtra, pracma, readr, rstudioapi, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, tibble, forcats, furrr, future, ggpp, purrr, stats, cli, crayon, utils, graphics, grDevices
-Depends: 
+Imports: pracma, readr, rstudioapi, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, tibble, furrr, future, purrr, stats, utils, graphics, grDevices
+Depends:
     R (>= 2.10)
 Suggests:
     testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    gridExtra
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
 VignetteBuilder: knitr

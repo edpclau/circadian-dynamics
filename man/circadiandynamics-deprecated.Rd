@@ -65,7 +65,9 @@ process_timeseries.core(...)
 process_timeseries.waveform(...)
 }
 \arguments{
-\item{path, file, directory, folder}{Path forwarded to the replacement function.}
+\item{file, directory}{Path forwarded to the replacement function.}
+
+\item{...}{Arguments forwarded to the replacement function.}
 }
 \value{
 The value of the replacement function.

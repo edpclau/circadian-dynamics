@@ -14,13 +14,13 @@ library(circadiandynamics)
 
 ## Reading data
 
-Readers take an explicit path (use the `*_interactive()` variants to pick a file via a dialog). Trikinetics files have two readers: a long form for actograms and a nested per-individual form for analysis.
+Each format has one reader (`read_trikinetics()`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, `read_vitalpatch()`). Pass a file or a folder; leave the path `NULL` to pick one via a dialog. Trikinetics supports a nested per-individual `layout` for analysis and a `"long"` layout for actograms.
 
 ```{r, eval = FALSE}
 # nested per-individual list, for analysis:
-monitor <- read_trikinetics_nested("path/to/monitor.txt")
+monitor <- read_trikinetics("path/to/monitor.txt")
 # long form, for actograms:
-actogram(read_trikinetics_long("path/to/monitor.txt")[-2], sampling = 1)
+actogram(read_trikinetics("path/to/monitor.txt", layout = "long")[-2], sampling = 1)
 ```
 
 ## A worked example on the bundled dataset

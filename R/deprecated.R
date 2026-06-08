@@ -6,7 +6,8 @@
 #'   automatically: [read_trikinetics()], [read_clocklab()], [read_csv_data()],
 #'   [read_satellite()], [read_vitalpatch()].
 #'
-#' @param path,file,directory,folder Path forwarded to the replacement function.
+#' @param file,directory Path forwarded to the replacement function.
+#' @param ... Arguments forwarded to the replacement function.
 #' @return The value of the replacement function.
 #' @name circadiandynamics-deprecated
 #' @keywords internal
