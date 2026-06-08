@@ -139,78 +139,35 @@ process_timeseries.core <- function(df = NULL,
   on.exit(future::plan(oplan), add = TRUE)
   if (big_data) future::plan(future::multisession)
 
-  if (make_windows){
-  #Set step and window_size
-  window_size <- days(window_size_in_days) #Width of the window
-  times <- df$datetime
-  step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day")) #days to move the window
-
-  df = future_map(
-    .options = furrr_options(seed = 42),
-    .x = step,
-    .f = ~ {
-
-      x = filter(df, (datetime >= .x) & (datetime <= .x + window_size))
-
-      #General Pipeline
-
-      x = process_timeseries.rmv_gaps(x, sampling_rate = sampling_rate)
-
-      x = process_timeseries.na_to_zero(x)
-
-      #ACF Pipeline
-      x = process_timeseries.waveform(x,
-                                      detrend_data = detrend_data, smooth_data = smooth_data,
-                                      butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
-
-      acf_results = analyze_timeseries.acf(x, from = from, to = to, sampling_rate = sampling_rate)
-
-      acf_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
-
-      #Lomb-Scargle Pipeline
-
-      lsp_results = analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
-
-      lsp_cosinor = analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
-
-      return(list(data = x,
-                  acf = list(results = acf_results,
-                             cosinor = acf_cosinor),
-                  lomb = list(results = lsp_results,
-                              cosinor = lsp_cosinor)
-                  )
-             )
-      }
-  )
-
-  return(df)
-
-  } else {
-  #General Pipeline
-  df = process_timeseries.rmv_gaps(df, sampling_rate = sampling_rate)
-  df = process_timeseries.na_to_zero(df)
-  #ACF Pipeline
-  df = process_timeseries.waveform(df,
-                                  detrend_data = detrend_data, smooth_data = smooth_data,
-                                  butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
-  acf_results = analyze_timeseries.acf(df, from = from, to = to, sampling_rate = sampling_rate)
-  acf_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = acf_results$period)
-  #Lomb-Scargle Pipeline
-  lsp_results = analyze_timeseries.lomb(df = df, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
-  lsp_cosinor = analyze_timeseries.cosinor(df, sampling_rate = sampling_rate, period = lsp_results$period)
-
-
-  return(list(data = df,
-              acf = list(results = acf_results,
-                         cosinor = acf_cosinor),
-              lomb = list(results = lsp_results,
-                          cosinor = lsp_cosinor)
-              )
-         )
-
+  # Full per-series pipeline: clean -> waveform -> ACF + Lomb-Scargle + cosinors.
+  run_one <- function(x) {
+    x <- process_timeseries.rmv_gaps(x, sampling_rate = sampling_rate)
+    x <- process_timeseries.na_to_zero(x)
+    x <- process_timeseries.waveform(x,
+                                     detrend_data = detrend_data, smooth_data = smooth_data,
+                                     butterworth = butterworth, f_low = f_low, f_high = f_high, order = order)
+    acf_results <- analyze_timeseries.acf(x, from = from, to = to, sampling_rate = sampling_rate)
+    acf_cosinor <- analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = acf_results$period)
+    lsp_results <- analyze_timeseries.lomb(df = x, sampling_rate = sampling_rate, from = from, to = to, ofac = ofac, alpha = lomb_pvalue)
+    lsp_cosinor <- analyze_timeseries.cosinor(x, sampling_rate = sampling_rate, period = lsp_results$period)
+    list(
+      data = x,
+      acf = list(results = acf_results, cosinor = acf_cosinor),
+      lomb = list(results = lsp_results, cosinor = lsp_cosinor)
+    )
   }
 
+  if (!make_windows) return(run_one(df))
 
+  # Slide a fixed-width window across the series and run the pipeline per window.
+  window_size <- days(window_size_in_days)
+  times <- df$datetime
+  step <- seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day"))
+  future_map(
+    .x = step,
+    .options = furrr_options(seed = 42),
+    .f = ~ run_one(filter(df, (datetime >= .x) & (datetime <= .x + window_size)))
+  )
 }
 
 #' @rdname process_timeseries

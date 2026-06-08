@@ -12,9 +12,11 @@ simplify_data(df, big_data = FALSE)
 \item{big_data}{Logical; if TRUE use a multisession plan for large datasets. Default FALSE.}
 }
 \value{
-A named list of four tibbles: \code{data}, \code{autocorrelation}, \code{lombscargle}, \code{utils}.
+A named list of four tibbles: `data`, `autocorrelation`, `lombscargle`, `utils`.
 }
 \description{
-Arranges the nested output of [process_timeseries.main] into four tidy data
-  frames (data, autocorrelation, lombscargle, utils) suitable for export and plotting.
+Arranges the nested output of [process_timeseries.main] into four
+  tidy tibbles (`data`, `autocorrelation`, `lombscargle`, `utils`) suitable for
+  export and plotting. Works for both windowed and non-windowed output; the
+  windowed case adds a `window` column.
 }
