@@ -41,26 +41,18 @@
 analyze_acf <- function(df = NULL,  from = 18, to = 30,
                        sampling_rate = "1 hour") {
 
-  #Create results list
-  results = list()
-  #First check if the function can be skipped (var = 0)
-  #the data for the acf will be the last col outputter by the processing functions
-  values = pull(df, ncol(df))
-  #Check the variance
-  if (var(values) == 0 | length(values) <= 3) {
-  results$datetime = NA
-  results$autocorrelation = NA
-  results$power = NA
-  results$period = NA
-  results$rhythm_strength = NA
-  results$max_peak_of_int = NA
-  results$start = NA
-  results$end = NA
-  results$from = from
-  results$to = to
-  return(results)
+  # Empty result, returned from every branch where no period can be determined.
+  # All keys present and consistent (start/end are NA in every NA branch).
+  na_result <- function() list(
+    datetime = NA, autocorrelation = NA, power = NA, period = NA,
+    rhythm_strength = NA, max_peak_of_int = NA, start = NA, end = NA,
+    from = from, to = to
+  )
 
-  }
+  # ACF runs on the last column produced by the processing steps.
+  values = pull(df, ncol(df))
+  # Skip flat or too-short windows.
+  if (var(values) == 0 | length(values) <= 3) return(na_result())
 
   ##### Flow Control Parameters #####
 
@@ -97,20 +89,8 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
   #Find the peaks
   peaks = findpeaks(autocorrelation, sortstr = TRUE)
 
-  #If there are no Peaks, return NA
-  if (rlang::is_empty(peaks)) {
-    results$datetime = NA
-    results$autocorrelation = NA
-    results$power = NA
-    results$period = NA
-    results$rhythm_strength = NA
-    results$max_peak_of_int = NA
-    results$start = NA
-    results$end = NA
-    results$from = from
-    results$to = to
-    return(results)
-  }
+  #If there are no peaks, return NA
+  if (rlang::is_empty(peaks)) return(na_result())
 
 
 
@@ -146,19 +126,10 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
 
 
   } else {
-    results$datetime = NA
-    results$autocorrelation = NA
-    results$power = NA
-    results$period = NA
-    results$rhythm_strength = NA
-    results$max_peak_of_int = NA
-    results$start = NA
-    results$end = NA
-    results$from = from
-    results$to = to
-    results$start = start
-    results$end = end
-    return(results)
+    # Peaks exist but none fall in the [start, end] band: no period. start/end are
+    # reported as NA here too (previously they were the real durations) so that every
+    # empty result is consistent.
+    return(na_result())
   }
 
 
@@ -166,17 +137,16 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
 
 
 
-  results$datetime = max_date
-  results$autocorrelation = autocorrelation
-  results$power = peaks$auto_power
-  results$period = period
-  results$rhythm_strength = rhythm_strength
-  results$max_peak_of_int = max_peak_of_int
-  results$start = start
-  results$end = end
-  results$from = from
-  results$to = to
-
-  #Return results
-  return(results)
+  list(
+    datetime = max_date,
+    autocorrelation = autocorrelation,
+    power = peaks$auto_power,
+    period = period,
+    rhythm_strength = rhythm_strength,
+    max_peak_of_int = max_peak_of_int,
+    start = start,
+    end = end,
+    from = from,
+    to = to
+  )
 }

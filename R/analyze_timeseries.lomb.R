@@ -89,70 +89,42 @@ analyze_lomb<- function (df = NULL, sampling_rate = NULL, from = 18, to = 30,
     to  <- (as.numeric(duration(to, units = "hours"), sampling_rate) / sampling_bin_size)
   }
 
-  #If there is 0 variance in the data or less than 2 values that are not NA, skip window.
-  if (var(values) == 0 | sum(!is.na(values)) <= 2) {
-    results = list(
-      period = NA ,
-      power = NA,
-      p_value = NA,
-      sig_level = NA,
-      scanned = NA,
-      power = NA,
-      rhythm_strength = NA
-    )
-    return(results)
+  # Empty result returned when no periodogram can be computed (flat/too-short window
+  # or a failed Lomb-Scargle fit). Same key set as the success path.
+  na_result <- list(period = NA, peak = NA, p_value = NA, sig_level = NA,
+                    scanned = NA, power = NA, rhythm_strength = NA)
+
+  # Skip flat windows or windows with too few non-NA values.
+  if (var(values) == 0 | sum(!is.na(values)) <= 2) return(na_result)
+
+  #### Lomb-Scargle periodogram ####
+  lsp_of_int <- lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
+  if (is_empty(lsp_of_int)) return(na_result)
+
+  ## Peak of interest within the [from, to] band ##
+  peaks <- lsp_peaks(lsp_of_int)
+  position <- from <= peaks$time & to >= peaks$time
+  if (any(position)) {
+    peak <- peaks$peaks[position][1]
+    period <- peaks$time[position][1]
+    # Rhythm strength = peak power relative to the significance threshold. Anchored
+    # to alpha, so it is comparable across windows regardless of periodogram grid size.
+    rhythm_strength <- peak / lsp_of_int$sig.level
+  } else {
+    # Periodogram computed but no peak in band: period/peak undefined, but the
+    # periodogram values (p_value, sig_level, scanned, power) are still meaningful.
+    peak <- NA
+    period <- NA
+    rhythm_strength <- NA
   }
 
-#### Lomb Scargle periodogram#####
-
-#lsp of interest
-lsp_of_int = lsp_mod(x = values, ofac = ofac, type = type, alpha = alpha, plot = FALSE)
-
-#If lsp_of_int fails (is NULL), then skip.
-if (is_empty(lsp_of_int)) {
-  results = list(
-    period = NA ,
-    power = NA,
-    p_value = NA,
-    sig_level = NA,
-    scanned = NA,
-    power = NA,
-    rhythm_strength = NA
+  list(
+    period = as.numeric(duration(period * sampling_bin_size, sampling_rate), "hours"),
+    peak = peak,
+    p_value = lsp_of_int$p.value,
+    sig_level = lsp_of_int$sig.level,
+    scanned = as.numeric(duration(lsp_of_int$scanned * sampling_bin_size, sampling_rate), "hours"),
+    power = lsp_of_int$power,
+    rhythm_strength = rhythm_strength
   )
-  return(results)
-}
-
-
-## Find Peaks of Interest ##
-peaks = lsp_peaks(lsp_of_int)
-
-
-position = c(from <= peaks$time & to >= peaks$time)
-
-if (any(position)) {
-  rs  = peaks$peaks[position][1]/ sqrt(length(lsp_of_int$scanned)/lsp_of_int$sig.level)
-  period = peaks$time[position][1]
-  peak = peaks$peaks[position][1]
-
-} else {
-  rs = NA
-  period = NA
-  peak = NA
-}
-
-
-results = list(
-       period = as.numeric(duration(period * sampling_bin_size, sampling_rate), "hours"),
-       peak = peak,
-       p_value = lsp_of_int$p.value,
-       sig_level = lsp_of_int$sig.level,
-       scanned = as.numeric(duration(lsp_of_int$scanned * sampling_bin_size, sampling_rate), "hours"),
-       power = lsp_of_int$power,
-       #this is a beta measurement and needs validation
-       rhythm_strength = rs
-       )
-
-
-
-  return(results)
 }
