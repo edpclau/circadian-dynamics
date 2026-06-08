@@ -1,34 +1,21 @@
-#' Import data from a Trikinetics tsv
-#' @param file a path to a csv file.
-#' @param ... Arguments passed on to \code{read_csv_data}.
-#' @return A named list of tibbles, one per individual/column, each with columns \code{datetime}, \code{ld} (if present), and \code{value}.
-#' @export read_csv_data
+#' Import circadian data from a generic CSV
 #'
+#' @param file Path to a `.csv` whose first column is the datetime and remaining
+#'   columns are individuals/signals. If `NULL` (default) a file dialog opens.
+#' @return A named list of tibbles, one per individual/column, each with columns
+#'   `datetime` and `value`.
+#' @export
 #' @examples
 #' \dontrun{
-#' circadian_data <- read_csv_data(file = "/path/to/data.csv")
+#' circadian_data <- read_csv_data("/path/to/data.csv")
 #' }
 #' @importFrom readr read_csv
 #' @importFrom magrittr '%>%'
-#' @importFrom tidyr pivot_longer
-#' @importFrom tidyr nest
-
-read_csv_data <- function(file = NULL){
-
-  ##### Flow Control #####
-  if (missing(file) || is.null(file)) {
-    stop("`file` is required. Use read_csv_data_interactive() to choose one via a dialog.")
-  }
-
-  # Import the file
-  df = read_csv(file)
-  names(df) = c('datetime', names(df)[-1])
-  df = df %>% pivot_longer(-datetime) %>% nest(data = -name)
-  names(df$data) <- df$name
-  df = df$data
-  return(df)
+#' @importFrom tidyr pivot_longer nest
+read_csv_data <- function(file = NULL) {
+  if (is.null(file)) file <- file.choose()
+  df <- read_csv(file, show_col_types = FALSE)
+  names(df) <- c("datetime", names(df)[-1])
+  df <- df %>% pivot_longer(-datetime) %>% nest(data = -name)
+  stats::setNames(df$data, df$name)
 }
-
-#' @rdname read_csv_data
-#' @export
-read_csv_data_interactive <- function(...) read_csv_data(file.choose(), ...)

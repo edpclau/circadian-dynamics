@@ -2,26 +2,23 @@
 % Please edit documentation in R/read_csv_data.R
 \name{read_csv_data}
 \alias{read_csv_data}
-\alias{read_csv_data_interactive}
-\title{Import data from a Trikinetics tsv}
+\title{Import circadian data from a generic CSV}
 \usage{
 read_csv_data(file = NULL)
-
-read_csv_data_interactive(...)
 }
 \arguments{
-\item{file}{a path to a csv file.}
-
-\item{...}{Arguments passed on to \code{read_csv_data}.}
+\item{file}{Path to a `.csv` whose first column is the datetime and remaining
+columns are individuals/signals. If `NULL` (default) a file dialog opens.}
 }
 \value{
-A named list of tibbles, one per individual/column, each with columns \code{datetime}, \code{ld} (if present), and \code{value}.
+A named list of tibbles, one per individual/column, each with columns
+  `datetime` and `value`.
 }
 \description{
-Import data from a Trikinetics tsv
+Import circadian data from a generic CSV
 }
 \examples{
 \dontrun{
-circadian_data <- read_csv_data(file = "/path/to/data.csv")
+circadian_data <- read_csv_data("/path/to/data.csv")
 }
 }

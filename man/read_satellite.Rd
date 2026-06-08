@@ -2,27 +2,21 @@
 % Please edit documentation in R/read_satelite.R
 \name{read_satellite}
 \alias{read_satellite}
-\alias{read_satellite_interactive}
-\title{Import Weather data From satellite}
+\title{Import weather data from satellite}
 \usage{
-read_satellite(path = NULL)
-
-read_satellite_interactive(...)
+read_satellite(file = NULL)
 }
 \arguments{
-\item{path}{A file path to the satellite data CSV.}
-
-\item{...}{Arguments passed on to \code{read_satellite}.}
+\item{file}{Path to the satellite data CSV. If `NULL` (default) a file dialog opens.}
 }
 \value{
-A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
+A tibble with columns `datetime` and one column of numeric satellite values.
 }
 \description{
-Import Weather data From satellite
+Import weather data from satellite
 }
 \examples{
 \dontrun{
-read_satellite(path = "/path/to/data.csv")
+read_satellite("/path/to/data.csv")
 }
-
 }

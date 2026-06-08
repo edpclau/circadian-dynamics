@@ -1,25 +1,14 @@
-#' Import Weather data From satellite
+#' Import weather data from satellite
 #'
-#' @param path A file path to the satellite data CSV.
-#' @param ... Arguments passed on to \code{read_satellite}.
-#'
-#' @return A tibble with columns \code{datetime} and one column of numeric satellite measurement values.
+#' @param file Path to the satellite data CSV. If `NULL` (default) a file dialog opens.
+#' @return A tibble with columns `datetime` and one column of numeric satellite values.
 #' @export
-#'
 #' @examples
 #' \dontrun{
-#' read_satellite(path = "/path/to/data.csv")
+#' read_satellite("/path/to/data.csv")
 #' }
-#'
-read_satellite <- function(path = NULL) {
-  if (missing(path) || is.null(path)) {
-    stop("`path` is required. Use read_satellite_interactive() to choose one via a dialog.")
-  }
-  df <- readr::read_csv(path, skip = 8, col_types = list(readr::col_datetime(), readr::col_double()))
-  df <- dplyr::rename(df, 'datetime'=time)
-  return(df)
+read_satellite <- function(file = NULL) {
+  if (is.null(file)) file <- file.choose()
+  df <- readr::read_csv(file, skip = 8, col_types = list(readr::col_datetime(), readr::col_double()))
+  dplyr::rename(df, "datetime" = time)
 }
-
-#' @rdname read_satellite
-#' @export
-read_satellite_interactive <- function(...) read_satellite(rstudioapi::selectFile(), ...)

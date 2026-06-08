@@ -1,44 +1,23 @@
-#' @title Read a Folder of Vital Patch Data
-#' @description This function imports a folder of Vital Patch data in the standard format. That is,
-#' the format provided in Vital Patch's Eval Data. There should be a folder per channel. read_vitalpatch
-#' concatenates all the data into a single tibble (data.frame) so that the user doesn't have to do it manually.
+#' Import a folder of Vital Patch data
 #'
+#' @description Imports a folder of Vital Patch "Eval Data" (one subfolder per
+#'   channel) and concatenates it into a single tibble.
 #'
-#' @param folder A path (directory) to the folder we want to analyze.
-#' @param ... Arguments passed on to \code{read_vitalpatch}.
-#'
-#' @return Returns a tibble (data.frame) object with parsed dates.
-#'
-#' @details Parallelism follows the caller's \code{future::plan()}; set a plan (e.g. \code{future::plan(future::multisession)}) before calling to parallelize.
-#'
+#' @param folder Path to the folder to import. If `NULL` (default) a directory
+#'   dialog opens. Parallelism follows the caller's [future::plan()].
+#' @return A tibble with parsed `datetime` and the channel columns.
 #' @export
-#'
 #' @examples
 #' \dontrun{
-#' read_vitalpatch(folder = "/path/to/folder")
+#' read_vitalpatch("/path/to/folder")
 #' }
-#'
 #' @importFrom lubridate as_datetime
 #' @importFrom dplyr rename
-#' @importFrom purrr map_df
-#'
+#' @importFrom readr cols
 read_vitalpatch <- function(folder = NULL) {
-
-  ##### Flow Control #####
-  if (missing(folder) || is.null(folder)) {
-    stop("`folder` is required. Use read_vitalpatch_interactive() to choose one via a dialog.")
-  }
-files = list.files(folder, full.names = TRUE)
-
-df = furrr::future_map_dfr(files, readr::read_csv, col_types = cols(.default = 'd'))
-
-df$Time = lubridate::as_datetime(df$Time/1000)
-
-df = dplyr::rename(df, datetime = Time)
-
-return(df)
+  if (is.null(folder)) folder <- rstudioapi::selectDirectory()
+  files <- list.files(folder, full.names = TRUE)
+  df <- furrr::future_map_dfr(files, readr::read_csv, col_types = cols(.default = "d"))
+  df$Time <- lubridate::as_datetime(df$Time / 1000)
+  dplyr::rename(df, datetime = Time)
 }
-
-#' @rdname read_vitalpatch
-#' @export
-read_vitalpatch_interactive <- function(...) read_vitalpatch(rstudioapi::selectDirectory(), ...)
