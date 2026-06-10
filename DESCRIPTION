@@ -13,7 +13,7 @@ Description:
     function to the data.
 License: GPL-3
 Encoding: UTF-8
-Imports: pracma, readr, rstudioapi, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, tibble, furrr, future, purrr, stats, utils, graphics, grDevices
+Imports: pracma, readr, rstudioapi, lubridate, signal, dplyr, stringr, magrittr, tidyr, broom, ggplot2, rlang, tibble, furrr, future, purrr, stats, utils, graphics, grDevices, grid
 Depends:
     R (>= 2.10)
 Suggests:

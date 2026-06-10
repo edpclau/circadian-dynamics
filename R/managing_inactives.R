@@ -24,81 +24,52 @@
 #' @import magrittr
 #' @importFrom lubridate duration
 #' @importFrom furrr future_map future_map2
-#' @importFrom dplyr filter tibble group_by mutate all_of select
-#'
-#'
-#'
-rm_inactive_dates <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
-
-  #Definition for what we will consider an inactive dates
-  inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
-
-  to_return = future_map(
-    .x = df,
-    .f = ~ {
-      #Identify Sequences of activity
-      rles = rle(.x[['value']])
-      rles = tibble(lengths = rles$lengths, values = rles$values)
-
-      #Identify perdiods where activity or measurements are 0
-      inactive = mutate(rles, inactive = ifelse(values == 0 & lengths >= inactivity_threshold, TRUE, FALSE))$inactive
-
-      #If there is an inactive period, return only the dates before that datetime
-      if (any(inactive)) {
-        inactive_point = which.max(inactive) - 1
-        rows = sum(rles[1:inactive_point,][[1]])
-        return(.x[1:rows,])
-      } else {
-        return(.x)
-      }
-    }
-    )
-
-  return(to_return)
-
-
-  }
-
-
-#' @rdname rm_inactive_dates
-#' @export
-report_inactive_variables <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
-
-  #Definition for what we will consider an inactive dates
-  inactivity_threshold = duration(inactivity_period) / duration(sampling_rate)
-
-  to_return = future_map2(
-    .x = df,
-    .y = names(df),
-    .f = ~ {
-      #Identify Sequences of activity
-      rles = rle(.x[['value']])
-      rles = tibble(lengths = rles$lengths, values = rles$values)
-
-      #Identify perdiods where activity or measurements are 0
-      inactive = mutate(rles, inactive = ifelse(values == 0 & lengths >= inactivity_threshold, TRUE, FALSE))$inactive
-
-      #If there is an inactive period, return only the active variables
-      if (any(inactive)) {
-        return(.y)
-      }
-    }
-  )
-
-
-
-
-
-  return(as.character(to_return))
+rm_inactive_dates <- function(df, inactivity_period = "1 day", sampling_rate = "1 hour") {
+  threshold <- .inactivity_threshold(inactivity_period, sampling_rate)
+  future_map(df, ~ {
+    runs <- .inactive_runs(.x[["value"]], threshold)
+    if (!any(runs$inactive)) return(.x)
+    # Keep only the rows before the first inactive run. If the first run is itself the
+    # inactive one there is no active prefix, so return an empty frame.
+    inactive_point <- which.max(runs$inactive) - 1L
+    if (inactive_point == 0) return(.x[0, ])
+    rows <- sum(runs$lengths[seq_len(inactive_point)])
+    .x[seq_len(rows), ]
+  })
 }
 
 
 #' @rdname rm_inactive_dates
 #' @export
-rm_inactive_variables <- function(df,inactivity_period = "1 day", sampling_rate = "1 hour") {
+report_inactive_variables <- function(df, inactivity_period = "1 day", sampling_rate = "1 hour") {
+  threshold <- .inactivity_threshold(inactivity_period, sampling_rate)
+  inactive <- future_map2(df, names(df), ~ {
+    if (any(.inactive_runs(.x[["value"]], threshold)$inactive)) .y
+  })
+  # Active individuals yield NULL above; drop them before coercion, otherwise
+  # as.character() turns each NULL slot into the literal string "NULL".
+  as.character(Filter(Negate(is.null), inactive))
+}
 
-  inactive = report_inactive_variables(df, inactivity_period, sampling_rate)
 
-  return(df[!(names(df) %in% inactive)])
+#' @rdname rm_inactive_dates
+#' @export
+rm_inactive_variables <- function(df, inactivity_period = "1 day", sampling_rate = "1 hour") {
+  inactive <- report_inactive_variables(df, inactivity_period, sampling_rate)
+  df[!(names(df) %in% inactive)]
+}
 
-  }
+
+# --- internal helpers -------------------------------------------------------
+
+# Number of samples that counts as "inactive" (inactivity_period / sampling_rate).
+.inactivity_threshold <- function(inactivity_period, sampling_rate) {
+  lubridate::duration(inactivity_period) / lubridate::duration(sampling_rate)
+}
+
+# Run-length-encode `values`; return per-run logical (a zero run at least `threshold`
+# samples long) together with the run lengths.
+.inactive_runs <- function(values, threshold) {
+  r <- rle(values)
+  list(inactive = r$values == 0 & r$lengths >= threshold, lengths = r$lengths)
+}

@@ -1,6 +1,6 @@
 #' Helper function to prepare raw data for analysis
 #'
-#' @description Processes raw data in such a way that it can be directly inputted to the rhythm_analysis_by_window function.
+#' @description Cleans, optionally filters/detrends, and runs ACF + Lomb-Scargle + cosinor analysis on a timeseries (optionally in sliding windows).
 #'
 #'
 #' @param df A data.frame where the first column is a POSIXct object and the rest are independent measurement values.
@@ -11,15 +11,15 @@
 #'
 #' @param window_step_in_days a numeric indicating the amount of day by which to move the window in day units.
 #'
-#' @param movavg Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.
+#' @param movavg Logical. If TRUE, smooths the measurement values using a moving average. Default = FALSE.
 #'
 #' @param detrend_data Logical. If TRUE (default) will detrend the data. If FALSE measurement values won't be detrended. If both, detrend_data and smooth_data are TRUE, the detrending will run over the smoothed data.
 #'
-#' @param butterworth Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.
+#' @param butterworth Logical. If TRUE (default) applies a two-pass Butterworth band-pass filter to the measurement values. If FALSE, values are not filtered.
 #'
 #' @param order filter order. Default = 2.
 #' @param f_low Frequency for the low pass filter. Default = 1/4.
-#' @param f_high Frequency for the high pass filter. Default = 1/72.
+#' @param f_high Frequency for the high pass filter. Default = 1/73.
 #'
 #' @param from The period (in hours) from which to start looking for peaks. Default = 18.
 #'
@@ -49,7 +49,7 @@
 #' processed_data <- process_timeseries_main(list_of_dfs, sampling_rate = "1 hour")
 #' }
 #'
-#' @importFrom dplyr select right_join bind_rows filter
+#' @importFrom dplyr right_join filter
 #' @importFrom tibble tibble
 #' @importFrom magrittr "%>%"
 #' @importFrom lubridate hour ceiling_date
@@ -92,9 +92,7 @@ df = smooth_and_detrend(df, smooth_data = smooth_data, detrend_data = detrend_da
 if (butterworth)
 df = butterworth_filter(df, order = order, f_low = f_low, f_high = f_high, plot = FALSE)
 
-
-return(df)
-
+df
 }
 
 
@@ -120,7 +118,7 @@ process_timeseries_core <- function(df = NULL,
                                     f_high = 1/73,
                                     order = 2,
                                     big_data = FALSE,
-                                    ofac = 1,
+                                    ofac = 10,
                                     lomb_pvalue = 0.01) {
 
   oplan <- future::plan()
@@ -150,10 +148,15 @@ process_timeseries_core <- function(df = NULL,
   # Slide a fixed-width window across the series and run the pipeline per window.
   window_size <- days(window_size_in_days)
   times <- df$datetime
-  step <- seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day"))
+  # Only start windows where a full window_size still fits, so trailing windows are
+  # not silently analysed on far less than window_size_in_days of data. Guarantee at
+  # least one window for series shorter than the window itself.
+  last_start <- max(times) - window_size
+  if (last_start < min(times)) last_start <- min(times)
+  step <- seq(from = min(times), to = last_start, by = paste(window_step_in_days, "day"))
   future_map(
     .x = step,
-    .options = furrr_options(seed = 42),
+    .options = furrr_options(seed = 42, packages = "lubridate"),
     .f = ~ run_one(filter(df, (datetime >= .x) & (datetime <= .x + window_size)))
   )
 }
@@ -181,34 +184,25 @@ process_timeseries_main <- function(df = NULL,
   on.exit(future::plan(oplan), add = TRUE)
   if (big_data) future::plan(future::multisession)
 
-  return(
-
-    future_map(
-      .x = df,
-      .options = furrr_options(seed = 42),
-      .f = ~ {
-        process_timeseries_core(df = .x,
-
-                                make_windows = make_windows,
-                                window_size_in_days = window_size_in_days,
-                                window_step_in_days = window_step_in_days,
-                                sampling_rate = sampling_rate,
-                                detrend_data = detrend_data,
-                                smooth_data = movavg,
-                                butterworth = butterworth,
-                                f_low = f_low,
-                                f_high = f_high,
-                                from = from,
-                                to = to,
-                                order = order,
-                                big_data = big_data,
-                                ofac = ofac,
-                                lomb_pvalue = lomb_pvalue)
-      }
-    )
-
-
+  future_map(
+    .x = df,
+    .options = furrr_options(seed = 42),
+    .f = ~ process_timeseries_core(df = .x,
+                                   make_windows = make_windows,
+                                   window_size_in_days = window_size_in_days,
+                                   window_step_in_days = window_step_in_days,
+                                   sampling_rate = sampling_rate,
+                                   detrend_data = detrend_data,
+                                   smooth_data = movavg,
+                                   butterworth = butterworth,
+                                   f_low = f_low,
+                                   f_high = f_high,
+                                   from = from,
+                                   to = to,
+                                   order = order,
+                                   big_data = big_data,
+                                   ofac = ofac,
+                                   lomb_pvalue = lomb_pvalue)
   )
-
 }
 

@@ -49,6 +49,8 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = "m
   lomb_run <- !is.na(unit$lomb$results$period)
   n_rows <- detrended + smoothed + butterworth + 4
   l_adjust <- -2
+  # Colourblind-safe, consistent across panels: vermillion = ACF, blue = Lomb-Scargle.
+  cols <- okabe_ito(8); acf_col <- cols[6]; lsp_col <- cols[5]
 
   par(mfrow = c(n_rows, 1), mar = c(2, 4, 1.5, 0))
 
@@ -62,25 +64,26 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = "m
 
   if (acf_run) {
     x <- as.numeric(duration(seq(0, length(d$datetime) - 1, 1), sampling_rate), "hours")
-    plot(x, unit$acf$results$autocorrelation, type = "l", xlab = "", ylab = "Power")
-    ci <- 1.965 / sqrt(length(x / 60))
-    abline(h = c(ci, -ci), col = "red", lty = 2)
-    text(x = as.numeric(duration(unit$acf$results$datetime, sampling_rate), "hour"),
-         y = unit$acf$results$max_peak_of_int, label = "*", col = "red", cex = 3)
+    plot(x, unit$acf$results$autocorrelation, type = "l", xlab = "", ylab = "Autocorrelation")
+    # White-noise 95% band, +/- 1.96/sqrt(N), N constant across lags (Levine et al. 2002).
+    ci <- 1.96 / sqrt(length(x))
+    abline(h = c(ci, -ci), col = acf_col, lty = 2)
+    points(x = as.numeric(duration(unit$acf$results$datetime, sampling_rate), "hour"),
+           y = unit$acf$results$max_peak_of_int, col = acf_col, pch = 19, cex = 1.2)
     text(x = max(x) * 0.5, y = max(unit$acf$results$autocorrelation) * 0.9,
          label = paste("Autocorrelation:", "Period =", round(unit$acf$results$period, 2), "|",
-                       "Power (R.I.) =", round(unit$acf$results$max_peak_of_int, 2)), col = "red")
+                       "Power (R.I.) =", round(unit$acf$results$max_peak_of_int, 2)), col = acf_col)
   } else {
     plot.new()
     mtext("Autocorrelation Not Run", side = 1, line = l_adjust)
   }
 
   if (lomb_run) {
-    plot(unit$lomb$results$scanned, unit$lomb$results$power, type = "l", xlab = "", ylab = "Power")
-    abline(h = unit$lomb$results$sig_level, col = "blue", lty = 2)
+    plot(unit$lomb$results$scanned, unit$lomb$results$power, type = "l", xlab = "Period (hours)", ylab = "Power")
+    abline(h = unit$lomb$results$sig_level, col = lsp_col, lty = 2)
     text(x = max(unit$lomb$results$scanned) * 0.605, y = max(unit$lomb$results$power) * 0.9,
          label = paste("Lomb-Scargle:", "Period =", round(unit$lomb$results$period, 2), "|",
-                       "Power (R.I.) =", round(unit$lomb$results$peak, 2)), col = "blue")
+                       "Power (R.I.) =", round(unit$lomb$results$peak, 2)), col = lsp_col)
   } else {
     plot.new()
     mtext("Lomb-Scargle Periodogram Not Run", side = 1, line = l_adjust)
@@ -93,13 +96,13 @@ generate_plots_with_windows <- function(trikinetics_analyzed, sampling_rate = "m
     mtext("Cosinor Not Run", side = 1, line = l_adjust)
   }
   if (lomb_run) {
-    lines(d$datetime, unit$lomb$cosinor$wave, col = "blue")
+    lines(d$datetime, unit$lomb$cosinor$wave, col = lsp_col, lwd = 1.5)
     text(x = mean(d$datetime), y = max(d[[ncol(d)]]) * 0.9,
-         label = paste("Lomb-Scargle Cosinor:", "R^2 =", round(unit$lomb$cosinor$adj_r_squared, 4)), col = "blue")
+         label = paste("Lomb-Scargle Cosinor:", "R^2 =", round(unit$lomb$cosinor$adj_r_squared, 4)), col = lsp_col)
   }
   if (acf_run) {
-    lines(d$datetime, unit$acf$cosinor$wave, col = "red")
+    lines(d$datetime, unit$acf$cosinor$wave, col = acf_col, lwd = 1.5)
     text(x = mean(d$datetime), y = max(d[[ncol(d)]]) * 0.7,
-         label = paste("Acf Cosinor:", "R^2 =", round(unit$acf$cosinor$adj_r_squared, 4)), col = "red")
+         label = paste("Acf Cosinor:", "R^2 =", round(unit$acf$cosinor$adj_r_squared, 4)), col = acf_col)
   }
 }

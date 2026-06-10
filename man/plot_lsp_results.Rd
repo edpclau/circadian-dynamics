@@ -10,8 +10,8 @@ plot_lsp_results(df)
 \item{df}{The `lombscargle` table from [simplify_data()].}
 }
 \value{
-A named list with `period_plots`, `rhythm_plots`, `amplitude_plots`,
-  and `phase_plots`, one ggplot per individual.
+A named list with `period_plots`, `relative_power_plots`,
+  `amplitude_plots`, and `phase_plots`, one ggplot per individual.
 }
 \description{
 Plot Lomb-Scargle results by window

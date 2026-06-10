@@ -17,17 +17,21 @@ test_that("simplify_data tidies windowed output with a window column and stable 
   # more than one window was produced and unpacked
   expect_gt(length(unique(tidy$autocorrelation$window)), 1)
 
+  # Trailing cos_coeff..cosinor_n carry the cosinor sine/cosine coefficients and
+  # their covariance + N, plumbed through for the Bingham acrophase ellipse.
   expect_named(tidy$autocorrelation, c(
-    "data", "window", "peak_datetime", "period", "rhythm_strength", "acf_peak",
+    "data", "window", "peak_datetime", "period", "cosinor_period", "rhythm_strength", "acf_peak",
     "mesor", "amplitude", "amp_se", "acrophase", "acro_se", "phase", "phase_se",
-    "adj_r_squared", "cosinor_p_value"
+    "adj_r_squared", "cosinor_p_value",
+    "cos_coeff", "sin_coeff", "var_sin", "var_cos", "cov_sincos", "cosinor_n"
   ))
   # NB: lomb results carry no $datetime, so tibble() drops the NULL peak_datetime
   # column here (unlike the autocorrelation table). This is existing behaviour.
   expect_named(tidy$lombscargle, c(
-    "data", "window", "period", "rhythm_strength", "lsp_peak",
+    "data", "window", "period", "cosinor_period", "relative_power", "lsp_peak",
     "mesor", "amplitude", "amp_se", "acrophase", "acro_se", "phase", "phase_se",
-    "adj_r_squared", "cosinor_p_value"
+    "adj_r_squared", "cosinor_p_value",
+    "cos_coeff", "sin_coeff", "var_sin", "var_cos", "cov_sincos", "cosinor_n"
   ))
   # no Granger columns survive anywhere
   expect_false(any(grepl("^gc_|_gc$|granger", names(tidy$lombscargle), ignore.case = TRUE)))

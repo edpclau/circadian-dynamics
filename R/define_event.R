@@ -1,8 +1,6 @@
 #' Define an Event for the USDA RFID data
 #'
 #' @param df data.frame of RFID data containing at least the following columns: UID, UTCTime, Address, ScanCount.
-#' @param core boolean. If TRUE (default), will run paralelization using the multicore approach. This doesn't work well on Windows 10
-#' systems. If FALSE, it will use the multisession approach.
 #'
 #' @return returns a data.frame with an additional column called "event".
 #'
@@ -26,7 +24,7 @@
 #'
 #'
 #'
-define_event <- function(df, core = TRUE) {
+define_event <- function(df) {
   # Make sure the date has been parsed as datetime.
   if (!is.POSIXct(df$UTCTime)) {
     df$UTCTime = mdy_hms(df$UTCTime)

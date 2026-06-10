@@ -36,29 +36,24 @@ smooth_and_detrend <- function(df = NULL, smooth_data = TRUE, binning_n = 4,
       )
   }
 
+  # pracma::movavg() errors with "Window length n must be greater than length of
+  # time series" when the series is no longer than the smoothing window. Short
+  # trailing windows (or animals that die early) can have <= binning_n rows; fall
+  # back to no smoothing instead of crashing the furrr worker.
+  if (smooth_data && nrow(df) <= binning_n) {
+    warning("Window has <= binning_n rows; skipping moving-average smoothing.")
+    smooth_data <- FALSE
+  }
+
 
   ####### Data Smoothing or Detrending ######
-  if (smooth_data & detrend_data) {
-      df =  df %>%
-          mutate(
-            smoothed =  movavg(value, n = binning_n, type = "s"),
-            smoothed_and_detrended = c(detrend(smoothed)))
-
-
-
-  } else if (smooth_data) {
-
-    df =  df %>%
-      mutate(
-        smoothed =  movavg(value, n = binning_n, type = "s"))
-
-
-  } else if (detrend_data) {
-
-    df =  df %>%
-      mutate(
-        detrended =  c(detrend(value)))
-
+  # Smooth first (if requested); detrend then runs on the smoothed signal when both
+  # are TRUE (column `smoothed_and_detrended`), otherwise on the raw values (`detrended`).
+  if (smooth_data) df <- mutate(df, smoothed = movavg(value, n = binning_n, type = "s"))
+  if (detrend_data) {
+    src <- if (smooth_data) df$smoothed else df$value
+    out_col <- if (smooth_data) "smoothed_and_detrended" else "detrended"
+    df[[out_col]] <- c(detrend(src))
   }
 
   return(df)

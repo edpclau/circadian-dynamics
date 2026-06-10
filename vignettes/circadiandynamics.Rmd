@@ -39,7 +39,8 @@ sub <- lapply(trikinetics[c("IND 2", "IND 4")], bin15)
 result <- process_timeseries_main(
   sub, make_windows = FALSE, sampling_rate = "15 minutes",
   from = 15, to = 33, detrend_data = FALSE, butterworth = TRUE,
-  f_low = 1/(12*4), f_high = 1/(35*4), order = 2, ofac = 1
+  f_low = 1/(12*4), f_high = 1/(35*4), order = 2,
+  ofac = 1  # small for a fast vignette build; process_timeseries_main() defaults to 10
 )
 periods <- data.frame(
   individual = names(result),

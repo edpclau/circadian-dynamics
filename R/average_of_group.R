@@ -11,16 +11,9 @@
 #' average_of_group(df = monitor_downsampled)
 #' }
 #'
-#' @importFrom tidyr pivot_longer everything
-#' @importFrom dplyr group_by summarise left_join select
-#' @importFrom dplyr summarise
-#' @import magrittr
+#' @importFrom dplyr select everything
 average_of_group <- function(df = NULL) {
-df_long <- pivot_longer(df, -1, names_to = "ID", values_to = "value")
-df_mean <- group_by(df_long, datetime) %>%
-  summarise(mean = mean(value, na.rm = TRUE), .groups = "drop")
-df <- left_join(df, df_mean, by = names(df)[1])
-df <- select(df, 1, mean, everything())
-
-return(df)
+  # Row-wise mean across all measurement columns (assumes one row per datetime).
+  df$mean <- rowMeans(df[-1], na.rm = TRUE)
+  select(df, 1, mean, everything())
 }

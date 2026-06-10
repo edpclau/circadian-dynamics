@@ -38,7 +38,6 @@ units <- str_remove(units, "\\d")
   #handle the anonymous function naming
 method <- match.arg(method, choices = c("mean", "sum", "median"))
 method <- as_function(method)
-method <- match.fun(method, c(mean, sum, median))
 
 
 #flooring dates

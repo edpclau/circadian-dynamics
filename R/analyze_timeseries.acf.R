@@ -17,8 +17,9 @@
 #'
 #' @details The reported `rhythm_strength` is the maximum autocorrelation peak within the
 #' search band divided by the 95% white-noise confidence bound \code{1.965 / sqrt(n)}, where \code{n} is the number of observations in \code{df}. Values > 1
-#' indicate the peak exceeds what white noise would produce. The Lomb-Scargle `rhythm_strength`
-#' (in [analyze_lomb]) is a separate, experimental measure and is not directly comparable.
+#' indicate the peak exceeds what white noise would produce. The Lomb-Scargle path
+#' reports a different quantity, `relative_power` (in [analyze_lomb]), which is on a
+#' different scale and is not directly comparable.
 #'
 #' @return A data.frame with the autocorrelation results for each window which include: period, peaks,
 #' power, lags for the peaks.
@@ -32,9 +33,8 @@
 #' res <- analyze_acf(df, from = 18, to = 30, sampling_rate = "1 hour")
 #' }
 #'
-#' @importFrom dplyr pull filter mutate left_join select
-#' @importFrom stringr str_extract str_remove
-#' @importFrom lubridate duration as.duration as.interval
+#' @importFrom dplyr pull filter
+#' @importFrom lubridate duration
 #' @importFrom tibble tibble
 #' @importFrom pracma findpeaks movavg
 #'
@@ -51,8 +51,9 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
 
   # ACF runs on the last column produced by the processing steps.
   values = pull(df, ncol(df))
-  # Skip flat or too-short windows.
-  if (var(values) == 0 | length(values) <= 3) return(na_result())
+  # Skip flat or too-short windows. var(values) is NA (not 0) when values contains
+  # NAs, so guard with isTRUE() and na.rm to avoid an `if(NA)` crash.
+  if (isTRUE(var(values, na.rm = TRUE) == 0) || length(values) <= 3) return(na_result())
 
   ##### Flow Control Parameters #####
 
@@ -61,8 +62,9 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
     stop("must provide a sampling_rate")
   } else {
 
-    sampling_bin_size = as.numeric(str_extract(sampling_rate, "\\d*"))
-    sampling_rate = str_remove(sampling_rate, "\\d* *")
+    sr <- .parse_sampling_rate(sampling_rate)
+    sampling_bin_size <- sr$bin
+    sampling_rate <- sr$unit
   }
 
   #2. the period must be calculated from the data on the second day.
@@ -84,7 +86,6 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
       # The function that looks for peaks doesn't allow NA, 0 would be ignored if we put a threshold, therefore it won't affect
       # the results
   autocorrelation = ifelse(is.na(autocorrelation), 0, autocorrelation)
-  len_autocor = length(autocorrelation)
 
   #Find the peaks
   peaks = findpeaks(autocorrelation, sortstr = TRUE)
@@ -94,9 +95,11 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
 
 
 
-  # peaks[,2] are lags in samples; scale by the sampling bin size to get real time.
+  # peaks[,2] are 1-based ACF-vector indices; index i corresponds to lag i-1
+  # (lag 0 is index 1). Subtract 1 to get the true lag in samples before scaling
+  # by the sampling bin size, otherwise every period is one bin too large.
   peaks = tibble(auto_power = peaks[,1],
-                 datetime = duration(peaks[,2] * sampling_bin_size, sampling_rate))
+                 datetime = duration((peaks[,2] - 1L) * sampling_bin_size, sampling_rate))
 
   #Keep only the positive peaks
   peaks = dplyr::filter(peaks, auto_power >= 0.2)
@@ -106,31 +109,16 @@ analyze_acf <- function(df = NULL,  from = 18, to = 30,
   #Find the maximum peak within the scope
   peaks_of_int = filter(peaks, datetime >= start, datetime <= end)
 
-  #Make sure the peaks_of_int is not empty, otherwise return NA
-  if (!all(is_empty(peaks_of_int$auto_power))) {
+  # Peaks exist but none fall in the [start, end] band: no period (consistent NA result).
+  if (nrow(peaks_of_int) == 0) return(na_result())
 
-    #Get the maximum peak
-    max_peak_of_int = max(peaks_of_int$auto_power)
-
-    #Get the period of the maximum peak
-    period = filter(peaks_of_int, auto_power == max_peak_of_int)$datetime
-    #Translate the period into the correct time
-    period = as.numeric(period, 'hours') - 24
-
-    #Get datetime of the maximum peak
-    max_date = filter(peaks_of_int, auto_power == max_peak_of_int)$datetime
-    max_date = as.numeric(duration(max_date, sampling_rate), 'hours')
-
-    #Get the Rhythm Strength
-    rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
-
-
-  } else {
-    # Peaks exist but none fall in the [start, end] band: no period. start/end are
-    # reported as NA here too (previously they were the real durations) so that every
-    # empty result is consistent.
-    return(na_result())
-  }
+  max_peak_of_int = max(peaks_of_int$auto_power)
+  # top$datetime is already a Duration; convert straight to hours. Re-wrapping it in
+  # duration() would reinterpret its seconds as 'sampling_rate' units and inflate it.
+  top = filter(peaks_of_int, auto_power == max_peak_of_int)
+  period = as.numeric(top$datetime, 'hours') - 24
+  max_date = as.numeric(top$datetime, 'hours')
+  rhythm_strength = max_peak_of_int / (1.965/sqrt(nrow(df)))
 
 
 

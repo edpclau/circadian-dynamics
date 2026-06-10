@@ -4,37 +4,31 @@
 \alias{analyze_cosinor}
 \title{Cosinor Analysis}
 \usage{
-analyze_cosinor(
-  df = NULL,
-  sampling_rate = NULL,
-  period = NULL,
-  na.action = na.omit
-)
+analyze_cosinor(df = NULL, sampling_rate = NULL, period = NULL)
 }
 \arguments{
 \item{df}{A data.frame which contains the dates of a time series in column 1 and the values in column 2.}
 
 \item{sampling_rate}{A character string indicating the sampling rate of the data. Examples: '30 minutes', '1 hour', '4 seconds', '100 days'.}
 
-\item{period}{A numeric indicating the period to analyse. Must be in the same units as the sampling rate.
-Examples: If the goal is to evaluate a 24 "hour" period but the sampling rate is "30 minutes",
-the period to use is a  48 "30 minutes" period.}
-
-\item{na.action}{Default is na.omit which excludes NA values from the analysis. See [stats::lm()] for a more detailed description.}
+\item{period}{A numeric indicating the period to analyse, given in HOURS regardless of the
+sampling rate (e.g. \code{period = 24} for a 24-hour rhythm). The function
+converts it internally to the number of samples per cycle using \code{sampling_rate}.}
 }
 \value{
-A data.frame with:
-MESOR: The intercept of the regression. ie. Mean of the COSINOR fit.
-Amplitude: Amplitude of the COSINOR fit.
-Amplitude_se
-Acrophase: Phase shifting of the fit in radians.
-Acrophase_se
-Phase_in_seconds: Acrophase in seconds.
-Phase_se_seconds
-Adj_r_squared: The PR or Percent Rythm of the fit.
-Cosinor_p_value: p.value for the regression. Significance indicates the period matches the data.
-Wave_y = MESOR + amplitude * cosw : The use is to plot the fit.
-Wave_x = timeseries_datetime + phase_in_seconds : The use is to plot the fit.
+A named list with:
+\code{period}: The period (in hours) that was fitted. Equals the supplied
+\code{period}, or 24 when \code{period} is NA/empty (e.g. when neither ACF nor
+Lomb-Scargle found an in-band peak), which lets callers tell the ACF-period and
+Lomb-period cosinor fits apart.
+\code{mesor}: Intercept of the regression, i.e. the mean of the cosinor fit.
+\code{amplitude}, \code{amplitude_se}: Amplitude of the fit and its standard error.
+\code{acrophase}, \code{acrophase_se}: Phase of the fit in radians and its standard error.
+\code{phase}, \code{phase_se}: Acrophase in time units of \code{sampling_rate}, and its standard error.
+\code{adj_r_squared}: Adjusted R-squared (percent rhythm) of the fit.
+\code{p_value}: p-value of the regression; significance indicates the period matches the data.
+\code{wave}: Fitted values (\code{mesor + sin_coeff * sin + cos_coeff * cos}) for plotting.
+\code{cos_coeff}, \code{sin_coeff}: The fitted cosine and sine coefficients.
 }
 \description{
 COSINOR analysis of a timeseries.

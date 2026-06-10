@@ -50,6 +50,7 @@ simplify_data <- function(df, big_data = FALSE) {
   tibble::tibble(
     peak_datetime = u$acf$results$datetime,
     period = u$acf$results$period,
+    cosinor_period = u$acf$cosinor$period,
     rhythm_strength = u$acf$results$rhythm_strength,
     acf_peak = u$acf$results$max_peak_of_int,
     mesor = u$acf$cosinor$mesor,
@@ -60,7 +61,13 @@ simplify_data <- function(df, big_data = FALSE) {
     phase = u$acf$cosinor$phase,
     phase_se = u$acf$cosinor$phase_se,
     adj_r_squared = u$acf$cosinor$adj_r_squared,
-    cosinor_p_value = u$acf$cosinor$p_value
+    cosinor_p_value = u$acf$cosinor$p_value,
+    cos_coeff = u$acf$cosinor$cos_coeff,
+    sin_coeff = u$acf$cosinor$sin_coeff,
+    var_sin = u$acf$cosinor$var_sin,
+    var_cos = u$acf$cosinor$var_cos,
+    cov_sincos = u$acf$cosinor$cov_sincos,
+    cosinor_n = u$acf$cosinor$n_obs
   )
 }
 
@@ -68,7 +75,8 @@ simplify_data <- function(df, big_data = FALSE) {
   tibble::tibble(
     peak_datetime = u$lomb$results$datetime,
     period = if (is_empty(u$lomb$results$period)) NA else u$lomb$results$period,
-    rhythm_strength = if (is_empty(u$lomb$results$rhythm_strength)) NA else u$lomb$results$rhythm_strength,
+    cosinor_period = u$lomb$cosinor$period,
+    relative_power = if (is_empty(u$lomb$results$relative_power)) NA else u$lomb$results$relative_power,
     lsp_peak = u$lomb$results$peak,
     mesor = u$lomb$cosinor$mesor,
     amplitude = u$lomb$cosinor$amplitude,
@@ -78,7 +86,13 @@ simplify_data <- function(df, big_data = FALSE) {
     phase = u$lomb$cosinor$phase,
     phase_se = u$lomb$cosinor$phase_se,
     adj_r_squared = u$lomb$cosinor$adj_r_squared,
-    cosinor_p_value = u$lomb$cosinor$p_value
+    cosinor_p_value = u$lomb$cosinor$p_value,
+    cos_coeff = u$lomb$cosinor$cos_coeff,
+    sin_coeff = u$lomb$cosinor$sin_coeff,
+    var_sin = u$lomb$cosinor$var_sin,
+    var_cos = u$lomb$cosinor$var_cos,
+    cov_sincos = u$lomb$cosinor$cov_sincos,
+    cosinor_n = u$lomb$cosinor$n_obs
   )
 }
 
@@ -96,7 +110,7 @@ simplify_data <- function(df, big_data = FALSE) {
     lsp_p_value = u$lomb$results$p_value,
     lsp_scanned = list(u$lomb$results$scanned),
     lsp_power = list(u$lomb$results$power),
-    lsp_rs = if (is_empty(u$lomb$results$rhythm_strength)) NA else u$lomb$results$rhythm_strength,
+    lsp_relpower = if (is_empty(u$lomb$results$relative_power)) NA else u$lomb$results$relative_power,
     acf_start = u$acf$results$start,
     acf_end = u$acf$results$end,
     acf_from = u$acf$results$from,

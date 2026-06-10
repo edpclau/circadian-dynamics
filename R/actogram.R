@@ -18,14 +18,20 @@ actogram <- function (df, sampling, file = 'actogram') {
   rows = round(inds/3)
   search_factor = 60/sampling
   dday = search_factor * 24
-  days = sum(diff(lubridate::yday(df$datetime) - min(lubridate::yday(df$datetime))))
-  day = seq(1, days, by = 1)
+  # Number of calendar days spanned. The previous yday()-based arithmetic
+  # under-counted by one within a year and went negative across a year boundary
+  # (Dec -> Jan), corrupting the layout. difftime is non-negative and wrap-safe.
+  days = as.integer(ceiling(as.numeric(difftime(max(df$datetime), min(df$datetime), units = 'days'))))
+  day = seq_len(days)
 
 
   #Set matrix layout for the plots
-  layout.matrix <- matrix(c(seq(1, days+1, by = 1)), nrow = (days+1), ncol = 1)
+  layout.matrix <- matrix(seq_len(days + 1), nrow = days + 1, ncol = 1)
 
   pdf(file = paste0(file,'.pdf'))
+  # Close the PDF device even if the loop below errors, so a partial/corrupt file
+  # is not left open and the graphics device stack is not polluted.
+  on.exit(grDevices::dev.off(), add = TRUE)
 
   layout(mat = layout.matrix,
          heights = c(rep(1, days), 3), # Heights of the two rows
@@ -33,7 +39,8 @@ actogram <- function (df, sampling, file = 'actogram') {
 
   # layout.show(days+1)
 
-  for (ind in seq(1, ncol(df[-1]), by = 1)) {
+  vals <- df[-1]
+  for (ind in seq_len(ncol(vals))) {
 
     #Actogram
     par(mar = c(0,0,0,0))
@@ -41,13 +48,11 @@ actogram <- function (df, sampling, file = 'actogram') {
 
       slice = seq(1+dday*(i - 1), dday*(i+1), by = 1)
 
-      hour = lubridate::hour(df[[1]][slice])
-      hour = seq(1, 48, by = (48-1)/(length(hour) - 1))
+      hour = seq(1, 48, by = (48 - 1) / (length(slice) - 1))
 
-
-      activity = df[-1][[ind]][slice]
+      activity = vals[[ind]][slice]
       mact = max(activity)
-      mact = ifelse( mact == 0 | is.na(mact) , 1, mact )
+      if (is.na(mact) || mact == 0) mact = 1
 
 
 
@@ -65,9 +70,6 @@ actogram <- function (df, sampling, file = 'actogram') {
 
 
   }
-
-
-  dev.off()
 
 }
 

@@ -77,7 +77,6 @@ trikinetics_analyzed = process_timeseries_main(
   #Here we are removing all periods below 12 hours and those above 35 hours.
   f_low = 1/(12*sampling_rate_numeric),
   f_high = 1/(35*sampling_rate_numeric),
-  # f_high = 0,
   #Order for the butterworth filter
   order = 2,
 
@@ -86,9 +85,10 @@ trikinetics_analyzed = process_timeseries_main(
   #it run slower as there is an overhead to paralleling the analysis.
   big_data = FALSE,
 
-  ##Control the p.value threshold and the ovarsampling factor for the
-  #lomb-scargle periodogram
-  ofac = sampling_rate_in_seconds,
+  ##Control the p.value threshold and the oversampling factor for the
+  #Lomb-Scargle periodogram. ofac is a small integer (typically 1-10);
+  #values above 20 are capped with a warning.
+  ofac = 10,
   lomb_pvalue = 0.05
 )
 
@@ -96,12 +96,8 @@ trikinetics_analyzed = process_timeseries_main(
 ## 7.1 Export Detailed Plots
 ### Make sure the sampling_rate says if the data is sampled in minutes, hours,
 ### or days.
-### If you selected make_time_windows = TRUE in the analysis,
+### If you selected make_windows = TRUE in the analysis,
 detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
-## 7.2 Summary Plots
-
-
-
 
 # 8. Tidy up data for export
 ## The data outputted by 'process_timeseries_main) is not easily read
@@ -143,7 +139,7 @@ future_map(
     plots =  arrangeGrob(raw_plots[[.x]],
                          actograms_by_window[[.x]],
                          acf_plots$period_plots[[.x]], acf_plots$rhythm_plots[[.x]],
-                         lsp_plots$period_plots[[.x]], lsp_plots$rhythm_plots[[.x]],
+                         lsp_plots$period_plots[[.x]], lsp_plots$relative_power_plots[[.x]],
                          lsp_plots$amplitude_plots[[.x]], lsp_plots$phase_plots[[.x]],
                          nrow = 5, ncol = 4,
                          layout_matrix = layout)

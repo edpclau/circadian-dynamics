@@ -28,23 +28,22 @@ make_time_windows <- function(data = NULL, window_size_in_days = 3, window_step_
 # Set parameters
 window_size = days(window_size_in_days) #Width of the window
 
-# Finding dates where the window does not exceed the last time point in the data
+# Finding dates where the window does not exceed the last time point in the data.
+# Window starts stop at max(times) - window_size so every window is full width;
+# fall back to a single window when the series is shorter than the window.
 times <- data[['datetime']]
-step = seq(from = min(times), to = max(times), by = paste(window_step_in_days, "day")) #days to move the window
+last_start <- max(times) - window_size
+if (last_start < min(times)) last_start <- min(times)
+step = seq(from = min(times), to = last_start, by = paste(window_step_in_days, "day")) #days to move the window
 
 
 
-#plan for paralelization
-oplan <- future::plan()
-on.exit(future::plan(oplan), add = TRUE)
-future::plan(future::multisession, workers = 2)
-
-# Creating a new data.frame where data is partitioned by window
-return( furrr::future_map_dfr(.x = step,
-                               ~ filter(data, (datetime >= .x) & (datetime <= .x + window_size)),
-                               .id = "window",
-                               .options = furrr::furrr_options(seed = TRUE), packages = 'lubridate')
-)
+# Partition the data by window. Runs on the caller's future plan (sequential by
+# default); the deterministic seed keeps furrr from warning about RNG.
+furrr::future_map_dfr(.x = step,
+                      ~ filter(data, (datetime >= .x) & (datetime <= .x + window_size)),
+                      .id = "window",
+                      .options = furrr::furrr_options(seed = TRUE, packages = 'lubridate'))
 
 
 

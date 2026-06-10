@@ -9,9 +9,10 @@ devtools::install_github("edpclau/circadian-dynamics")
 
 # What's new in 4.0.0 (breaking changes)
 
-- **One reader per format.** `read_trikinetics(path, layout)`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, and `read_vitalpatch()` each accept a file *or* a folder and open a dialog when the path is `NULL`. The old `*_interactive()` / `*_folder()` and `read_trikinetics_nested|long()` names still work but are deprecated.
-- **Analysis functions renamed** off their misleading S3-style dotted names: `analyze_acf()`, `analyze_cosinor()`, `analyze_lomb()`, and `process_timeseries_main()` / `_core()` / `_waveform()`. The old dotted names are deprecated shims.
-- **Lomb-Scargle rhythm strength** is now `peak / significance_threshold`, so it is comparable across windows.
+- **One reader per format.** `read_trikinetics(path, layout)`, `read_clocklab()`, `read_csv_data()`, `read_satellite()`, and `read_vitalpatch()` each accept a file *or* a folder and open a dialog when the path is `NULL`. The old `*_interactive()` / `*_folder()` and `read_trikinetics_nested|long()` names have been removed.
+- **Analysis functions renamed** off their misleading S3-style dotted names: `analyze_acf()`, `analyze_cosinor()`, `analyze_lomb()`, and `process_timeseries_main()` / `_core()` / `_waveform()`. The old dotted names have been removed.
+- `process_timeseries_core()`'s `ofac` default is now `10`, matching `process_timeseries_main()` and the documentation.
+- **Lomb-Scargle rhythm strength** is now reported as `relative_power` — the fraction of total spectral power carried by the dominant in-band peak (`peak / sum(power)`), a length-robust index comparable across windows.
 - Many unused plotting functions were removed and the result plotters de-duplicated; the Granger test (dropped in 3.0.0) no longer appears anywhere.
 
 Earlier 3.0.0 changes: Granger causality test removed; `rythm` → `rhythm` throughout; new `adjust_pvalues()` for Benjamini-Hochberg/FDR correction.
@@ -94,7 +95,6 @@ trikinetics_analyzed = process_timeseries_main(
   #Here we are removing all periods below 12 hours and those above 35 hours.
   f_low = 1/(12*sampling_rate_numeric),
   f_high = 1/(35*sampling_rate_numeric),
-  # f_high = 0,
   #Order for the butterworth filter
   order = 2,
 
@@ -112,7 +112,7 @@ trikinetics_analyzed = process_timeseries_main(
 ```
 # 7. Export Figures
 ## 7.1 Export Detailed Plots
-Make sure the sampling_rate says if the data is sampled in minutes, hours, or days. If you selected make_time_windows = TRUE in the analysis,
+Make sure the sampling_rate says if the data is sampled in minutes, hours, or days. If you selected make_windows = TRUE in the analysis,
 ```{r}
 detailed_plots(trikinetics_analyzed, sampling_rate = 'minutes', windows = TRUE)
 ```

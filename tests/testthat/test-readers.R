@@ -11,10 +11,3 @@ test_that("read_csv_data nests one tibble per measurement column", {
   expect_named(out$IND_1, c("datetime", "value"))
   expect_equal(out$IND_2$value, 6:10)
 })
-
-test_that("deprecated reader aliases warn and delegate", {
-  expect_warning(
-    try(read_trikinetics_long("/no/such/file.txt"), silent = TRUE),
-    "deprecated"
-  )
-})

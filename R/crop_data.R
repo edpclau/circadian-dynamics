@@ -17,19 +17,27 @@
 crop_data <- function(df = NULL, from = NULL, to = NULL) {
   if (is.null(from) & is.null(to)) {return(df)}
 
-  if (is.null(from)) {from = as.character(min(df$datetime, na.rm = TRUE))}
+  # df is a *list* of data.frames, so df$datetime is NULL and min()/max() on it
+  # would return Inf -> an unparseable bound -> every row silently filtered out.
+  # Derive the missing bound from each element's first (datetime) column instead.
+  if (is.null(from)) {
+    from = as.character(min(do.call(c, lapply(df, function(d) min(d[[1]], na.rm = TRUE)))))
+  }
 
-  if (is.null(to)) {to = as.character(max(df$datetime, na.rm = TRUE))}
+  if (is.null(to)) {
+    to = as.character(max(do.call(c, lapply(df, function(d) max(d[[1]], na.rm = TRUE)))))
+  }
 
 
 
+  # Parse the bounds once rather than re-parsing them for every element below.
+  from_dt = parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5)
+  to_dt   = parse_date_time(to,   orders = "%y%m%d %H%M%S", truncated = 5)
   df = future_map(
     .x = df,
-    .f = ~ {
-      filter(.x,
-             !!as.symbol(names(.x)[1]) >= parse_date_time(from, orders = "%y%m%d %H%M%S", truncated = 5),
-             !!as.symbol(names(.x)[1]) <= parse_date_time(to, orders = "%y%m%d %H%M%S", truncated = 5))
-    }
+    .f = ~ filter(.x,
+                  !!as.symbol(names(.x)[1]) >= from_dt,
+                  !!as.symbol(names(.x)[1]) <= to_dt)
   )
 
   return(df)

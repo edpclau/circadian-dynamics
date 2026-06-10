@@ -36,7 +36,7 @@ process_timeseries_core(
   f_high = 1/73,
   order = 2,
   big_data = FALSE,
-  ofac = 1,
+  ofac = 10,
   lomb_pvalue = 0.01
 )
 
@@ -68,11 +68,11 @@ process_timeseries_main(
 
 \item{smooth_data}{Logical. If TRUE will smooth the measurement values using a moving average. Default = FALSE.}
 
-\item{butterworth}{Logical. If TRUE (default) will apply a buttwerworth filter to the measurement values using a moving average. If FALSE measurement values won't be filtered.}
+\item{butterworth}{Logical. If TRUE (default) applies a two-pass Butterworth band-pass filter to the measurement values. If FALSE, values are not filtered.}
 
 \item{f_low}{Frequency for the low pass filter. Default = 1/4.}
 
-\item{f_high}{Frequency for the high pass filter. Default = 1/72.}
+\item{f_high}{Frequency for the high pass filter. Default = 1/73.}
 
 \item{order}{filter order. Default = 2.}
 
@@ -94,7 +94,7 @@ process_timeseries_main(
 
 \item{lomb_pvalue}{The significance level used for the Lomb-Scargle analysis. Default = 0.01.}
 
-\item{movavg}{Logical. If TRUE (default) will smooth the measurement values useing a moving average. If FALSE measurement values won't be smoothed.}
+\item{movavg}{Logical. If TRUE, smooths the measurement values using a moving average. Default = FALSE.}
 }
 \value{
 A named list of data.frames containing the output of \code{butterworth_filter}, [find_gaps()],
@@ -102,7 +102,7 @@ A named list of data.frames containing the output of \code{butterworth_filter}, 
 [analyze_cosinor()] for each measurement value.
 }
 \description{
-Processes raw data in such a way that it can be directly inputted to the rhythm_analysis_by_window function.
+Cleans, optionally filters/detrends, and runs ACF + Lomb-Scargle + cosinor analysis on a timeseries (optionally in sliding windows).
 }
 \examples{
 \dontrun{

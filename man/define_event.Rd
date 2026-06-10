@@ -4,13 +4,10 @@
 \alias{define_event}
 \title{Define an Event for the USDA RFID data}
 \usage{
-define_event(df, core = TRUE)
+define_event(df)
 }
 \arguments{
 \item{df}{data.frame of RFID data containing at least the following columns: UID, UTCTime, Address, ScanCount.}
-
-\item{core}{boolean. If TRUE (default), will run paralelization using the multicore approach. This doesn't work well on Windows 10
-systems. If FALSE, it will use the multisession approach.}
 }
 \value{
 returns a data.frame with an additional column called "event".

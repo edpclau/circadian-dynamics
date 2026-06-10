@@ -18,9 +18,9 @@ butterworth_filter(
 
 \item{order}{filter order. Default = 2.}
 
-\item{f_low}{Frequency for the low pass filter. Default = 1/4.}
+\item{f_low}{Normalised cut-off (fraction of Nyquist) for the low-pass stage. Default = 1/4.}
 
-\item{f_high}{Frequency for the high pass filter. Default = 1/72.}
+\item{f_high}{Normalised cut-off (fraction of Nyquist) for the high-pass stage. Default = 1/72.}
 
 \item{plot}{logical. If TRUE (default) plots the filtered data over the raw data. Red line is the low pass filter. Blue is the high pass filter. If FALSE, does not plot.}
 
@@ -30,9 +30,17 @@ butterworth_filter(
 The input data.frame \code{df} with an additional column \code{butterworth} containing the filtered values.
 }
 \description{
-A helper function which wraps around the [signal::butter()] and [signal::filfilt()] functions.
-It can be either a low or high pass filter for a given period. (The function can take the period argument
-because it does the conversion to frequency automatically. (frequency = 1/period).
+A helper that wraps [signal::butter()] and [signal::filtfilt()] to apply a
+two-pass (zero-phase) band-pass filter: a low-pass stage followed by a high-pass
+stage.
+
+\strong{The cut-offs are normalised frequencies}, given as a fraction of the
+Nyquist frequency (half the sampling rate), exactly as [signal::butter()]
+expects. They are NOT derived from a period and are NOT rescaled by the sampling
+rate inside this function. The caller must convert a physical cut-off to a
+normalised frequency for the data's own sampling rate before calling (see the
+package example script, which scales \code{f_low}/\code{f_high} by the sampling
+rate).
 }
 \examples{
 \dontrun{

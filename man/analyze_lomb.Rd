@@ -27,7 +27,9 @@ Must be in hours. Default = 18.}
 \item{to}{An optional numeric indicating up to which period or frequency to start looking for peaks.
 Must be in hours. Default = 30.}
 
-\item{ofac}{\code{lomb::lsp()} The oversampling factor. Must be an integer>=1. Larger values of ofac lead to finer scanning of frequencies but may be time-consuming for large datasets and/or large frequency ranges (from...to).}
+\item{ofac}{The Lomb-Scargle oversampling factor. Must be an integer >= 1. Larger values give
+finer frequency scanning but cost more time on large datasets or wide (from...to)
+ranges. Default = 1. Typically 1-10; values above 20 are capped to 20 with a warning.}
 
 \item{alpha}{The significance level used by the Lomb-Scargle periodogram. Powers exceeding the
 corresponding significance threshold are considered significant. Default = 0.01.}
@@ -48,6 +50,15 @@ scanned          A vector containing the frequencies/period scanned.
 normalized_power A vector containing the normalized power corresponding to scanned frequencies/periods.
 
 sig_level        Powers > sig.level can considered significant peaks.
+
+relative_power   The fraction of total Lomb-Scargle spectral power carried by the
+                 dominant in-band peak, i.e. \code{peak / sum(power)}. Bounded in
+                 (0, 1]; a normalised, length-robust index of how concentrated the
+                 series' power is at the detected period. Higher values indicate a
+                 more dominant, robust rhythm. This replaces the former
+                 \code{rhythm_strength} (peak / significance threshold), which was a
+                 significance ratio rather than a measure of rhythm strength and
+                 grew with recording length.
 }
 \description{
 Iteratively computes the Lomb-Scargle periodogram for a time series with irregular (or regular) sampling intervals.
@@ -58,4 +69,13 @@ res <- analyze_lomb(df, sampling_rate = "1 hour", from = 18, to = 30)
 }
 
 
+}
+\references{
+Ruf, T. (1999) The Lomb-Scargle Periodogram in Biological Rhythm Research: Analysis
+of Incomplete and Unequally Spaced Time-Series. Biological Rhythm Research 30(2):
+178-201. \doi{10.1076/brhm.30.2.178.1422}
+
+Refinetti, R., Cornelissen, G. & Halberg, F. (2007) Procedures for numerical
+analysis of circadian rhythms. Biological Rhythm Research 38(4): 275-325.
+\doi{10.1080/09291010600903692}
 }

@@ -25,3 +25,11 @@ test_that("acrophase is in [0, 2*pi) and finite", {
   expect_true(is.finite(res$acrophase_se) && res$acrophase_se > 0)
   expect_equal(res$acrophase, pi/2, tolerance = 0.35)  # ~pi/2; loose tol absorbs the 1-sample index offset
 })
+
+test_that("analyze_cosinor returns sine/cosine covariance and N for joint (Bingham) inference", {
+  df <- make_sine(period_h = 24, sampling_min = 60, n_days = 5)
+  r <- analyze_cosinor(df, sampling_rate = "1 hour", period = 24)
+  expect_true(all(c("var_sin", "var_cos", "cov_sincos", "n_obs") %in% names(r)))
+  expect_true(is.finite(r$var_sin) && is.finite(r$var_cos))
+  expect_equal(r$n_obs, nrow(df))
+})

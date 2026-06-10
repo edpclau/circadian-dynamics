@@ -138,9 +138,6 @@ lsp_mod <- function (x, times = NULL, from = NULL, to = NULL,
 
 
   times <- as.numeric(times)
-  start <- min(times)
-  end <- max(times)
-  av.int <- mean(diff(times))
   o <- order(times)
   times <- times[o]
   x <- x[o]
